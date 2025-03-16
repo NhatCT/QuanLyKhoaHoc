@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="10" stylesheets="@../css/style.css"
+      xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.ntn.quanlykhoahoc.DashboardStudent">
+
+    <Label text="Danh sách khóa học" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+
+ <TableView fx:id="courseTable">
+    <columns>
+        <TableColumn fx:id="imageColumn" text="Hình Ảnh"/>
+        <TableColumn fx:id="nameColumn" text="Tên Khóa Học"/>
+        <TableColumn fx:id="instructorColumn" text="Giảng Viên"/>
+        <TableColumn fx:id="priceColumn" text="Giá"/>
+        <TableColumn fx:id="actionColumn" text="Hành động"/>
+    </columns>
+</TableView>
+
+
+    <Pagination fx:id="pagination" />
+
+</VBox>
