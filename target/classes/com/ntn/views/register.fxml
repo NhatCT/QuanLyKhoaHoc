@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="10" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ntn.quanlykhoahoc.controllers.Register">
+    <Label style="-fx-font-family: 'Arial'; -fx-font-size: 20; -fx-font-weight: bold;" text="Đăng Ký" />
+    <TextField fx:id="fullNameField" promptText="Họ và tên" />
+    <TextField fx:id="emailField" promptText="Email" />
+    <PasswordField fx:id="passwordField" promptText="Mật khẩu" />
+    <PasswordField fx:id="confirmPasswordField" promptText="Nhập lại mật khẩu" />
+    <Button onAction="#handleRegister" text="Đăng ký" />
+    <Hyperlink text="Đã có tài khoản? Đăng nhập" onAction="#handleLogin" />
+</VBox>
