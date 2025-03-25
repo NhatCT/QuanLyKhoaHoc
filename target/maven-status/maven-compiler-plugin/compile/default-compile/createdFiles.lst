@@ -1,9 +1,6 @@
 com\ntn\quanlykhoahoc\controllers\Login.class
-com\ntn\quanlykhoahoc\controllers\ForgotPassword.class
-com\ntn\quanlykhoahoc\database\Database.class
+com\ntn\quanlykhoahoc\session\SessionManager.class
 com\ntn\quanlykhoahoc\controllers\Register.class
-com\ntn\quanlykhoahoc\App.class
-com\ntn\quanlykhoahoc\controllers\DashboardTeacher.class
 com\ntn\quanlykhoahoc\models\KhoaHoc.class
 com\ntn\quanlykhoahoc\controllers\DashboardStudentController.class
 com\ntn\quanlykhoahoc\controllers\ResetPassword.class
@@ -11,4 +8,8 @@ com\ntn\quanlykhoahoc\controllers\DashboardAdmin.class
 module-info.class
 com\ntn\quanlykhoahoc\controllers\ForgotPassword$1.class
 com\ntn\quanlykhoahoc\controllers\OTPVerification.class
+com\ntn\quanlykhoahoc\controllers\ForgotPassword.class
+com\ntn\quanlykhoahoc\database\Database.class
+com\ntn\quanlykhoahoc\App.class
+com\ntn\quanlykhoahoc\controllers\DashboardTeacher.class
 com\ntn\quanlykhoahoc\DashboardStudent.class

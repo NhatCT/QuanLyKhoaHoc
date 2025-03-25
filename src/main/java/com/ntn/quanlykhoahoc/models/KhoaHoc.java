@@ -1,56 +1,26 @@
 package com.ntn.quanlykhoahoc.models;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
 public class KhoaHoc {
     private int id;
-    private StringProperty tenKhoaHoc;
-    private StringProperty giangVien;
-    private StringProperty gia;
+    private String tenKhoaHoc;
+    private String moTa;
+    private double gia;
     private String hinhAnh;
+    private String tenGiangVien;
 
-    public KhoaHoc(int id, String tenKhoaHoc, String giangVien, String gia, String hinhAnh) {
+    public KhoaHoc(int id, String tenKhoaHoc, String moTa, double gia, String hinhAnh, String tenGiangVien) {
         this.id = id;
-        this.tenKhoaHoc = new SimpleStringProperty(tenKhoaHoc);
-        this.giangVien = new SimpleStringProperty(giangVien);
-        this.gia = new SimpleStringProperty(gia);
+        this.tenKhoaHoc = tenKhoaHoc;
+        this.moTa = moTa;
+        this.gia = gia;
         this.hinhAnh = hinhAnh;
+        this.tenGiangVien = tenGiangVien;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getTenKhoaHoc() {
-        return tenKhoaHoc.get();
-    }
-
-    public StringProperty tenKhoaHocProperty() {
-        return tenKhoaHoc;
-    }
-
-    public String getGiangVien() {
-        return giangVien.get();
-    }
-
-    public StringProperty giangVienProperty() {
-        return giangVien;
-    }
-
-    public String getGia() {
-        return gia.get();
-    }
-
-    public StringProperty giaProperty() {
-        return gia;
-    }
-
-    public String getHinhAnh() {
-        return hinhAnh;
-    }
-
-    public StringProperty hinhAnhProperty() {
-        return new SimpleStringProperty(hinhAnh);
-    }
+    public int getId() { return id; }
+    public String getTenKhoaHoc() { return tenKhoaHoc; }
+    public String getMoTa() { return moTa; }
+    public double getGia() { return gia; }
+    public String getHinhAnh() { return hinhAnh; }
+    public String getTenGiangVien() { return tenGiangVien; }
 }

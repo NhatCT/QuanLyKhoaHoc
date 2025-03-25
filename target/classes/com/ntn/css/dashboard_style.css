@@ -1,0 +1,96 @@
+/* Sidebar */
+.sidebar {
+    -fx-background-color: #2c3e50;
+    -fx-padding: 15px;
+}
+
+.sidebar Label {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.sidebar Button {
+    -fx-background-color: #34495e;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 12px;
+}
+
+.sidebar Button:hover {
+    -fx-background-color: #1abc9c;
+}
+
+
+.coursesGrid {
+    -fx-hgap: 30px;
+    -fx-vgap: 30px;
+    -fx-padding: 15px;
+    -fx-alignment: center; 
+}
+
+
+.course-card {
+    -fx-border-color: #ccc;
+    -fx-border-radius: 10px;
+    -fx-padding: 20px;  
+    -fx-background-color: #ecf0f1;
+    -fx-alignment: center;
+    -fx-pref-width: 450px;  
+    -fx-pref-height: 500px;
+}
+
+.course-card Label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.course-card Button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 14px;
+    -fx-font-size: 14px;
+}
+
+.course-card Button:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Pagination */
+.pagination {
+    -fx-padding: 12px;
+    -fx-spacing: 15px;
+}
+
+.pagination Button {
+    -fx-background-color: #34495e;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.pagination Button:hover {
+    -fx-background-color: #1abc9c;
+}
+
+/* Cart Section */
+.cart-section {
+    -fx-background-color: #bdc3c7;
+    -fx-padding: 15px;
+}
+
+.cart-section TableView {
+    -fx-background-color: white;
+}
+
+.cart-section Button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.cart-section Button:hover {
+    -fx-background-color: #c0392b;
+}

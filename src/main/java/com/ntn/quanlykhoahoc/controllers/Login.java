@@ -2,6 +2,7 @@ package com.ntn.quanlykhoahoc.controllers;
 
 import com.ntn.quanlykhoahoc.App;
 import com.ntn.quanlykhoahoc.database.Database;
+import com.ntn.quanlykhoahoc.session.SessionManager;
 import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -14,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Login {
+
     @FXML
     private TextField emailField;
     @FXML
@@ -39,6 +41,9 @@ public class Login {
         }
 
         if (authenticate(email, password, role)) {
+            // Lưu email vào session
+            SessionManager.setLoggedInEmail(email);
+
             showAlert("Thành công", "Đăng nhập thành công!", Alert.AlertType.INFORMATION);
             navigateToDashboard(role);
         } else {
@@ -52,11 +57,10 @@ public class Login {
     }
 
     public boolean authenticate(String email, String password, String role) {
-        String query = "SELECT mat_khau FROM nguoidung WHERE email = ? " +
-                       "AND loai_nguoi_dung_id = (SELECT id FROM loainguoidung WHERE ten_loai = ?)";
+        String query = "SELECT mat_khau FROM nguoidung WHERE email = ? "
+                + "AND loai_nguoi_dung_id = (SELECT id FROM loainguoidung WHERE ten_loai = ?)";
 
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, email);
             stmt.setString(2, role);
@@ -73,22 +77,21 @@ public class Login {
 
         return false;
     }
-    
-    @FXML
-private void handleForgotPassword() {
-    try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ntn/views/forgot_password.fxml"));
-        Parent root = loader.load();
-        
-        Stage stage = new Stage();
-        stage.setTitle("Quên Mật Khẩu");
-        stage.setScene(new Scene(root));
-        stage.show();
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-}
 
+    @FXML
+    private void handleForgotPassword() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ntn/views/forgot_password.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Quên Mật Khẩu");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void navigateToDashboard(String role) {
         try {

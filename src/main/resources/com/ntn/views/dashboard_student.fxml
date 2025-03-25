@@ -1,48 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.ntn.quanlykhoahoc.controllers.DashboardStudentController">
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ntn.quanlykhoahoc.controllers.DashboardStudentController">
 
-    <!-- Sidebar -->
+    <!-- Sidebar (Thanh menu trái) -->
     <left>
-        <VBox spacing="10" style="-fx-background-color: #2c3e50; -fx-padding: 15px;">
-            <Label text="Welcome, Student" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
-            <Button text="Dashboard" fx:id="dashboardBtn"/>
-            <Button text="My Courses" fx:id="coursesBtn"/>
-            <Button text="Profile" fx:id="profileBtn"/>
-            <Button text="Logout" fx:id="logoutBtn"/>
+        <VBox fx:id="sidebar" prefWidth="220" spacing="12" style="-fx-padding: 15px; -fx-background-color: #f4f4f4;">
+            <Label fx:id="welcomeLabel" prefHeight="60.0" prefWidth="162.0" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Welcome, Student" />
+            <Button fx:id="dashboardBtn" prefHeight="34.0" prefWidth="182.0" text="Dashboard" />
+            <Button fx:id="coursesBtn" prefHeight="20.0" prefWidth="182.0" text="My Courses" />
+            <Button fx:id="profileBtn" prefHeight="26.0" prefWidth="181.0" text="Profile" />
+            <Button fx:id="logoutButton" onAction="#handleLogout" prefHeight="16.0" prefWidth="180.0" text="Logout" />
         </VBox>
     </left>
 
-    <!-- Course List -->
+    <!-- Phần hiển thị danh sách khóa học -->
     <center>
-        <ScrollPane fitToWidth="true">
-            <GridPane fx:id="coursesGrid" hgap="15" vgap="15" style="-fx-padding: 15px;">
-                <!-- Các khóa học sẽ được thêm vào bằng code -->
-            </GridPane>
-        </ScrollPane>
+        <VBox spacing="12" style="-fx-padding: 20px;">
+            <ScrollPane fx:id="coursesScrollPane" fitToHeight="true" fitToWidth="true" prefHeight="750.0" prefWidth="1000">
+                <GridPane fx:id="coursesGrid" hgap="30" prefHeight="750.0" prefWidth="1100" vgap="30">
+                </GridPane>
+            </ScrollPane>
+
+            <!-- Thanh phân trang -->
+            <HBox fx:id="paginationContainer" alignment="CENTER" spacing="12">
+                <Button fx:id="prevPageBtn" text="Previous" />
+                <Label fx:id="pageLabel" text="Page 1" />
+                <Button fx:id="nextPageBtn" text="Next" />
+            </HBox>
+        </VBox>
     </center>
 
-    <!-- Cart Section -->
+    <!-- Giỏ hàng (Selected Courses) -->
     <right>
-        <VBox spacing="10" style="-fx-background-color: #bdc3c7; -fx-padding: 15px;">
-            <Label text="Selected Courses"/>
-            
+        <VBox fx:id="cartSection" prefWidth="270" spacing="12" style="-fx-padding: 15px; -fx-background-color: #f4f4f4;">
+            <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Selected Courses" />
             <TableView fx:id="cartTable">
                 <columns>
-                    <TableColumn text="Course" fx:id="courseColumn"/>
-                    <TableColumn text="Price" fx:id="priceColumn"/>
+                    <TableColumn fx:id="courseColumn" text="Khóa học" />
                 </columns>
-                <placeholder>
-                    <Label text="No courses selected"/>
-                </placeholder>
             </TableView>
-
-            <Button text="Pay" fx:id="payButton"/>
-            <Button text="Remove" fx:id="removeButton"/>
+            <Button fx:id="payButton" text="Pay" />
+            <Button fx:id="removeButton" text="Remove" />
         </VBox>
     </right>
 

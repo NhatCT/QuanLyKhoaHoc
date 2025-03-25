@@ -4,45 +4,52 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.ntn.quanlykhoahoc.controllers.DashboardStudentController">
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="com.ntn.quanlykhoahoc.controllers.DashboardStudentController">
 
-    <!-- Sidebar -->
+    <!-- Sidebar (Thanh menu trái) -->
     <left>
-        <VBox spacing="10" style="-fx-background-color: #2c3e50; -fx-padding: 15px;">
-            <Label text="Welcome, Student" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
-            <Button text="Dashboard" fx:id="dashboardBtn"/>
-            <Button text="My Courses" fx:id="coursesBtn"/>
-            <Button text="Profile" fx:id="profileBtn"/>
-            <Button text="Logout" fx:id="logoutBtn"/>
+        <VBox fx:id="sidebar" prefWidth="220" spacing="12"
+              style="-fx-padding: 15px; -fx-background-color: #f4f4f4;">
+            <Label fx:id="welcomeLabel" text="Welcome, Student" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <Button fx:id="dashboardBtn" text="Dashboard" />
+            <Button fx:id="coursesBtn" text="My Courses" />
+            <Button fx:id="profileBtn" text="Profile" />
+            <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout"/>
         </VBox>
     </left>
 
-    <!-- Course List -->
+    <!-- Phần hiển thị danh sách khóa học -->
     <center>
-        <ScrollPane fitToWidth="true">
-            <GridPane fx:id="coursesGrid" hgap="15" vgap="15" style="-fx-padding: 15px;">
-                <!-- Các khóa học sẽ được thêm vào bằng code -->
-            </GridPane>
-        </ScrollPane>
+        <VBox spacing="12" style="-fx-padding: 20px;">
+            <ScrollPane fx:id="coursesScrollPane" fitToHeight="true" fitToWidth="true"
+                        prefHeight="750.0" prefWidth="1000">
+                <GridPane fx:id="coursesGrid" prefHeight="750.0" prefWidth="1100"
+                          hgap="30" vgap="30">
+                </GridPane>
+            </ScrollPane>
+
+            <!-- Thanh phân trang -->
+            <HBox fx:id="paginationContainer" alignment="CENTER" spacing="12">
+                <Button fx:id="prevPageBtn" text="Previous" />
+                <Label fx:id="pageLabel" text="Page 1" />
+                <Button fx:id="nextPageBtn" text="Next" />
+            </HBox>
+        </VBox>
     </center>
 
-    <!-- Cart Section -->
+    <!-- Giỏ hàng (Selected Courses) -->
     <right>
-        <VBox spacing="10" style="-fx-background-color: #bdc3c7; -fx-padding: 15px;">
-            <Label text="Selected Courses"/>
-            
+        <VBox fx:id="cartSection" prefWidth="270" spacing="12"
+              style="-fx-padding: 15px; -fx-background-color: #f4f4f4;">
+            <Label text="Selected Courses" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
             <TableView fx:id="cartTable">
                 <columns>
-                    <TableColumn text="Course" fx:id="courseColumn"/>
-                    <TableColumn text="Price" fx:id="priceColumn"/>
+                    <TableColumn fx:id="courseColumn" text="Khóa học" />
                 </columns>
-                <placeholder>
-                    <Label text="No courses selected"/>
-                </placeholder>
             </TableView>
-
-            <Button text="Pay" fx:id="payButton"/>
-            <Button text="Remove" fx:id="removeButton"/>
+            <Button fx:id="payButton" text="Pay" />
+            <Button fx:id="removeButton" text="Remove" />
         </VBox>
     </right>
 
