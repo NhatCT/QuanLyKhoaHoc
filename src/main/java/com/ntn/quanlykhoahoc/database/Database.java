@@ -26,7 +26,7 @@ public class Database {
     }
     
     public static Connection getConn() throws SQLException {
-        return DriverManager.getConnection("jdbc:mysql://localhost/quanlykhoahoc", "root", "Nhat#1908");
+        return DriverManager.getConnection("jdbc:mysql://localhost/quanlykhoahoc", "root", "Abc123");
     }
 
 
