@@ -1,7 +1,7 @@
 /* Sidebar */
 .sidebar {
     -fx-background-color: #2c3e50;
-    -fx-padding: 15px;
+    -fx-padding: 15 15;
 }
 
 .sidebar Label {
@@ -11,74 +11,74 @@
 }
 
 .sidebar Button {
-    -fx-background-color: #34495e;
+    -fx-background-color: #4a69bd;
     -fx-text-fill: white;
     -fx-font-size: 14px;
-    -fx-padding: 12px;
+    -fx-padding: 12 12;
 }
 
 .sidebar Button:hover {
-    -fx-background-color: #1abc9c;
+    -fx-background-color: #6ab04c;
 }
 
-
+/* Courses Grid */
 .coursesGrid {
     -fx-hgap: 30px;
     -fx-vgap: 30px;
-    -fx-padding: 15px;
+    -fx-padding: 15 15;
     -fx-alignment: center; 
 }
 
-
+/* Course Card */
 .course-card {
     -fx-border-color: #ccc;
     -fx-border-radius: 10px;
-    -fx-padding: 20px;  
+    -fx-padding: 20 20;
     -fx-background-color: #ecf0f1;
     -fx-alignment: center;
     -fx-pref-width: 450px;  
     -fx-pref-height: 500px;
 }
 
-.course-card Label {
+.course-card-label {
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-text-fill: #2c3e50;
 }
 
 .course-card Button {
-    -fx-background-color: #3498db;
+    -fx-background-color: #e67e22;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-padding: 8px 14px;
+    -fx-padding: 14 14;
     -fx-font-size: 14px;
 }
 
 .course-card Button:hover {
-    -fx-background-color: #2980b9;
+    -fx-background-color: #d35400;
 }
 
 /* Pagination */
 .pagination {
-    -fx-padding: 12px;
+    -fx-padding: 12 12;
     -fx-spacing: 15px;
 }
 
 .pagination Button {
-    -fx-background-color: #34495e;
+    -fx-background-color: #8e44ad;
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
 
 .pagination Button:hover {
-    -fx-background-color: #1abc9c;
+    -fx-background-color: #f39c12;
 }
 
 /* Cart Section */
 .cart-section {
     -fx-background-color: #bdc3c7;
-    -fx-padding: 15px;
+    -fx-padding: 15 15;
 }
 
 .cart-section TableView {
@@ -86,11 +86,129 @@
 }
 
 .cart-section Button {
-    -fx-background-color: #e74c3c;
+    -fx-background-color: #c0392b;
     -fx-text-fill: white;
     -fx-font-weight: bold;
 }
 
 .cart-section Button:hover {
-    -fx-background-color: #c0392b;
+    -fx-background-color: #e74c3c;
+}
+
+/* General Button */
+.button {
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+/* TableView */
+.table-view {
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5;
+}
+
+/* Form Container (for Add/Edit User) */
+.form-container {
+    -fx-padding: 20 20;
+    -fx-background-color: white;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5;
+}
+
+/* Form Label */
+.form-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-font-size: 14px;
+}
+
+/* Form Field (TextField, ComboBox) */
+.form-field {
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5;
+    -fx-background-color: #fff;
+    -fx-padding: 10 10;
+    -fx-font-size: 14px;
+}
+
+.form-field:disabled {
+    -fx-opacity: 0.7;
+}
+
+/* Form Checkbox */
+.form-checkbox {
+    -fx-text-fill: #2c3e50;
+    -fx-font-size: 14px;
+}
+
+/* Specific Button Styles */
+.button.course-card-button {
+    -fx-background-color: #3498db; /* Xanh lam (xanh dương) cho nút "Chọn Ảnh" */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 14 14;
+    -fx-font-size: 14px;
+    -fx-background-radius: 5;
+}
+
+.button.course-card-button:hover {
+    -fx-background-color: #2980b9; /* Xanh lam đậm khi hover */
+}
+
+.button.cart-section-button {
+    -fx-background-color: #e74c3c; /* Đỏ cho nút "Hủy" và "Xóa Ảnh" */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 14 14;
+    -fx-font-size: 14px;
+    -fx-background-radius: 5;
+}
+
+.button.cart-section-button:hover {
+    -fx-background-color: #c0392b; /* Đỏ đậm khi hover */
+}
+
+.button.add-button {
+    -fx-background-color: #2ecc71; /* Xanh lá cho nút "Thêm" */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 14 14;
+    -fx-font-size: 14px;
+    -fx-background-radius: 5;
+}
+
+.button.add-button:hover {
+    -fx-background-color: #27ae60; /* Xanh lá đậm khi hover */
+}
+
+/* Button Container (for HBox in bottom section) */
+.button-container {
+    -fx-padding: 15 15;
+    -fx-alignment: center;
+    -fx-spacing: 10;
+}
+
+/* Image Preview */
+.image-preview {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 4);
+}
+
+/* Background cho Quản trị */
+.root-quan-tri {
+    -fx-background-color: #f1c40f;
+}
+
+/* Background cho Học viên */
+.root-hoc-vien {
+    -fx-background-color: #2ecc71;
+}
+
+/* Background mặc định */
+.root-default {
+    -fx-background-color: #ecf0f1;
+}
+
+/* Error Field */
+.error-field {
+    -fx-border-color: red;
 }

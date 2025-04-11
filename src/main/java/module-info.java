@@ -1,4 +1,5 @@
 module com.ntn.quanlykhoahoc {
+    // Required modules
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
@@ -7,16 +8,14 @@ module com.ntn.quanlykhoahoc {
     requires java.logging;
     requires jakarta.mail;
 
-    // Mở package cho JavaFX (FXML)
+    // Open packages for reflection (needed by JavaFX FXML and javafx.base)
     opens com.ntn.quanlykhoahoc to javafx.fxml;
     opens com.ntn.quanlykhoahoc.controllers to javafx.fxml;
-    opens com.ntn.quanlykhoahoc.models to javafx.fxml;
+    opens com.ntn.quanlykhoahoc.pojo to javafx.fxml, javafx.base; // Mở cho javafx.base
+    opens com.ntn.quanlykhoahoc.database to javafx.fxml; // Kiểm tra lại xem có cần thiết không
 
-    // Xuất package cho các module khác sử dụng
+    // Export packages for external use
     exports com.ntn.quanlykhoahoc;
     exports com.ntn.quanlykhoahoc.controllers;
-
-    // 🚀 Sửa lỗi test không thể truy cập Database
-    exports com.ntn.quanlykhoahoc.database; 
-    opens com.ntn.quanlykhoahoc.database;
+    exports com.ntn.quanlykhoahoc.database; // Đảm bảo package tồn tại
 }

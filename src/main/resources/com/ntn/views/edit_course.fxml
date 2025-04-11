@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="450" prefWidth="350" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ntn.quanlykhoahoc.controllers.EditCourseController">
+    <center>
+        <GridPane alignment="CENTER" hgap="8" style="-fx-padding: 15;" stylesheets="@../css/dashboard_style.css" vgap="8">
+            <children>
+                <!-- Tiêu đề -->
+                <Label styleClass="course-card-label" text="✏️ Sửa Khóa Học" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="0" />
+
+                <!-- ID Khóa Học -->
+                <Label styleClass="form-label" text="ID Khóa Học" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <TextField fx:id="idField" editable="false" prefWidth="180" styleClass="form-field" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <tooltip>
+                        <Tooltip text="ID khóa học (không thể chỉnh sửa)" />
+                    </tooltip>
+                </TextField>
+
+                <!-- Tên Khóa Học -->
+                <Label styleClass="form-label" text="Tên Khóa Học" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <TextField fx:id="tenKhoaHocField" prefWidth="180" styleClass="form-field" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <tooltip>
+                        <Tooltip text="Nhập tên khóa học" />
+                    </tooltip>
+                </TextField>
+
+                <!-- Giảng Viên -->
+                <Label styleClass="form-label" text="Giảng Viên" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <ComboBox fx:id="giangVienComboBox" prefWidth="180" styleClass="form-field" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                    <tooltip>
+                        <Tooltip text="Chọn giảng viên" />
+                    </tooltip>
+                </ComboBox>
+
+                <!-- Mô Tả -->
+                <Label styleClass="form-label" text="Mô Tả" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                <TextArea fx:id="moTaField" prefHeight="60" prefWidth="180" styleClass="form-field" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                    <tooltip>
+                        <Tooltip text="Nhập mô tả khóa học" />
+                    </tooltip>
+                </TextArea>
+
+                <!-- Ngày Bắt Đầu -->
+                <Label styleClass="form-label" text="Ngày Bắt Đầu" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                <DatePicker fx:id="ngayBatDauField" prefWidth="180" styleClass="form-field" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                    <tooltip>
+                        <Tooltip text="Chọn ngày bắt đầu" />
+                    </tooltip>
+                </DatePicker>
+
+                <!-- Ngày Kết Thúc -->
+                <Label styleClass="form-label" text="Ngày Kết Thúc" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                <DatePicker fx:id="ngayKetThucField" prefWidth="180" styleClass="form-field" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                    <tooltip>
+                        <Tooltip text="Chọn ngày kết thúc" />
+                    </tooltip>
+                </DatePicker>
+
+                <!-- Học Phí -->
+                <Label styleClass="form-label" text="Học Phí (VNĐ)" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+                <TextField fx:id="giaField" prefWidth="180" styleClass="form-field" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                    <tooltip>
+                        <Tooltip text="Nhập học phí" />
+                    </tooltip>
+                </TextField>
+
+                <!-- Hình Ảnh -->
+                <Label styleClass="form-label" text="Hình Ảnh" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+                <VBox spacing="3" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                    <TextField fx:id="hinhAnhField" editable="false" prefWidth="180" promptText="Chưa chọn ảnh" styleClass="form-field" />
+                    <ImageView fx:id="imagePreview" fitHeight="80" fitWidth="160" preserveRatio="true" />
+                    <HBox spacing="3">
+                        <Button fx:id="chooseImageButton" onAction="#chooseImage" styleClass="course-card-button" text="Chọn Ảnh" />
+                        <Button fx:id="clearImageButton" onAction="#clearImage" styleClass="cart-section-button" text="Xóa Ảnh" />
+                    </HBox>
+                </VBox>
+
+                <!-- Trạng Thái Hoạt Động -->
+                <Label styleClass="form-label" text="Hoạt Động" GridPane.columnIndex="0" GridPane.rowIndex="9" />
+                <CheckBox fx:id="activeCheckBox" styleClass="form-checkbox" GridPane.columnIndex="1" GridPane.rowIndex="9">
+                    <tooltip>
+                        <Tooltip text="Chọn để kích hoạt khóa học" />
+                    </tooltip>
+                </CheckBox>
+            </children>
+            <columnConstraints>
+                <ColumnConstraints />
+                <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+            </rowConstraints>
+        </GridPane>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER" spacing="8" style="-fx-padding: 8;">
+            <Button onAction="#handleSave" styleClass="course-card-button" stylesheets="@../css/dashboard_style.css" text="Lưu" />
+            <Button onAction="#handleCancel" styleClass="cart-section-button" stylesheets="@../css/dashboard_style.css" text="Hủy" />
+        </HBox>
+    </bottom>
+</BorderPane>

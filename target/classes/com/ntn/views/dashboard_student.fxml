@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -14,43 +16,66 @@
 
     <!-- Sidebar (Thanh menu trái) -->
     <left>
-        <VBox fx:id="sidebar" prefWidth="220" spacing="12" style="-fx-padding: 15px; -fx-background-color: #f4f4f4;">
+        <VBox fx:id="sidebar" prefWidth="220" spacing="12" style="-fx-padding: 15px; -fx-background-color: #f4f4f4; -fx-border-color: #e0e0e0; -fx-border-width: 0 1 0 0;">
             <Label fx:id="welcomeLabel" prefHeight="60.0" prefWidth="162.0" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Welcome, Student" />
-            <Button fx:id="dashboardBtn" prefHeight="34.0" prefWidth="182.0" text="Dashboard" />
-            <Button fx:id="coursesBtn" prefHeight="20.0" prefWidth="182.0" text="My Courses" />
-            <Button fx:id="profileBtn" prefHeight="26.0" prefWidth="181.0" text="Profile" />
-            <Button fx:id="logoutButton" onAction="#handleLogout" prefHeight="16.0" prefWidth="180.0" text="Logout" />
+            <Button fx:id="dashboardBtn" prefHeight="34.0" prefWidth="182.0" text="Dashboard" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
+            <Button fx:id="coursesBtn" prefHeight="34.0" prefWidth="182.0" text="My Courses" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" />
+            <Button fx:id="profileBtn" prefHeight="34.0" prefWidth="182.0" text="Profile" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" />
+            <Button fx:id="logoutButton" onAction="#handleLogout" prefHeight="34.0" prefWidth="182.0" text="Logout" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;" />
         </VBox>
     </left>
 
     <!-- Phần hiển thị danh sách khóa học -->
     <center>
         <VBox spacing="12" style="-fx-padding: 20px;">
+            <Label text="Danh Sách Khóa Học" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
             <ScrollPane fx:id="coursesScrollPane" fitToHeight="true" fitToWidth="true" prefHeight="750.0" prefWidth="1000">
-                <GridPane fx:id="coursesGrid" hgap="30" prefHeight="750.0" prefWidth="1100" vgap="30">
-                </GridPane>
+                <content>
+                    <GridPane fx:id="coursesGrid" hgap="30" prefHeight="750.0" prefWidth="1100" vgap="30" />
+                </content>
             </ScrollPane>
 
             <!-- Thanh phân trang -->
             <HBox fx:id="paginationContainer" alignment="CENTER" spacing="12">
-                <Button fx:id="prevPageBtn" text="Previous" />
+                <Button fx:id="prevPageBtn" text="Previous" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
                 <Label fx:id="pageLabel" text="Page 1" />
-                <Button fx:id="nextPageBtn" text="Next" />
+                <Button fx:id="nextPageBtn" text="Next" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
             </HBox>
         </VBox>
     </center>
 
     <!-- Giỏ hàng (Selected Courses) -->
     <right>
-        <VBox fx:id="cartSection" prefWidth="270" spacing="12" style="-fx-padding: 15px; -fx-background-color: #f4f4f4;">
+        <VBox fx:id="cartSection" prefWidth="270" spacing="12" style="-fx-padding: 15px; -fx-background-color: #f4f4f4; -fx-border-color: #e0e0e0; -fx-border-width: 1 0 0 0;">
             <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Selected Courses" />
-            <TableView fx:id="cartTable">
+            <TableView fx:id="cartTable" prefHeight="600">
                 <columns>
-                    <TableColumn fx:id="courseColumn" text="Khóa học" />
+                    <TableColumn fx:id="courseColumn" prefWidth="150.0" text="Khóa học">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="tenKhoaHoc" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="instructorColumn" prefWidth="120.0" text="Giảng Viên">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="tenGiangVien" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="priceColumn" prefWidth="100.0" text="Giá">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="gia" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="imageColumn" prefWidth="100.0" text="Hình Ảnh">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="hinhAnh" />
+                        </cellValueFactory>
+                    </TableColumn>
                 </columns>
             </TableView>
-            <Button fx:id="payButton" text="Pay" />
-            <Button fx:id="removeButton" text="Remove" />
+            <HBox spacing="10" alignment="CENTER">
+                <Button fx:id="payButton" text="Pay" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
+                <Button fx:id="removeButton" text="Remove" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;" />
+            </HBox>
         </VBox>
     </right>
 

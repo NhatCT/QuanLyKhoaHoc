@@ -1,5 +1,7 @@
 package com.ntn.quanlykhoahoc.controllers;
 
+import com.ntn.quanlykhoahoc.services.NavigationService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -9,58 +11,51 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.time.LocalDateTime;
+
 public class OTPVerification {
-    @FXML
-    private TextField otpField;
-    @FXML
-    private Button verifyButton;
+
+    @FXML private TextField otpField;
+    @FXML private Button verifyButton;
 
     private String correctOTP;
+    private LocalDateTime otpExpiryTime;
     private String email;
 
-    public void setEmailAndOTP(String email, String otp) {
+    private final NavigationService navigationService = new NavigationService();
+
+    public void setEmailAndOTP(String email, String otp, LocalDateTime expiryTime) {
         this.email = email;
         this.correctOTP = otp;
+        this.otpExpiryTime = expiryTime;
     }
 
     @FXML
     private void handleVerifyOTP() {
         String enteredOTP = otpField.getText().trim();
 
+        if (enteredOTP.isEmpty()) {
+            navigationService.showAlert("Lỗi", "Vui lòng nhập mã OTP.", Alert.AlertType.ERROR);
+            return;
+        }
+
+        if (correctOTP == null || LocalDateTime.now().isAfter(otpExpiryTime)) {
+            navigationService.showAlert("Lỗi", "OTP hết hạn hoặc không hợp lệ.", Alert.AlertType.ERROR);
+            clearOTP();
+            return;
+        }
+
         if (enteredOTP.equals(correctOTP)) {
-            showAlert("Thành công", "OTP hợp lệ! Hãy đặt lại mật khẩu.", Alert.AlertType.INFORMATION);
-            openResetPasswordWindow(email);
-            closeWindow();
+            navigationService.showAlert("Thành công", "OTP hợp lệ. Đặt lại mật khẩu.", Alert.AlertType.INFORMATION);
+            navigationService.openResetPasswordWindow(email);
+            navigationService.closeWindow(verifyButton);
         } else {
-            showAlert("Lỗi", "Mã OTP không chính xác. Vui lòng thử lại.", Alert.AlertType.ERROR);
+            navigationService.showAlert("Lỗi", "OTP không đúng.", Alert.AlertType.ERROR);
         }
     }
 
-    private void openResetPasswordWindow(String email) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ntn/views/reset_password.fxml"));
-            Parent root = loader.load();
-            ResetPassword controller = loader.getController();
-            controller.setEmail(email);
-            Stage stage = new Stage();
-            stage.setTitle("Đặt lại mật khẩu");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void closeWindow() {
-        Stage stage = (Stage) verifyButton.getScene().getWindow();
-        stage.close();
-    }
-
-    private void showAlert(String title, String message, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    private void clearOTP() {
+        correctOTP = null;
+        otpExpiryTime = null;
     }
 }

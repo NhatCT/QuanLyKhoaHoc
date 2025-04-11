@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Priority?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ntn.quanlykhoahoc.controllers.DashboardAdminController">
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: #f5f5f5; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="10" />
+            </padding>
+            <Label text="Education" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #6c5ce7;" />
+            <HBox HBox.hgrow="ALWAYS" />
+            <Button fx:id="logoutBtn" text="Đăng xuất" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
+        </HBox>
+    </top>
+
+    <left>
+        <VBox spacing="15" style="-fx-background-color: #f5f5f5; -fx-border-color: #e0e0e0; -fx-border-width: 0 1 0 0;">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="20" />
+            </padding>
+            <VBox spacing="5" alignment="CENTER">
+                <ImageView fx:id="userAvatar" fitWidth="50" fitHeight="50" preserveRatio="true" />
+                <Label fx:id="welcomeLabel" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Admin" />
+                <Label text="Quản trị viên" style="-fx-font-size: 12px; -fx-text-fill: #6c5ce7;" />
+            </VBox>
+            <Button fx:id="manageUsersBtn" text="Quản lý Người Dùng" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManageUsers"/>
+            <Button fx:id="manageCoursesBtn" text="Quản lý Khóa Học" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManageCourses"/>
+            <Button fx:id="managePaymentsBtn" text="Quản lý Thanh Toán" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManagePayments"/>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="20" style="-fx-background-color: #fafafa;">
+            <padding>
+                <Insets bottom="20" left="20" right="20" top="20" />
+            </padding>
+            <VBox spacing="10">
+                <Label text="Tùy Chọn Nhanh" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                <HBox spacing="15">
+                    <VBox spacing="5" style="-fx-background-color: white; -fx-border-color: #e0e0e0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10;">
+                        <Label text="Người Dùng" style="-fx-font-size: 14px;" />
+                        <Label fx:id="totalUsersLabel" text="Tổng: 0" style="-fx-font-size: 12px; -fx-text-fill: #666;" />
+                        <Button text="Xem Chi Tiết" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" prefWidth="100" onAction="#loadManageUsers" />
+                    </VBox>
+                    <VBox spacing="5" style="-fx-background-color: white; -fx-border-color: #e0e0e0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10;">
+                        <Label text="Khóa Học" style="-fx-font-size: 14px;" />
+                        <Label fx:id="totalCoursesLabel" text="Tổng: 0" style="-fx-font-size: 12px; -fx-text-fill: #666;" />
+                        <Button text="Xem Chi Tiết" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" prefWidth="100" onAction="#loadManageCourses" />
+                    </VBox>
+                    <VBox spacing="5" style="-fx-background-color: white; -fx-border-color: #e0e0e0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10;">
+                        <Label text="Thanh Toán" style="-fx-font-size: 14px;" />
+                        <Label fx:id="totalPaymentsLabel" text="Tổng: 0" style="-fx-font-size: 12px; -fx-text-fill: #666;" />
+                        <Button text="Xem Chi Tiết" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" prefWidth="100" onAction="#loadManagePayments" />
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <VBox spacing="10" VBox.vgrow="ALWAYS">
+                <Label text="Danh Sách Quản Lý" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                <StackPane VBox.vgrow="ALWAYS">
+                    <VBox fx:id="userTableContainer" spacing="10" visible="true" managed="true">
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <TextField fx:id="searchUserField" promptText="Tìm kiếm người dùng..." prefWidth="200" />
+                            <Button fx:id="searchUserBtn" text="Tìm" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" prefWidth="80" />
+                        </HBox>
+                        <TableView fx:id="userTable" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="avatarColumn" prefWidth="100.0" minWidth="80.0" maxWidth="120.0" text="Avatar">
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="avatar" />
+                                    </cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="hoColumn" prefWidth="150.0" minWidth="100.0" text="Họ">
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="ho" />
+                                    </cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="tenColumn" prefWidth="150.0" minWidth="100.0" text="Tên">
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="ten" />
+                                    </cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="emailColumn" prefWidth="200.0" minWidth="150.0" text="Email">
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="email" />
+                                    </cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="userStatusColumn" prefWidth="100.0" minWidth="80.0" text="Trạng Thái">
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="active" />
+                                    </cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="loaiNguoiDungColumn" prefWidth="120.0" minWidth="100.0" text="Loại Người Dùng">
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="loaiNguoiDungId" />
+                                    </cellValueFactory>
+                                </TableColumn>
+                            </columns>
+                        </TableView>
+                        <HBox fx:id="userButtons" spacing="10" alignment="CENTER" style="-fx-padding: 10;">
+                            <Button fx:id="addUserBtn" text="Thêm" prefWidth="100" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
+                            <Button fx:id="editUserBtn" text="Sửa" prefWidth="100" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
+                            <Button fx:id="deleteUserBtn" text="Xóa" prefWidth="100" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
+                            <Button fx:id="toggleUserStatusBtn" text="Bật/Tắt Tài Khoản" prefWidth="150" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
+                        </HBox>
+                    </VBox>
+
+                    <VBox fx:id="courseTableContainer" spacing="10" visible="false" managed="false">
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <TextField fx:id="searchCourseField" promptText="Tìm kiếm khóa học..." prefWidth="200" />
+                            <Button fx:id="searchCourseBtn" text="Tìm" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" prefWidth="80" />
+                        </HBox>
+                        <TableView fx:id="courseTable" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="courseIdColumn" prefWidth="50.0" text="ID">
+                                    <cellValueFactory><PropertyValueFactory property="id" /></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="courseColumn" prefWidth="200.0" text="Tên Khóa Học">
+                                    <cellValueFactory><PropertyValueFactory property="tenKhoaHoc" /></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="courseDescriptionColumn" prefWidth="200.0" text="Mô Tả">
+                                    <cellValueFactory><PropertyValueFactory property="moTa" /></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="coursePriceColumn" prefWidth="100.0" text="Giá">
+                                    <cellValueFactory><PropertyValueFactory property="gia" /></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="courseImageColumn" prefWidth="100.0" text="Hình Ảnh">
+                                    <cellValueFactory><PropertyValueFactory property="hinhAnh" /></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="courseInstructorColumn" prefWidth="150.0" text="Giảng Viên">
+                                    <cellValueFactory><PropertyValueFactory property="tenGiangVien" /></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="courseStatusColumn" prefWidth="100.0" text="Trạng Thái">
+                                    <cellValueFactory><PropertyValueFactory property="active" /></cellValueFactory>
+                                </TableColumn>
+                            </columns>
+                        </TableView>
+                        <HBox fx:id="courseButtons" spacing="10" alignment="CENTER" style="-fx-padding: 10;">
+                            <Button fx:id="addCourseBtn" text="Thêm" prefWidth="100" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
+                            <Button fx:id="editCourseBtn" text="Sửa" prefWidth="100" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
+                            <Button fx:id="deleteCourseBtn" text="Xóa" prefWidth="100" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
+                            <Button fx:id="toggleCourseStatusBtn" text="Bật/Tắt Khóa Học" prefWidth="150" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
+                        </HBox>
+                    </VBox>
+
+                    <VBox fx:id="paymentTableContainer" spacing="10" visible="false" managed="false">
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <TextField fx:id="searchPaymentField" promptText="Tìm kiếm thanh toán..." prefWidth="200" />
+                            <Button fx:id="searchPaymentBtn" text="Tìm" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" prefWidth="80" />
+                        </HBox>
+                        <TableView fx:id="paymentTable" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="paymentTransactionIdColumn" prefWidth="100.0" text="ID Giao Dịch">
+                                    <cellValueFactory><PropertyValueFactory property="transactionId" /></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="paymentIdColumn" prefWidth="120.0" text="ID Thanh Toán">
+                                    <cellValueFactory><PropertyValueFactory property="thanhToanID" /></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="paymentHocVienIDColumn" prefWidth="100.0" text="ID Học Viên">
+                                    <cellValueFactory><PropertyValueFactory property="hocVienID" /></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="paymentKhoaHocIDColumn" prefWidth="100.0" text="ID Khóa Học">
+                                    <cellValueFactory><PropertyValueFactory property="khoaHocID" /></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="paymentDateColumn" prefWidth="150.0" text="Ngày Thanh Toán">
+                                    <cellValueFactory><PropertyValueFactory property="ngayThanhToan" /></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="paymentAmountColumn" prefWidth="120.0" text="Số Tiền">
+                                    <cellValueFactory><PropertyValueFactory property="soTien" /></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn fx:id="paymentMethodColumn" prefWidth="150.0" text="Phương Thức">
+                                    <cellValueFactory><PropertyValueFactory property="phuongThuc" /></cellValueFactory>
+                                </TableColumn>
+                            </columns>
+                        </TableView>
+                        <HBox fx:id="paymentButtons" spacing="10" alignment="CENTER" style="-fx-padding: 10;">
+                            <Button fx:id="addPaymentBtn" text="Thêm" prefWidth="100" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
+                            <Button fx:id="editPaymentBtn" text="Sửa" prefWidth="100" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
+                            <Button fx:id="deletePaymentBtn" text="Xóa" prefWidth="100" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" />
+                        </HBox>
+                    </VBox>
+                </StackPane>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

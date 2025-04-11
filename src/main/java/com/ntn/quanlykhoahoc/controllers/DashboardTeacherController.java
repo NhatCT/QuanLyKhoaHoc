@@ -8,6 +8,6 @@ package com.ntn.quanlykhoahoc.controllers;
  *
  * @author Thanh Nhat
  */
-public class DashboardAdmin {
+public class DashboardTeacherController {
     
 }

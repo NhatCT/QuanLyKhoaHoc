@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+
+<VBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ntn.quanlykhoahoc.controllers.ProfileController" spacing="10" style="-fx-padding: 20; -fx-background-color: white; -fx-border-color: #e0e0e0; -fx-border-radius: 5;">
+    <Label text="Hồ Sơ Quản Trị Viên" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+    <HBox spacing="10" alignment="CENTER">
+        <ImageView fx:id="avatarImage" fitWidth="100" fitHeight="100" preserveRatio="true" />
+    </HBox>
+    <HBox spacing="10">
+        <Label text="Họ:" style="-fx-font-weight: bold;" />
+        <Label fx:id="hoLabel" />
+    </HBox>
+    <HBox spacing="10">
+        <Label text="Tên:" style="-fx-font-weight: bold;" />
+        <Label fx:id="tenLabel" />
+    </HBox>
+    <HBox spacing="10">
+        <Label text="Email:" style="-fx-font-weight: bold;" />
+        <Label fx:id="emailLabel" />
+    </HBox>
+    <HBox spacing="10">
+        <Label text="Loại người dùng:" style="-fx-font-weight: bold;" />
+        <Label fx:id="loaiNguoiDungLabel" />
+    </HBox>
+    <HBox spacing="10">
+        <Label text="Trạng thái:" style="-fx-font-weight: bold;" />
+        <Label fx:id="activeLabel" />
+    </HBox>
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Đóng" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;" onAction="#handleClose" />
+    </HBox>
+</VBox>
