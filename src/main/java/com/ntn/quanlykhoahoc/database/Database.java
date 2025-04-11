@@ -31,6 +31,7 @@ public class Database {
      */
     public static Connection getConn() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
+
     }
 
     /**

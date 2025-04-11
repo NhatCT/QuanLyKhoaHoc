@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 E:\OneDrive\Documents\NetBeansProjects\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\App.java
 E:\OneDrive\Documents\NetBeansProjects\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\AddCourseController.java
 E:\OneDrive\Documents\NetBeansProjects\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\AddPaymentController.java
@@ -28,3 +29,19 @@ E:\OneDrive\Documents\NetBeansProjects\QuanLyKhoaHoc\src\main\java\com\ntn\quanl
 E:\OneDrive\Documents\NetBeansProjects\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\services\UserService.java
 E:\OneDrive\Documents\NetBeansProjects\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\session\SessionManager.java
 E:\OneDrive\Documents\NetBeansProjects\QuanLyKhoaHoc\src\main\java\module-info.java
+=======
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\DashboardStudent.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\OTPVerification.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\Register.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\App.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\Login.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\ResetPassword.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\session\SessionManager.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\DashboardStudentController.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\DashboardAdmin.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\DashboardTeacher.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\ForgotPassword.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\models\KhoaHoc.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\database\Database.java
+D:\QuanLyKhoaHoc\src\main\java\module-info.java
+>>>>>>> e034a90e949530304210f1938716b967173a4840
