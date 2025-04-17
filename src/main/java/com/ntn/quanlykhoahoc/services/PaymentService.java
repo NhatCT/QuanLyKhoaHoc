@@ -19,52 +19,35 @@ import java.util.logging.Logger;
 public class PaymentService {
     private static final Logger LOGGER = Logger.getLogger(PaymentService.class.getName());
 
+    /**
+     * Adds a new payment record to lichsu_thanhtoan.
+     */
     public int addPayment(int hocVienID, int khoaHocID, double soTien, LocalDate ngayThanhToan, String phuongThuc) throws SQLException {
-    String sql = "INSERT INTO lichsu_thanhtoan (hocVienID, khoaHocID, so_tien, ngay_thanh_toan, phuong_thuc, status) VALUES (?, ?, ?, ?, ?, ?)";
-    try (Connection conn = Database.getConn();
-         PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-        stmt.setInt(1, hocVienID);
-        stmt.setInt(2, khoaHocID);
-        stmt.setDouble(3, soTien);
-        stmt.setString(4, ngayThanhToan.toString());
-        stmt.setString(5, phuongThuc);
-        stmt.setString(6, "PENDING");
-        stmt.executeUpdate();
-        ResultSet rs = stmt.getGeneratedKeys();
-        return rs.next() ? rs.getInt(1) : -1;
-    }
-}
-
-    private int addToThanhToan(Connection conn, int hocVienID, int khoaHocID, double soTien, LocalDate ngayThanhToan) throws SQLException {
-        if (!isValidHocVien(hocVienID) || !isValidCourse(khoaHocID)) {
-            LOGGER.warning("Invalid hocVienID=" + hocVienID + " or khoaHocID=" + khoaHocID);
-            return 0;
-        }
-        String sql = "INSERT INTO thanhtoan (hocVienID, khoaHocID, soTien, ngayThanhToan) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        String sql = "INSERT INTO lichsu_thanhtoan (hocVienID, khoaHocID, so_tien, ngay_thanh_toan, phuong_thuc) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = Database.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, hocVienID);
             stmt.setInt(2, khoaHocID);
             stmt.setDouble(3, soTien);
             stmt.setTimestamp(4, Timestamp.valueOf(ngayThanhToan.atStartOfDay()));
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                try (ResultSet rs = stmt.getGeneratedKeys()) {
-                    if (rs.next()) return rs.getInt(1);
-                }
-            }
-            return 0;
+            stmt.setString(5, phuongThuc);
+            stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+            return rs.next() ? rs.getInt(1) : -1;
         }
     }
 
-    private int addToLichSuThanhToan(Connection conn, Integer hocVienID, Integer khoaHocID, double soTien, LocalDate ngayThanhToan, String phuongThuc, int thanhToanID) throws SQLException {
-        String sql = "INSERT INTO lichsu_thanhtoan (hocVienID, khoaHocID, so_tien, ngay_thanh_toan, phuong_thuc, thanhToanID) VALUES (?, ?, ?, ?, ?, ?)";
+    /**
+     * Adds a record to lichsu_thanhtoan.
+     */
+    private int addToLichSuThanhToan(Connection conn, Integer hocVienID, Integer khoaHocID, double soTien, LocalDate ngayThanhToan, String phuongThuc) throws SQLException {
+        String sql = "INSERT INTO lichsu_thanhtoan (hocVienID, khoaHocID, so_tien, ngay_thanh_toan, phuong_thuc) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             if (hocVienID != null) stmt.setInt(1, hocVienID); else stmt.setNull(1, java.sql.Types.INTEGER);
             if (khoaHocID != null) stmt.setInt(2, khoaHocID); else stmt.setNull(2, java.sql.Types.INTEGER);
             stmt.setDouble(3, soTien);
             stmt.setTimestamp(4, Timestamp.valueOf(ngayThanhToan.atStartOfDay()));
             stmt.setString(5, phuongThuc);
-            stmt.setInt(6, thanhToanID);
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
                 try (ResultSet rs = stmt.getGeneratedKeys()) {
@@ -75,6 +58,9 @@ public class PaymentService {
         }
     }
 
+    /**
+     * Adds a record to khoahoc_hocvien.
+     */
     private int addToKhoaHocHocVien(Connection conn, int hocVienID, int khoaHocID, LocalDate ngayDangKy) throws SQLException {
         String checkSql = "SELECT id FROM khoahoc_hocvien WHERE hocVienID = ? AND khoaHocID = ?";
         try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
@@ -103,6 +89,9 @@ public class PaymentService {
         }
     }
 
+    /**
+     * Notifies the admin about a new payment.
+     */
     private void notifyAdmin(int hocVienID, int khoaHocID, int thanhToanID) throws SQLException {
         String noiDung = String.format("Học viên ID=%d đã thanh toán cho khóa học ID=%d (ThanhToanID=%d). Vui lòng xét duyệt.", hocVienID, khoaHocID, thanhToanID);
         String sql = "INSERT INTO thongbao (noi_dung, nguoi_nhan_id, ngay_gui, trang_thai) VALUES (?, ?, ?, ?)";
@@ -117,8 +106,11 @@ public class PaymentService {
         }
     }
 
+    /**
+     * Notifies the student about the approval/rejection status.
+     */
     private void notifyStudent(int hocVienID, int khoaHocID, String trangThai) throws SQLException {
-        String noiDung = String.format("Yêu cầu tham gia khóa học ID=%d của bạn đã được %s.", 
+        String noiDung = String.format("Yêu cầu tham gia khóa học ID=%d của bạn đã được %s.",
                 khoaHocID, trangThai.equals("APPROVED") ? "duyệt" : "từ chối");
         String sql = "INSERT INTO thongbao (noi_dung, nguoi_nhan_id, ngay_gui, trang_thai) VALUES (?, ?, ?, ?)";
         try (Connection conn = Database.getConn();
@@ -132,6 +124,9 @@ public class PaymentService {
         }
     }
 
+    /**
+     * Retrieves the admin ID.
+     */
     private int getAdminId() throws SQLException {
         String sql = "SELECT id FROM nguoidung WHERE loai_nguoi_dung_id = 1 LIMIT 1";
         try (Connection conn = Database.getConn();
@@ -145,21 +140,20 @@ public class PaymentService {
     /**
      * Updates a lichsu_thanhtoan record.
      */
-    public boolean updatePayment(int transactionId, Integer hocVienID, Integer khoaHocID, double soTien, LocalDate ngayThanhToan, String phuongThuc, int thanhToanID) throws SQLException {
+    public boolean updatePayment(int transactionId, Integer hocVienID, Integer khoaHocID, double soTien, LocalDate ngayThanhToan, String phuongThuc) throws SQLException {
         if (transactionId <= 0 || soTien <= 0 || ngayThanhToan == null || phuongThuc == null || phuongThuc.trim().isEmpty()) {
             LOGGER.warning("Invalid update details: transactionId=" + transactionId);
             return false;
         }
         try (Connection conn = Database.getConn();
              PreparedStatement stmt = conn.prepareStatement(
-                     "UPDATE lichsu_thanhtoan SET hocVienID = ?, khoaHocID = ?, so_tien = ?, ngay_thanh_toan = ?, phuong_thuc = ?, thanhToanID = ? WHERE id = ?")) {
+                     "UPDATE lichsu_thanhtoan SET hocVienID = ?, khoaHocID = ?, so_tien = ?, ngay_thanh_toan = ?, phuong_thuc = ? WHERE id = ?")) {
             if (hocVienID != null) stmt.setInt(1, hocVienID); else stmt.setNull(1, java.sql.Types.INTEGER);
             if (khoaHocID != null) stmt.setInt(2, khoaHocID); else stmt.setNull(2, java.sql.Types.INTEGER);
             stmt.setDouble(3, soTien);
             stmt.setTimestamp(4, Timestamp.valueOf(ngayThanhToan.atStartOfDay()));
             stmt.setString(5, phuongThuc);
-            stmt.setInt(6, thanhToanID);
-            stmt.setInt(7, transactionId);
+            stmt.setInt(6, transactionId);
             int rowsAffected = stmt.executeUpdate();
             LOGGER.info("Updated payment: transactionId=" + transactionId + ", rowsAffected=" + rowsAffected);
             return rowsAffected > 0;
@@ -169,13 +163,19 @@ public class PaymentService {
     /**
      * Deletes a lichsu_thanhtoan record.
      */
-    public boolean deletePayment(int transactionId) throws SQLException {
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement("DELETE FROM lichsu_thanhtoan WHERE id = ?")) {
-            stmt.setInt(1, transactionId);
-            int rowsAffected = stmt.executeUpdate();
-            LOGGER.info("Deleted payment: transactionId=" + transactionId + ", rowsAffected=" + rowsAffected);
-            return rowsAffected > 0;
+    public boolean deletePayment(String thanhToanID) throws SQLException {
+        try {
+            int id = Integer.parseInt(thanhToanID);
+            try (Connection conn = Database.getConn();
+                 PreparedStatement stmt = conn.prepareStatement("DELETE FROM lichsu_thanhtoan WHERE id = ?")) {
+                stmt.setInt(1, id);
+                int rowsAffected = stmt.executeUpdate();
+                LOGGER.info("Deleted payment: thanhToanID=" + thanhToanID + ", rowsAffected=" + rowsAffected);
+                return rowsAffected > 0;
+            }
+        } catch (NumberFormatException e) {
+            LOGGER.warning("Invalid thanhToanID format: " + thanhToanID);
+            return false;
         }
     }
 
@@ -184,19 +184,20 @@ public class PaymentService {
      */
     public List<ThanhToan> getAllPayments() throws SQLException {
         List<ThanhToan> payments = new ArrayList<>();
-        String sql = "SELECT id, thanhToanID, ngay_thanh_toan, so_tien, phuong_thuc, hocVienID, khoaHocID FROM lichsu_thanhtoan";
+        String sql = "SELECT id, ngay_thanh_toan, so_tien, phuong_thuc, hocVienID, khoaHocID FROM lichsu_thanhtoan";
         try (Connection conn = Database.getConn();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
+                String hocVienID = rs.getString("hocVienID");
+                String khoaHocID = rs.getString("khoaHocID");
                 payments.add(new ThanhToan(
-                        String.valueOf(rs.getInt("thanhToanID")),
-                        rs.getTimestamp("ngay_thanh_toan").toString(),
+                        String.valueOf(rs.getInt("id")),
+                        rs.getTimestamp("ngay_thanh_toan") != null ? rs.getTimestamp("ngay_thanh_toan").toString() : "",
                         String.valueOf(rs.getDouble("so_tien")),
-                        rs.getString("phuong_thuc"),
-                        rs.getString("hocVienID"),
-                        rs.getString("khoaHocID"),
-                        String.valueOf(rs.getInt("id"))
+                        rs.getString("phuong_thuc") != null ? rs.getString("phuong_thuc") : "",
+                        hocVienID != null ? hocVienID : "",
+                        khoaHocID != null ? khoaHocID : ""
                 ));
             }
             LOGGER.info("Retrieved " + payments.size() + " payment records");
@@ -208,20 +209,21 @@ public class PaymentService {
      * Retrieves a payment by transaction ID.
      */
     public ThanhToan getPaymentByTransactionId(int transactionId) throws SQLException {
-        String sql = "SELECT id, thanhToanID, ngay_thanh_toan, so_tien, phuong_thuc, hocVienID, khoaHocID FROM lichsu_thanhtoan WHERE id = ?";
+        String sql = "SELECT id, ngay_thanh_toan, so_tien, phuong_thuc, hocVienID, khoaHocID FROM lichsu_thanhtoan WHERE id = ?";
         try (Connection conn = Database.getConn();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, transactionId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
+                    String hocVienID = rs.getString("hocVienID");
+                    String khoaHocID = rs.getString("khoaHocID");
                     return new ThanhToan(
-                            String.valueOf(rs.getInt("thanhToanID")),
-                            rs.getTimestamp("ngay_thanh_toan").toString(),
+                            String.valueOf(rs.getInt("id")),
+                            rs.getTimestamp("ngay_thanh_toan") != null ? rs.getTimestamp("ngay_thanh_toan").toString() : "",
                             String.valueOf(rs.getDouble("so_tien")),
-                            rs.getString("phuong_thuc"),
-                            rs.getString("hocVienID"),
-                            rs.getString("khoaHocID"),
-                            String.valueOf(rs.getInt("id"))
+                            rs.getString("phuong_thuc") != null ? rs.getString("phuong_thuc") : "",
+                            hocVienID != null ? hocVienID : "",
+                            khoaHocID != null ? khoaHocID : ""
                     );
                 }
             }

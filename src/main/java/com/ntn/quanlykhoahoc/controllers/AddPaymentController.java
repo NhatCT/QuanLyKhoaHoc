@@ -16,10 +16,11 @@ public class AddPaymentController {
     @FXML private TextField amountTextField;
     @FXML private ComboBox<String> methodComboBox;
 
-    private PaymentService paymentService = new PaymentService();
+    private PaymentService paymentService;
 
     @FXML
     public void initialize() {
+        paymentService = new PaymentService();
         methodComboBox.setItems(FXCollections.observableArrayList(
                 "Tiền mặt", "Chuyển khoản", "Thẻ tín dụng"));
         methodComboBox.getSelectionModel().selectFirst();
@@ -44,10 +45,20 @@ public class AddPaymentController {
             int khoaHocID = Integer.parseInt(khoaHocIDText);
             double soTien = Double.parseDouble(soTienText);
 
-            int transactionId = paymentService.addPayment(hocVienID, khoaHocID, soTien, 
-                                                         ngayThanhToanLocalDate, phuongThuc);
-            if (transactionId > 0) {
-                showAlert("Thành công", "Đã thêm lịch sử thanh toán (ID Giao Dịch: " + transactionId + ")!", 
+            // Kiểm tra hợp lệ
+            if (!paymentService.isValidHocVien(hocVienID)) {
+                showAlert("Cảnh báo", "ID Học Viên không tồn tại!", Alert.AlertType.WARNING);
+                return;
+            }
+            if (!paymentService.isValidCourse(khoaHocID)) {
+                showAlert("Cảnh báo", "ID Khóa Học không tồn tại!", Alert.AlertType.WARNING);
+                return;
+            }
+
+            int thanhToanID = paymentService.addPayment(hocVienID, khoaHocID, soTien, 
+                                                        ngayThanhToanLocalDate, phuongThuc);
+            if (thanhToanID > 0) {
+                showAlert("Thành công", "Đã thêm lịch sử thanh toán (ID Thanh Toán: " + thanhToanID + ")!", 
                           Alert.AlertType.INFORMATION);
                 handleCancel();
             } else {

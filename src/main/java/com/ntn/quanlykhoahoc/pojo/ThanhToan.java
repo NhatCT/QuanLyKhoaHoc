@@ -10,19 +10,17 @@ public class ThanhToan {
     private final StringProperty phuongThuc = new SimpleStringProperty();
     private final StringProperty hocVienID = new SimpleStringProperty();
     private final StringProperty khoaHocID = new SimpleStringProperty();
-    private final StringProperty transactionId = new SimpleStringProperty();
 
     public ThanhToan() {}
 
     public ThanhToan(String thanhToanID, String ngayThanhToan, String soTien, String phuongThuc,
-                    String hocVienID, String khoaHocID, String transactionId) {
+                    String hocVienID, String khoaHocID) {
         this.thanhToanID.set(thanhToanID);
         this.ngayThanhToan.set(ngayThanhToan);
         this.soTien.set(soTien);
         this.phuongThuc.set(phuongThuc);
         this.hocVienID.set(hocVienID);
         this.khoaHocID.set(khoaHocID);
-        this.transactionId.set(transactionId);
     }
 
     // Getters and Property methods
@@ -49,8 +47,4 @@ public class ThanhToan {
     public String getKhoaHocID() { return khoaHocID.get(); }
     public StringProperty khoaHocIDProperty() { return khoaHocID; }
     public void setKhoaHocID(String khoaHocID) { this.khoaHocID.set(khoaHocID); }
-
-    public String getTransactionId() { return transactionId.get(); }
-    public StringProperty transactionIdProperty() { return transactionId; }
-    public void setTransactionId(String transactionId) { this.transactionId.set(transactionId); }
 }

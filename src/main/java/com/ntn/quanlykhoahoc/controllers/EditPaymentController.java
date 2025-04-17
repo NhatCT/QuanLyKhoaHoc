@@ -11,10 +11,10 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class EditPaymentController {
-    @FXML private TextField transactionIdTextField;  // lichsu_thanhtoan.id
-    @FXML private TextField paymentIdTextField;     // lichsu_thanhtoan.thanhToanID (read-only)
+    @FXML private TextField paymentIdTextField;     // lichsu_thanhtoan.id (read-only)
     @FXML private TextField hocVienIDField;         // lichsu_thanhtoan.hocVienID
     @FXML private TextField khoaHocIDField;         // lichsu_thanhtoan.khoaHocID
     @FXML private DatePicker paymentDatePicker;     // lichsu_thanhtoan.ngay_thanh_toan
@@ -22,15 +22,15 @@ public class EditPaymentController {
     @FXML private ComboBox<String> methodComboBox;  // lichsu_thanhtoan.phuong_thuc
 
     private ThanhToan currentPayment;
-    private PaymentService paymentService = new PaymentService();
+    private PaymentService paymentService;
 
     @FXML
     public void initialize() {
+        paymentService = new PaymentService();
         // Populate payment method options
         methodComboBox.setItems(FXCollections.observableArrayList(
                 "Tiền mặt", "Chuyển khoản", "Thẻ tín dụng"));
-        // Make transactionId and paymentId read-only
-        transactionIdTextField.setEditable(false);
+        // Make paymentId read-only
         paymentIdTextField.setEditable(false);
     }
 
@@ -41,7 +41,6 @@ public class EditPaymentController {
     public void setPayment(ThanhToan payment) {
         this.currentPayment = payment;
         if (payment != null) {
-            transactionIdTextField.setText(payment.getTransactionId());
             paymentIdTextField.setText(payment.getThanhToanID());
             hocVienIDField.setText(payment.getHocVienID());
             khoaHocIDField.setText(payment.getKhoaHocID());
@@ -49,13 +48,18 @@ public class EditPaymentController {
             methodComboBox.setValue(payment.getPhuongThuc());
 
             try {
-                // Parse the datetime string from the database (e.g., "2025-01-02 10:00:00")
-                LocalDateTime dateTime = LocalDateTime.parse(
-                        payment.getNgayThanhToan(), 
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-                );
-                paymentDatePicker.setValue(dateTime.toLocalDate());
-            } catch (Exception e) {
+                // Parse the datetime string from the database
+                String ngayThanhToan = payment.getNgayThanhToan();
+                if (ngayThanhToan != null && !ngayThanhToan.isEmpty()) {
+                    LocalDateTime dateTime = LocalDateTime.parse(
+                            ngayThanhToan,
+                            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    );
+                    paymentDatePicker.setValue(dateTime.toLocalDate());
+                } else {
+                    paymentDatePicker.setValue(LocalDate.now());
+                }
+            } catch (DateTimeParseException e) {
                 e.printStackTrace();
                 paymentDatePicker.setValue(LocalDate.now()); // Fallback to current date
             }
@@ -69,7 +73,6 @@ public class EditPaymentController {
             return;
         }
 
-        String transactionIdText = transactionIdTextField.getText();
         String paymentIdText = paymentIdTextField.getText();
         String hocVienIDText = hocVienIDField.getText();
         String khoaHocIDText = khoaHocIDField.getText();
@@ -78,23 +81,21 @@ public class EditPaymentController {
         String phuongThuc = methodComboBox.getValue();
 
         // Validate required fields
-        if (transactionIdText.isEmpty() || paymentIdText.isEmpty() || ngayThanhToanLocalDate == null || 
+        if (paymentIdText.isEmpty() || ngayThanhToanLocalDate == null || 
             soTienText.isEmpty() || phuongThuc == null || phuongThuc.isEmpty()) {
             showAlert("Cảnh báo", "Vui lòng điền đầy đủ các trường bắt buộc!", Alert.AlertType.WARNING);
             return;
         }
 
         try {
-            int transactionId = Integer.parseInt(transactionIdText);
-            int thanhToanID = Integer.parseInt(paymentIdText);
+            int transactionId = Integer.parseInt(paymentIdText); // thanhToanID chính là id
             Integer hocVienID = hocVienIDText.isEmpty() ? null : Integer.parseInt(hocVienIDText);
             Integer khoaHocID = khoaHocIDText.isEmpty() ? null : Integer.parseInt(khoaHocIDText);
             double soTien = Double.parseDouble(soTienText);
 
             // Validate optional fields
-            if (hocVienID != null && !paymentService.isValidNguoiDung(hocVienID)) {
-                showAlert("Cảnh báo", "ID Học Viên không tồn tại trong bảng nguoidung!", 
-                          Alert.AlertType.WARNING);
+            if (hocVienID != null && !paymentService.isValidHocVien(hocVienID)) {
+                showAlert("Cảnh báo", "ID Học Viên không tồn tại!", Alert.AlertType.WARNING);
                 return;
             }
             if (khoaHocID != null && !paymentService.isValidCourse(khoaHocID)) {
@@ -104,7 +105,7 @@ public class EditPaymentController {
 
             // Update the payment record in lichsu_thanhtoan
             boolean success = paymentService.updatePayment(transactionId, hocVienID, khoaHocID, soTien, 
-                                                          ngayThanhToanLocalDate, phuongThuc, thanhToanID);
+                                                           ngayThanhToanLocalDate, phuongThuc);
             if (success) {
                 showAlert("Thành công", "Đã cập nhật lịch sử thanh toán!", Alert.AlertType.INFORMATION);
                 handleCancel();
@@ -122,7 +123,7 @@ public class EditPaymentController {
 
     @FXML
     private void handleCancel() {
-        Stage stage = (Stage) transactionIdTextField.getScene().getWindow();
+        Stage stage = (Stage) paymentIdTextField.getScene().getWindow();
         stage.close();
     }
 

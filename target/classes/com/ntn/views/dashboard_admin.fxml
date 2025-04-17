@@ -26,22 +26,22 @@
         </HBox>
     </top>
 
-  <left>
-    <VBox spacing="15" style="-fx-background-color: #f5f5f5; -fx-border-color: #e0e0e0; -fx-border-width: 0 1 0 0;">
-        <padding>
-            <Insets bottom="10" left="10" right="10" top="20" />
-        </padding>
-        <VBox spacing="5" alignment="CENTER">
-            <ImageView fx:id="userAvatar" fitWidth="50" fitHeight="50" preserveRatio="true" />
-            <Label fx:id="welcomeLabel" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Admin" />
-            <Label text="Quản trị viên" style="-fx-font-size: 12px; -fx-text-fill: #6c5ce7;" />
+    <left>
+        <VBox spacing="15" style="-fx-background-color: #f5f5f5; -fx-border-color: #e0e0e0; -fx-border-width: 0 1 0 0;">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="20" />
+            </padding>
+            <VBox spacing="5" alignment="CENTER">
+                <ImageView fx:id="userAvatar" fitWidth="50" fitHeight="50" preserveRatio="true" />
+                <Label fx:id="welcomeLabel" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Admin" />
+                <Label text="Quản trị viên" style="-fx-font-size: 12px; -fx-text-fill: #6c5ce7;" />
+            </VBox>
+            <Button fx:id="manageUsersBtn" text="Quản lý Người Dùng" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManageUsers"/>
+            <Button fx:id="manageCoursesBtn" text="Quản lý Khóa Học" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManageCourses"/>
+            <Button fx:id="managePaymentsBtn" text="Quản lý Thanh Toán" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManagePayments"/>
+            <Button fx:id="manageApprovalsBtn" text="Quản lý Xét Duyệt" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManageApprovals"/>
         </VBox>
-        <Button fx:id="manageUsersBtn" text="Quản lý Người Dùng" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManageUsers"/>
-        <Button fx:id="manageCoursesBtn" text="Quản lý Khóa Học" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManageCourses"/>
-        <Button fx:id="managePaymentsBtn" text="Quản lý Thanh Toán" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManagePayments"/>
-        <Button fx:id="manageApprovalsBtn" text="Quản lý Xét Duyệt" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManageApprovals"/>
-    </VBox>
-</left>
+    </left>
 
     <center>
         <VBox spacing="20" style="-fx-background-color: #fafafa;">
@@ -127,25 +127,39 @@
                         <TableView fx:id="courseTable" VBox.vgrow="ALWAYS">
                             <columns>
                                 <TableColumn fx:id="courseIdColumn" prefWidth="50.0" text="ID">
-                                    <cellValueFactory><PropertyValueFactory property="id" /></cellValueFactory>
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="id" />
+                                    </cellValueFactory>
                                 </TableColumn>
                                 <TableColumn fx:id="courseColumn" prefWidth="200.0" text="Tên Khóa Học">
-                                    <cellValueFactory><PropertyValueFactory property="tenKhoaHoc" /></cellValueFactory>
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="tenKhoaHoc" />
+                                    </cellValueFactory>
                                 </TableColumn>
                                 <TableColumn fx:id="courseDescriptionColumn" prefWidth="200.0" text="Mô Tả">
-                                    <cellValueFactory><PropertyValueFactory property="moTa" /></cellValueFactory>
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="moTa" />
+                                    </cellValueFactory>
                                 </TableColumn>
                                 <TableColumn fx:id="coursePriceColumn" prefWidth="100.0" text="Giá">
-                                    <cellValueFactory><PropertyValueFactory property="gia" /></cellValueFactory>
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="gia" />
+                                    </cellValueFactory>
                                 </TableColumn>
                                 <TableColumn fx:id="courseImageColumn" prefWidth="100.0" text="Hình Ảnh">
-                                    <cellValueFactory><PropertyValueFactory property="hinhAnh" /></cellValueFactory>
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="hinhAnh" />
+                                    </cellValueFactory>
                                 </TableColumn>
                                 <TableColumn fx:id="courseInstructorColumn" prefWidth="150.0" text="Giảng Viên">
-                                    <cellValueFactory><PropertyValueFactory property="tenGiangVien" /></cellValueFactory>
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="tenGiangVien" />
+                                    </cellValueFactory>
                                 </TableColumn>
                                 <TableColumn fx:id="courseStatusColumn" prefWidth="100.0" text="Trạng Thái">
-                                    <cellValueFactory><PropertyValueFactory property="active" /></cellValueFactory>
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="active" />
+                                    </cellValueFactory>
                                 </TableColumn>
                             </columns>
                         </TableView>
@@ -162,28 +176,38 @@
                             <TextField fx:id="searchPaymentField" promptText="Tìm kiếm thanh toán..." prefWidth="200" />
                             <Button fx:id="searchPaymentBtn" text="Tìm" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" prefWidth="80" />
                         </HBox>
+                        <!-- Trong paymentTable -->
                         <TableView fx:id="paymentTable" VBox.vgrow="ALWAYS">
                             <columns>
-                                <TableColumn fx:id="paymentTransactionIdColumn" prefWidth="100.0" text="ID Giao Dịch">
-                                    <cellValueFactory><PropertyValueFactory property="transactionId" /></cellValueFactory>
-                                </TableColumn>
-                                <TableColumn fx:id="paymentIdColumn" prefWidth="120.0" text="ID Thanh Toán">
-                                    <cellValueFactory><PropertyValueFactory property="thanhToanID" /></cellValueFactory>
+                                <TableColumn fx:id="thanhToanIdColumn" prefWidth="100.0" text="ID Thanh Toán">
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="thanhToanID" />
+                                    </cellValueFactory>
                                 </TableColumn>
                                 <TableColumn fx:id="paymentHocVienIDColumn" prefWidth="100.0" text="ID Học Viên">
-                                    <cellValueFactory><PropertyValueFactory property="hocVienID" /></cellValueFactory>
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="hocVienID" />
+                                    </cellValueFactory>
                                 </TableColumn>
                                 <TableColumn fx:id="paymentKhoaHocIDColumn" prefWidth="100.0" text="ID Khóa Học">
-                                    <cellValueFactory><PropertyValueFactory property="khoaHocID" /></cellValueFactory>
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="khoaHocID" />
+                                    </cellValueFactory>
                                 </TableColumn>
                                 <TableColumn fx:id="paymentDateColumn" prefWidth="150.0" text="Ngày Thanh Toán">
-                                    <cellValueFactory><PropertyValueFactory property="ngayThanhToan" /></cellValueFactory>
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="ngayThanhToan" />
+                                    </cellValueFactory>
                                 </TableColumn>
                                 <TableColumn fx:id="paymentAmountColumn" prefWidth="120.0" text="Số Tiền">
-                                    <cellValueFactory><PropertyValueFactory property="soTien" /></cellValueFactory>
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="soTien" />
+                                    </cellValueFactory>
                                 </TableColumn>
                                 <TableColumn fx:id="paymentMethodColumn" prefWidth="150.0" text="Phương Thức">
-                                    <cellValueFactory><PropertyValueFactory property="phuongThuc" /></cellValueFactory>
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="phuongThuc" />
+                                    </cellValueFactory>
                                 </TableColumn>
                             </columns>
                         </TableView>

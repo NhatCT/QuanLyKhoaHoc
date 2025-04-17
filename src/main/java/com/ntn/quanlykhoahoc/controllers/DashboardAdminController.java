@@ -58,9 +58,9 @@ public class DashboardAdminController {
             courseImageColumn, courseInstructorColumn, courseStatusColumn,
             courseStartDateColumn, courseEndDateColumn;
     @FXML
-    private TableColumn<ThanhToan, String> paymentIdColumn, paymentDateColumn, paymentAmountColumn,
-            paymentMethodColumn, paymentHocVienIDColumn, paymentKhoaHocIDColumn,
-            paymentTransactionIdColumn, paymentStatusColumn;
+    private TableColumn<ThanhToan, String> thanhToanIdColumn, paymentDateColumn, paymentAmountColumn,
+            paymentMethodColumn, paymentHocVienIDColumn, paymentKhoaHocIDColumn;
+
     @FXML
     private Button addUserBtn, editUserBtn, deleteUserBtn, toggleUserStatusBtn;
     @FXML
@@ -83,8 +83,8 @@ public class DashboardAdminController {
     private ObservableList<KhoaHoc> allCourses = FXCollections.observableArrayList();
     private ObservableList<ThanhToan> allPayments = FXCollections.observableArrayList();
 
-    private CourseService courseService = new CourseService();
-    private PaymentService paymentService = new PaymentService();
+    private CourseService courseService;
+    private PaymentService paymentService;
     private static final String AVATAR_BASE_PATH = "/com/ntn/images/avatars/";
     private static final String COURSE_BASE_PATH = "/com/ntn/images/courses/";
     private static final String DEFAULT_COURSE_IMAGE = COURSE_BASE_PATH + "1.jpg";
@@ -96,6 +96,10 @@ public class DashboardAdminController {
 
     @FXML
     public void initialize() {
+        // Khởi tạo services
+        courseService = new CourseService();
+        paymentService = new PaymentService();
+
         welcomeLabel.setText("Bảng Điều Khiển Quản Trị");
         loadUserAvatar();
         updateQuickStats();
@@ -134,16 +138,6 @@ public class DashboardAdminController {
         if (loaiNguoiDungColumn != null) {
             loaiNguoiDungColumn.setCellValueFactory(data
                     -> new SimpleStringProperty(String.valueOf(data.getValue().getLoaiNguoiDungId())));
-        }
-        // Bind search button actions
-        if (searchUserBtn != null) {
-            searchUserBtn.setOnAction(e -> handleSearchUser());
-        }
-        if (searchCourseBtn != null) {
-            searchCourseBtn.setOnAction(e -> handleSearchCourse());
-        }
-        if (searchPaymentBtn != null) {
-            searchPaymentBtn.setOnAction(e -> handleSearchPayment());
         }
 
         // Configure Course TableColumns
@@ -196,8 +190,8 @@ public class DashboardAdminController {
         }
 
         // Configure Payment TableColumns
-        if (paymentIdColumn != null) {
-            paymentIdColumn.setCellValueFactory(data -> data.getValue().thanhToanIDProperty());
+        if (thanhToanIdColumn != null) {
+            thanhToanIdColumn.setCellValueFactory(data -> data.getValue().thanhToanIDProperty());
         }
         if (paymentDateColumn != null) {
             paymentDateColumn.setCellValueFactory(data -> data.getValue().ngayThanhToanProperty());
@@ -213,9 +207,6 @@ public class DashboardAdminController {
         }
         if (paymentKhoaHocIDColumn != null) {
             paymentKhoaHocIDColumn.setCellValueFactory(data -> data.getValue().khoaHocIDProperty());
-        }
-        if (paymentTransactionIdColumn != null) {
-            paymentTransactionIdColumn.setCellValueFactory(data -> data.getValue().transactionIdProperty());
         }
 
         // Bind data to tables
@@ -238,6 +229,17 @@ public class DashboardAdminController {
         }
         if (paymentTable != null) {
             paymentTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        }
+
+        // Bind search button actions
+        if (searchUserBtn != null) {
+            searchUserBtn.setOnAction(e -> handleSearchUser());
+        }
+        if (searchCourseBtn != null) {
+            searchCourseBtn.setOnAction(e -> handleSearchCourse());
+        }
+        if (searchPaymentBtn != null) {
+            searchPaymentBtn.setOnAction(e -> handleSearchPayment());
         }
 
         // Bind button actions
@@ -743,13 +745,12 @@ public class DashboardAdminController {
         if (selectedPayment != null) {
             Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
             confirmAlert.setTitle("Xác nhận xóa");
-            confirmAlert.setContentText("Bạn có chắc chắn muốn xóa lịch sử thanh toán ID Giao Dịch "
-                    + selectedPayment.getTransactionId() + "?");
+            confirmAlert.setContentText("Bạn có chắc chắn muốn xóa lịch sử thanh toán ID "
+                    + selectedPayment.getThanhToanID() + "?");
             Optional<ButtonType> result = confirmAlert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
-                    int transactionId = Integer.parseInt(selectedPayment.getTransactionId());
-                    boolean success = paymentService.deletePayment(transactionId);
+                    boolean success = paymentService.deletePayment(selectedPayment.getThanhToanID());
                     if (success) {
                         loadManagePayments();
                         updateQuickStats();
@@ -757,10 +758,6 @@ public class DashboardAdminController {
                     } else {
                         showAlert("Thông báo", "Không có bản ghi nào được xóa.", Alert.AlertType.INFORMATION);
                     }
-                } catch (NumberFormatException e) {
-                    LOGGER.log(Level.SEVERE, "Invalid transaction ID format: "
-                            + selectedPayment.getTransactionId(), e);
-                    showAlert("Lỗi", "ID giao dịch không hợp lệ.", Alert.AlertType.ERROR);
                 } catch (SQLException e) {
                     LOGGER.log(Level.SEVERE, "Error deleting payment history", e);
                     showAlert("Lỗi", "Không thể xóa lịch sử thanh toán: " + e.getMessage(),
@@ -836,8 +833,7 @@ public class DashboardAdminController {
             return;
         }
         ObservableList<ThanhToan> filteredPayments = allPayments.stream()
-                .filter(payment -> payment.getTransactionId().toLowerCase().contains(keyword)
-                || payment.getThanhToanID().toLowerCase().contains(keyword)
+                .filter(payment -> payment.getThanhToanID().toLowerCase().contains(keyword)
                 || payment.getHocVienID().toLowerCase().contains(keyword)
                 || payment.getKhoaHocID().toLowerCase().contains(keyword)
                 || payment.getPhuongThuc().toLowerCase().contains(keyword))
