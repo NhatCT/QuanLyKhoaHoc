@@ -3,16 +3,18 @@ package com.ntn.quanlykhoahoc.controllers;
 import com.ntn.quanlykhoahoc.services.*;
 import java.sql.SQLException;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
 import java.time.LocalDateTime;
+import javafx.scene.control.Alert;
 
 public class ForgotPassword {
 
-    @FXML private TextField emailField;
-    @FXML private Button sendEmailButton;
+    @FXML
+    private TextField emailField;
+    @FXML
+    private Button sendEmailButton;
 
     private final UserService userService = new UserService();
     private final OTPService otpService = new OTPService();
@@ -25,6 +27,12 @@ public class ForgotPassword {
 
         if (email.isEmpty()) {
             navigationService.showAlert("Lỗi", "Vui lòng nhập email.", Alert.AlertType.WARNING);
+            return;
+        }
+
+        // Kiểm tra email hợp lệ trước
+        if (!emailService.isValidEmail(email)) {
+            navigationService.showAlert("Lỗi", "Email không hợp lệ. Vui lòng nhập email đúng định dạng (ví dụ: user@domain.com).", Alert.AlertType.ERROR);
             return;
         }
 
@@ -41,10 +49,9 @@ public class ForgotPassword {
         String otp = otpService.generateOTP();
         LocalDateTime expiry = LocalDateTime.now().plusMinutes(5);
 
-        if (emailService.sendEmail(email, otp)) {
+        if (emailService.sendOtpEmail(email, otp)) {
             navigationService.showAlert("Thành công", "Mã OTP đã được gửi.", Alert.AlertType.INFORMATION);
-            navigationService.openOTPVerificationWindow(email, otp, expiry);
-            navigationService.closeWindow(sendEmailButton);
+            navigationService.openOTPVerificationWindow(email, otp, expiry, sendEmailButton);
         } else {
             navigationService.showAlert("Lỗi", "Không gửi được email.", Alert.AlertType.ERROR);
         }

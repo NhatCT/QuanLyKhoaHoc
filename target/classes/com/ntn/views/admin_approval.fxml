@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.ntn.quanlykhoahoc.controllers.AdminApprovalController">
+    <VBox spacing="10" alignment="CENTER">
+        <TableView fx:id="approvalTable">
+            <columns>
+                <TableColumn fx:id="hocVienColumn" text="Học viên ID" prefWidth="100"/>
+                <TableColumn fx:id="khoaHocColumn" text="Khóa học ID" prefWidth="100"/>
+                <TableColumn fx:id="ngayDangKyColumn" text="Ngày đăng ký" prefWidth="150"/>
+                <TableColumn fx:id="trangThaiColumn" text="Trạng thái" prefWidth="100"/>
+                <TableColumn fx:id="actionColumn" text="Hành động" prefWidth="200"/>
+            </columns>
+        </TableView>
+        <Button fx:id="refreshButton" text="Làm mới" onAction="#refreshTable"/>
+    </VBox>
+</AnchorPane>

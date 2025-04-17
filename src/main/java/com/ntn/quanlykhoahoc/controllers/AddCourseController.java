@@ -128,7 +128,7 @@ public class AddCourseController {
     }
 
     @FXML
-    private void handleAdd() {
+    private void handleAdd() throws SQLException {
         String tenKhoaHoc = tenKhoaHocField.getText().trim();
         String selectedGiangVien = giangVienIdField.getValue();
         String moTa = moTaField.getText().trim();
@@ -199,9 +199,6 @@ public class AddCourseController {
             } else {
                 showAlert("Lỗi", "Không thể thêm khóa học!", Alert.AlertType.ERROR);
             }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Lỗi khi thêm khóa học", e);
-            showAlert("Lỗi", "Không thể thêm khóa học: " + e.getMessage(), Alert.AlertType.ERROR);
         } catch (IllegalArgumentException e) {
             showAlert("Cảnh báo", e.getMessage(), Alert.AlertType.WARNING);
         }

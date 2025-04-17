@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ntn.quanlykhoahoc.controllers.TimetableController" spacing="15" style="-fx-padding: 20px; -fx-background-color: #f4f4f4;">
+    <Label style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Thời Khóa Biểu" />
+    <VBox spacing="10">
+        <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Thông báo lịch học sắp tới" />
+        <TextArea fx:id="upcomingSessionsTextArea" editable="false" prefHeight="100.0" wrapText="true" style="-fx-font-size: 14px;" />
+    </VBox>
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Sắp xếp theo:" />
+        <ComboBox fx:id="sortComboBox" prefWidth="150" promptText="Chọn tiêu chí" />
+        <Label text="Từ ngày:" />
+        <DatePicker fx:id="startDatePicker" promptText="Chọn ngày bắt đầu" />
+        <Label text="Đến ngày:" />
+        <DatePicker fx:id="endDatePicker" promptText="Chọn ngày kết thúc" />
+        <Button fx:id="filterButton" text="Lọc" style="-fx-background-color: #0078d4; -fx-text-fill: white; -fx-background-radius: 5;" onAction="#filterTimetable" />
+        <Button fx:id="clearFilterButton" text="Xóa bộ lọc" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;" onAction="#clearFilter" />
+    </HBox>
+    <ScrollPane fitToWidth="true">
+        <content>
+            <TableView fx:id="timetableTable">
+                <columns>
+                    <TableColumn fx:id="tenKhoaHocColumn" text="Tên Khóa Học" prefWidth="200" />
+                    <TableColumn fx:id="ngayHocColumn" text="Ngày Học" prefWidth="100" />
+                    <TableColumn fx:id="gioBatDauColumn" text="Giờ Bắt Đầu" prefWidth="100" />
+                    <TableColumn fx:id="gioKetThucColumn" text="Giờ Kết Thúc" prefWidth="100" />
+                    <TableColumn fx:id="giangVienColumn" text="Giảng Viên" prefWidth="150" />
+                    <TableColumn fx:id="lienKetColumn" text="Liên Kết" prefWidth="200" />
+                    <TableColumn fx:id="statusColumn" text="Trạng Thái" prefWidth="100" />
+                </columns>
+            </TableView>
+        </content>
+    </ScrollPane>
+</VBox>

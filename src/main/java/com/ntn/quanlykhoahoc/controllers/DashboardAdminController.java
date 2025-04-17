@@ -31,30 +31,50 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class DashboardAdminController {
+
     private static final Logger LOGGER = Logger.getLogger(DashboardAdminController.class.getName());
 
-    @FXML private Label welcomeLabel;
-    @FXML private ImageView userAvatar;
-    @FXML private Button manageCoursesBtn, manageUsersBtn, managePaymentsBtn, logoutBtn;
-    @FXML private Label totalUsersLabel, totalCoursesLabel, totalPaymentsLabel;
-    @FXML private TableView<NguoiDung> userTable;
-    @FXML private TableView<KhoaHoc> courseTable;
-    @FXML private TableView<ThanhToan> paymentTable;
-    @FXML private TableColumn<NguoiDung, String> avatarColumn, hoColumn, tenColumn, emailColumn, 
-                             userStatusColumn, loaiNguoiDungColumn;
-    @FXML private TableColumn<KhoaHoc, Integer> courseIdColumn;
-    @FXML private TableColumn<KhoaHoc, String> courseColumn, courseDescriptionColumn, coursePriceColumn, 
-                             courseImageColumn, courseInstructorColumn, courseStatusColumn, 
-                             courseStartDateColumn, courseEndDateColumn;
-    @FXML private TableColumn<ThanhToan, String> paymentIdColumn, paymentDateColumn, paymentAmountColumn, 
-                             paymentMethodColumn, paymentHocVienIDColumn, paymentKhoaHocIDColumn, 
-                             paymentTransactionIdColumn, paymentStatusColumn;
-    @FXML private Button addUserBtn, editUserBtn, deleteUserBtn, toggleUserStatusBtn;
-    @FXML private Button addCourseBtn, editCourseBtn, deleteCourseBtn, toggleCourseStatusBtn;
-    @FXML private Button addPaymentBtn, editPaymentBtn, deletePaymentBtn;
-    @FXML private VBox userTableContainer, courseTableContainer, paymentTableContainer;
-    @FXML private TextField searchUserField, searchCourseField, searchPaymentField;
-    @FXML private Button searchUserBtn, searchCourseBtn, searchPaymentBtn;
+    @FXML
+    private Label welcomeLabel;
+    @FXML
+    private ImageView userAvatar;
+    @FXML
+    private Button manageCoursesBtn, manageUsersBtn, managePaymentsBtn, logoutBtn;
+    @FXML
+    private Label totalUsersLabel, totalCoursesLabel, totalPaymentsLabel;
+    @FXML
+    private TableView<NguoiDung> userTable;
+    @FXML
+    private TableView<KhoaHoc> courseTable;
+    @FXML
+    private TableView<ThanhToan> paymentTable;
+    @FXML
+    private TableColumn<NguoiDung, String> avatarColumn, hoColumn, tenColumn, emailColumn,
+            userStatusColumn, loaiNguoiDungColumn;
+    @FXML
+    private TableColumn<KhoaHoc, Integer> courseIdColumn;
+    @FXML
+    private TableColumn<KhoaHoc, String> courseColumn, courseDescriptionColumn, coursePriceColumn,
+            courseImageColumn, courseInstructorColumn, courseStatusColumn,
+            courseStartDateColumn, courseEndDateColumn;
+    @FXML
+    private TableColumn<ThanhToan, String> paymentIdColumn, paymentDateColumn, paymentAmountColumn,
+            paymentMethodColumn, paymentHocVienIDColumn, paymentKhoaHocIDColumn,
+            paymentTransactionIdColumn, paymentStatusColumn;
+    @FXML
+    private Button addUserBtn, editUserBtn, deleteUserBtn, toggleUserStatusBtn;
+    @FXML
+    private Button addCourseBtn, editCourseBtn, deleteCourseBtn, toggleCourseStatusBtn;
+    @FXML
+    private Button addPaymentBtn, editPaymentBtn, deletePaymentBtn;
+    @FXML
+    private Button manageApprovalsBtn;
+    @FXML
+    private VBox userTableContainer, courseTableContainer, paymentTableContainer;
+    @FXML
+    private TextField searchUserField, searchCourseField, searchPaymentField;
+    @FXML
+    private Button searchUserBtn, searchCourseBtn, searchPaymentBtn;
 
     private ObservableList<NguoiDung> users = FXCollections.observableArrayList();
     private ObservableList<KhoaHoc> courses = FXCollections.observableArrayList();
@@ -66,9 +86,13 @@ public class DashboardAdminController {
     private CourseService courseService = new CourseService();
     private PaymentService paymentService = new PaymentService();
     private static final String AVATAR_BASE_PATH = "/com/ntn/images/avatars/";
-    private static final String DEFAULT_COURSE_IMAGE = "/com/ntn/images/courses/default_course.jpg";
+    private static final String COURSE_BASE_PATH = "/com/ntn/images/courses/";
+    private static final String DEFAULT_COURSE_IMAGE = COURSE_BASE_PATH + "1.jpg";
     private static final String DEFAULT_AVATAR = AVATAR_BASE_PATH + "default.jpg";
     private static final String PLACEHOLDER_IMAGE = "https://via.placeholder.com/50";
+
+    // Quản lý phiên (Session Management)
+    private static String currentUserEmail = null;
 
     @FXML
     public void initialize() {
@@ -80,127 +104,221 @@ public class DashboardAdminController {
         if (avatarColumn != null) {
             avatarColumn.setCellFactory(column -> new TableCell<>() {
                 private final ImageView imageView = new ImageView();
+
                 @Override
                 protected void updateItem(String avatarPath, boolean empty) {
                     super.updateItem(avatarPath, empty);
                     imageView.setImage(null);
                     if (empty || avatarPath == null || avatarPath.trim().isEmpty()) {
-                        setGraphic(loadImage(null, DEFAULT_AVATAR));
+                        setGraphic(loadImage(null, DEFAULT_AVATAR, true));
                     } else {
-                        setGraphic(loadImage(avatarPath, DEFAULT_AVATAR));
+                        setGraphic(loadImage(avatarPath, DEFAULT_AVATAR, true));
                     }
                 }
             });
             avatarColumn.setCellValueFactory(new PropertyValueFactory<>("avatar"));
         }
-        if (hoColumn != null) hoColumn.setCellValueFactory(new PropertyValueFactory<>("ho"));
-        if (tenColumn != null) tenColumn.setCellValueFactory(new PropertyValueFactory<>("ten"));
-        if (emailColumn != null) emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+        if (hoColumn != null) {
+            hoColumn.setCellValueFactory(new PropertyValueFactory<>("ho"));
+        }
+        if (tenColumn != null) {
+            tenColumn.setCellValueFactory(new PropertyValueFactory<>("ten"));
+        }
+        if (emailColumn != null) {
+            emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+        }
         if (userStatusColumn != null) {
-            userStatusColumn.setCellValueFactory(data -> 
-                    new SimpleStringProperty(data.getValue().isActive() ? "(Hoạt động)" : "(Vô hiệu)"));
+            userStatusColumn.setCellValueFactory(data
+                    -> new SimpleStringProperty(data.getValue().isActive() ? "(Hoạt động)" : "(Vô hiệu)"));
         }
         if (loaiNguoiDungColumn != null) {
-            loaiNguoiDungColumn.setCellValueFactory(data -> 
-                    new SimpleStringProperty(String.valueOf(data.getValue().getLoaiNguoiDungId())));
+            loaiNguoiDungColumn.setCellValueFactory(data
+                    -> new SimpleStringProperty(String.valueOf(data.getValue().getLoaiNguoiDungId())));
         }
         // Bind search button actions
-        if (searchUserBtn != null) searchUserBtn.setOnAction(e -> handleSearchUser());
-        if (searchCourseBtn != null) searchCourseBtn.setOnAction(e -> handleSearchCourse());
-        if (searchPaymentBtn != null) searchPaymentBtn.setOnAction(e -> handleSearchPayment());
+        if (searchUserBtn != null) {
+            searchUserBtn.setOnAction(e -> handleSearchUser());
+        }
+        if (searchCourseBtn != null) {
+            searchCourseBtn.setOnAction(e -> handleSearchCourse());
+        }
+        if (searchPaymentBtn != null) {
+            searchPaymentBtn.setOnAction(e -> handleSearchPayment());
+        }
 
         // Configure Course TableColumns
-        if (courseIdColumn != null) courseIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        if (courseColumn != null) courseColumn.setCellValueFactory(new PropertyValueFactory<>("tenKhoaHoc"));
-        if (courseDescriptionColumn != null) courseDescriptionColumn.setCellValueFactory(new PropertyValueFactory<>("moTa"));
+        if (courseIdColumn != null) {
+            courseIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        }
+        if (courseColumn != null) {
+            courseColumn.setCellValueFactory(new PropertyValueFactory<>("tenKhoaHoc"));
+        }
+        if (courseDescriptionColumn != null) {
+            courseDescriptionColumn.setCellValueFactory(new PropertyValueFactory<>("moTa"));
+        }
         if (coursePriceColumn != null) {
-            coursePriceColumn.setCellValueFactory(data -> 
-                    new SimpleStringProperty(String.format("%.2f", data.getValue().getGia())));
+            coursePriceColumn.setCellValueFactory(data
+                    -> new SimpleStringProperty(String.format("%.2f", data.getValue().getGia())));
         }
         if (courseImageColumn != null) {
             courseImageColumn.setCellFactory(column -> new TableCell<>() {
                 private final ImageView imageView = new ImageView();
+
                 @Override
                 protected void updateItem(String imagePath, boolean empty) {
                     super.updateItem(imagePath, empty);
                     imageView.setImage(null);
                     if (empty || imagePath == null || imagePath.trim().isEmpty()) {
-                        setGraphic(loadImage(null, DEFAULT_COURSE_IMAGE));
+                        setGraphic(loadImage(null, DEFAULT_COURSE_IMAGE, false));
                     } else {
-                        setGraphic(loadImage(imagePath, DEFAULT_COURSE_IMAGE));
+                        setGraphic(loadImage(imagePath, DEFAULT_COURSE_IMAGE, false));
                     }
                 }
             });
             courseImageColumn.setCellValueFactory(new PropertyValueFactory<>("hinhAnh"));
         }
-        if (courseInstructorColumn != null) courseInstructorColumn.setCellValueFactory(new PropertyValueFactory<>("tenGiangVien"));
+        if (courseInstructorColumn != null) {
+            courseInstructorColumn.setCellValueFactory(new PropertyValueFactory<>("tenGiangVien"));
+        }
         if (courseStatusColumn != null) {
-            courseStatusColumn.setCellValueFactory(data -> 
-                    new SimpleStringProperty(data.getValue().isActive() ? "(Hoạt động)" : "(Vô hiệu)"));
+            courseStatusColumn.setCellValueFactory(data
+                    -> new SimpleStringProperty(data.getValue().isActive() ? "(Hoạt động)" : "(Vô hiệu)"));
         }
         if (courseStartDateColumn != null) {
-            courseStartDateColumn.setCellValueFactory(data -> 
-                    new SimpleStringProperty(data.getValue().getNgayBatDau() != null ? 
-                            data.getValue().getNgayBatDau().toString() : "N/A"));
+            courseStartDateColumn.setCellValueFactory(data
+                    -> new SimpleStringProperty(data.getValue().getNgayBatDau() != null
+                            ? data.getValue().getNgayBatDau().toString() : "N/A"));
         }
         if (courseEndDateColumn != null) {
-            courseEndDateColumn.setCellValueFactory(data -> 
-                    new SimpleStringProperty(data.getValue().getNgayKetThuc() != null ? 
-                            data.getValue().getNgayKetThuc().toString() : "N/A"));
+            courseEndDateColumn.setCellValueFactory(data
+                    -> new SimpleStringProperty(data.getValue().getNgayKetThuc() != null
+                            ? data.getValue().getNgayKetThuc().toString() : "N/A"));
         }
 
         // Configure Payment TableColumns
-        if (paymentIdColumn != null) paymentIdColumn.setCellValueFactory(data -> data.getValue().thanhToanIDProperty());
-        if (paymentDateColumn != null) paymentDateColumn.setCellValueFactory(data -> data.getValue().ngayThanhToanProperty());
-        if (paymentAmountColumn != null) paymentAmountColumn.setCellValueFactory(data -> data.getValue().soTienProperty());
-        if (paymentMethodColumn != null) paymentMethodColumn.setCellValueFactory(data -> data.getValue().phuongThucProperty());
-        if (paymentHocVienIDColumn != null) paymentHocVienIDColumn.setCellValueFactory(data -> data.getValue().hocVienIDProperty());
-        if (paymentKhoaHocIDColumn != null) paymentKhoaHocIDColumn.setCellValueFactory(data -> data.getValue().khoaHocIDProperty());
-        if (paymentTransactionIdColumn != null) paymentTransactionIdColumn.setCellValueFactory(data -> data.getValue().transactionIdProperty());
+        if (paymentIdColumn != null) {
+            paymentIdColumn.setCellValueFactory(data -> data.getValue().thanhToanIDProperty());
+        }
+        if (paymentDateColumn != null) {
+            paymentDateColumn.setCellValueFactory(data -> data.getValue().ngayThanhToanProperty());
+        }
+        if (paymentAmountColumn != null) {
+            paymentAmountColumn.setCellValueFactory(data -> data.getValue().soTienProperty());
+        }
+        if (paymentMethodColumn != null) {
+            paymentMethodColumn.setCellValueFactory(data -> data.getValue().phuongThucProperty());
+        }
+        if (paymentHocVienIDColumn != null) {
+            paymentHocVienIDColumn.setCellValueFactory(data -> data.getValue().hocVienIDProperty());
+        }
+        if (paymentKhoaHocIDColumn != null) {
+            paymentKhoaHocIDColumn.setCellValueFactory(data -> data.getValue().khoaHocIDProperty());
+        }
+        if (paymentTransactionIdColumn != null) {
+            paymentTransactionIdColumn.setCellValueFactory(data -> data.getValue().transactionIdProperty());
+        }
 
         // Bind data to tables
-        if (userTable != null) userTable.setItems(users);
-        if (courseTable != null) courseTable.setItems(courses);
-        if (paymentTable != null) paymentTable.setItems(payments);
+        if (userTable != null) {
+            userTable.setItems(users);
+        }
+        if (courseTable != null) {
+            courseTable.setItems(courses);
+        }
+        if (paymentTable != null) {
+            paymentTable.setItems(payments);
+        }
 
         // Set column resize policy
-        if (userTable != null) userTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        if (courseTable != null) courseTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        if (paymentTable != null) paymentTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        if (userTable != null) {
+            userTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        }
+        if (courseTable != null) {
+            courseTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        }
+        if (paymentTable != null) {
+            paymentTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        }
 
         // Bind button actions
-        if (manageCoursesBtn != null) manageCoursesBtn.setOnAction(e -> loadManageCourses());
-        if (manageUsersBtn != null) manageUsersBtn.setOnAction(e -> loadManageUsers());
-        if (managePaymentsBtn != null) managePaymentsBtn.setOnAction(e -> loadManagePayments());
-        if (logoutBtn != null) logoutBtn.setOnAction(e -> handleLogout());
+        if (manageCoursesBtn != null) {
+            manageCoursesBtn.setOnAction(e -> loadManageCourses());
+        }
+        if (manageUsersBtn != null) {
+            manageUsersBtn.setOnAction(e -> loadManageUsers());
+        }
+        if (managePaymentsBtn != null) {
+            managePaymentsBtn.setOnAction(e -> loadManagePayments());
+        }
+        if (manageApprovalsBtn != null) {
+            manageApprovalsBtn.setOnAction(e -> loadManageApprovals());
+        }
+        if (logoutBtn != null) {
+            logoutBtn.setOnAction(e -> handleLogout());
+        }
 
-        if (toggleCourseStatusBtn != null) toggleCourseStatusBtn.setOnAction(e -> toggleCourseStatus());
-        if (toggleUserStatusBtn != null) toggleUserStatusBtn.setOnAction(e -> toggleUserStatus());
+        if (toggleCourseStatusBtn != null) {
+            toggleCourseStatusBtn.setOnAction(e -> toggleCourseStatus());
+        }
+        if (toggleUserStatusBtn != null) {
+            toggleUserStatusBtn.setOnAction(e -> toggleUserStatus());
+        }
 
-        if (addUserBtn != null) addUserBtn.setOnAction(e -> handleAddUser());
-        if (editUserBtn != null) editUserBtn.setOnAction(e -> handleEditUser());
-        if (deleteUserBtn != null) deleteUserBtn.setOnAction(e -> handleDeleteUser());
+        if (addUserBtn != null) {
+            addUserBtn.setOnAction(e -> handleAddUser());
+        }
+        if (editUserBtn != null) {
+            editUserBtn.setOnAction(e -> handleEditUser());
+        }
+        if (deleteUserBtn != null) {
+            deleteUserBtn.setOnAction(e -> handleDeleteUser());
+        }
 
-        if (addCourseBtn != null) addCourseBtn.setOnAction(e -> handleAddCourse());
-        if (editCourseBtn != null) editCourseBtn.setOnAction(e -> handleEditCourse());
-        if (deleteCourseBtn != null) deleteCourseBtn.setOnAction(e -> handleDeleteCourse());
+        if (addCourseBtn != null) {
+            addCourseBtn.setOnAction(e -> handleAddCourse());
+        }
+        if (editCourseBtn != null) {
+            editCourseBtn.setOnAction(e -> handleEditCourse());
+        }
+        if (deleteCourseBtn != null) {
+            deleteCourseBtn.setOnAction(e -> handleDeleteCourse());
+        }
 
-        if (addPaymentBtn != null) addPaymentBtn.setOnAction(e -> handleAddPayment());
-        if (editPaymentBtn != null) editPaymentBtn.setOnAction(e -> handleEditPayment());
-        if (deletePaymentBtn != null) deletePaymentBtn.setOnAction(e -> handleDeletePayment());
+        if (addPaymentBtn != null) {
+            addPaymentBtn.setOnAction(e -> handleAddPayment());
+        }
+        if (editPaymentBtn != null) {
+            editPaymentBtn.setOnAction(e -> handleEditPayment());
+        }
+        if (deletePaymentBtn != null) {
+            deletePaymentBtn.setOnAction(e -> handleDeletePayment());
+        }
 
         // Load users by default
         loadManageUsers();
     }
 
-    private ImageView loadImage(String imagePath, String defaultPath) {
+    private ImageView loadImage(String imagePath, String defaultPath, boolean isAvatar) {
         ImageView imageView = new ImageView();
         Image image = null;
         try {
-            String effectivePath = (imagePath == null || imagePath.trim().isEmpty()) ? defaultPath : imagePath;
-            if (!effectivePath.equals(defaultPath) && 
-                !effectivePath.toLowerCase().endsWith(".jpg") && 
-                !effectivePath.toLowerCase().endsWith(".png")) {
+            String effectivePath;
+            if (imagePath == null || imagePath.trim().isEmpty()) {
+                effectivePath = defaultPath;
+            } else {
+                if (!imagePath.startsWith("http://") && !imagePath.startsWith("https://") && !imagePath.startsWith("/com/ntn/images/")) {
+                    String basePath = isAvatar ? AVATAR_BASE_PATH : COURSE_BASE_PATH;
+                    effectivePath = basePath + imagePath;
+                } else {
+                    effectivePath = imagePath;
+                }
+            }
+
+            LOGGER.info("Attempting to load image: " + effectivePath);
+
+            if (!effectivePath.equals(defaultPath)
+                    && !effectivePath.toLowerCase().endsWith(".jpg")
+                    && !effectivePath.toLowerCase().endsWith(".png")) {
                 LOGGER.warning("Unsupported image format: " + effectivePath);
                 image = loadDefaultImage(defaultPath);
             } else if (effectivePath.startsWith("http://") || effectivePath.startsWith("https://")) {
@@ -273,8 +391,7 @@ public class DashboardAdminController {
     private void loadUserAvatar() {
         String userEmail = getCurrentUserEmail();
         String avatarPath = null;
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement("SELECT avatar FROM nguoidung WHERE email = ?")) {
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement("SELECT avatar FROM nguoidung WHERE email = ?")) {
             stmt.setString(1, userEmail);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -287,11 +404,15 @@ public class DashboardAdminController {
         if (avatarPath == null) {
             avatarPath = DEFAULT_AVATAR;
         }
-        userAvatar.setImage(loadImage(avatarPath, DEFAULT_AVATAR).getImage());
+        userAvatar.setImage(loadImage(avatarPath, DEFAULT_AVATAR, true).getImage());
     }
 
     private String getCurrentUserEmail() {
-        return "admin1@example.com"; // Replace with actual session management
+        return currentUserEmail != null ? currentUserEmail : "admin1@example.com";
+    }
+
+    public static void setCurrentUserEmail(String email) {
+        currentUserEmail = email;
     }
 
     @FXML
@@ -308,7 +429,9 @@ public class DashboardAdminController {
             courses.setAll(allCourses);
             courseTable.refresh();
             LOGGER.info("Loaded " + courses.size() + " courses.");
-            if (searchCourseField != null) searchCourseField.clear();
+            if (searchCourseField != null) {
+                searchCourseField.clear();
+            }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "SQL error loading courses", e);
             showAlert("Lỗi SQL", "Không thể tải danh sách khóa học: " + e.getMessage(), Alert.AlertType.ERROR);
@@ -326,10 +449,8 @@ public class DashboardAdminController {
 
         users.clear();
         allUsers.clear();
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT id, ho, ten, email, active, avatar, mat_khau, loai_nguoi_dung_id FROM nguoidung");
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(
+                "SELECT id, ho, ten, email, active, avatar, mat_khau, loai_nguoi_dung_id FROM nguoidung"); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 NguoiDung user = new NguoiDung(
                         rs.getInt("id"),
@@ -345,7 +466,9 @@ public class DashboardAdminController {
                 allUsers.add(user);
             }
             userTable.refresh();
-            if (searchUserField != null) searchUserField.clear();
+            if (searchUserField != null) {
+                searchUserField.clear();
+            }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error loading users", e);
             showAlert("Lỗi", "Không thể tải danh sách người dùng: " + e.getMessage(), Alert.AlertType.ERROR);
@@ -368,11 +491,29 @@ public class DashboardAdminController {
             payments.setAll(allPayments);
             paymentTable.refresh();
             LOGGER.info("Loaded " + payments.size() + " payment records");
-            if (searchPaymentField != null) searchPaymentField.clear();
+            if (searchPaymentField != null) {
+                searchPaymentField.clear();
+            }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error loading payment history", e);
-            showAlert("Lỗi", "Không thể tải danh sách lịch sử thanh toán: " + e.getMessage(), 
-                      Alert.AlertType.ERROR);
+            showAlert("Lỗi", "Không thể tải danh sách lịch sử thanh toán: " + e.getMessage(),
+                    Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void loadManageApprovals() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ntn/views/admin_approval.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Quản lý Xét Duyệt");
+            stage.showAndWait();
+            LOGGER.info("Opened approval management window.");
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Error opening approval management form", e);
+            showAlert("Lỗi", "Không thể mở form quản lý xét duyệt: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -380,8 +521,7 @@ public class DashboardAdminController {
     private void toggleCourseStatus() {
         KhoaHoc selectedCourse = courseTable.getSelectionModel().getSelectedItem();
         if (selectedCourse != null) {
-            try (Connection conn = Database.getConn();
-                 PreparedStatement stmt = conn.prepareStatement("UPDATE khoahoc SET active = NOT active WHERE id = ?")) {
+            try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement("UPDATE khoahoc SET active = NOT active WHERE id = ?")) {
                 stmt.setInt(1, selectedCourse.getId());
                 int rowsAffected = stmt.executeUpdate();
                 if (rowsAffected > 0) {
@@ -391,12 +531,12 @@ public class DashboardAdminController {
                 }
             } catch (SQLException e) {
                 LOGGER.log(Level.SEVERE, "Error toggling course status", e);
-                showAlert("Lỗi", "Không thể thay đổi trạng thái khóa học: " + e.getMessage(), 
-                          Alert.AlertType.ERROR);
+                showAlert("Lỗi", "Không thể thay đổi trạng thái khóa học: " + e.getMessage(),
+                        Alert.AlertType.ERROR);
             }
         } else {
-            showAlert("Cảnh báo", "Vui lòng chọn một khóa học để thay đổi trạng thái.", 
-                      Alert.AlertType.WARNING);
+            showAlert("Cảnh báo", "Vui lòng chọn một khóa học để thay đổi trạng thái.",
+                    Alert.AlertType.WARNING);
         }
     }
 
@@ -404,8 +544,7 @@ public class DashboardAdminController {
     private void toggleUserStatus() {
         NguoiDung selectedUser = userTable.getSelectionModel().getSelectedItem();
         if (selectedUser != null) {
-            try (Connection conn = Database.getConn();
-                 PreparedStatement stmt = conn.prepareStatement("UPDATE nguoidung SET active = NOT active WHERE id = ?")) {
+            try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement("UPDATE nguoidung SET active = NOT active WHERE id = ?")) {
                 stmt.setInt(1, selectedUser.getId());
                 int rowsAffected = stmt.executeUpdate();
                 if (rowsAffected > 0) {
@@ -415,12 +554,12 @@ public class DashboardAdminController {
                 }
             } catch (SQLException e) {
                 LOGGER.log(Level.SEVERE, "Error toggling user status", e);
-                showAlert("Lỗi", "Không thể thay đổi trạng thái người dùng: " + e.getMessage(), 
-                          Alert.AlertType.ERROR);
+                showAlert("Lỗi", "Không thể thay đổi trạng thái người dùng: " + e.getMessage(),
+                        Alert.AlertType.ERROR);
             }
         } else {
-            showAlert("Cảnh báo", "Vui lòng chọn một người dùng để thay đổi trạng thái.", 
-                      Alert.AlertType.WARNING);
+            showAlert("Cảnh báo", "Vui lòng chọn một người dùng để thay đổi trạng thái.",
+                    Alert.AlertType.WARNING);
         }
     }
 
@@ -471,8 +610,7 @@ public class DashboardAdminController {
             confirmAlert.setContentText("Bạn có chắc chắn muốn xóa người dùng " + selectedUser.getFullName() + "?");
             Optional<ButtonType> result = confirmAlert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                try (Connection conn = Database.getConn();
-                     PreparedStatement stmt = conn.prepareStatement("DELETE FROM nguoidung WHERE id = ?")) {
+                try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement("DELETE FROM nguoidung WHERE id = ?")) {
                     stmt.setInt(1, selectedUser.getId());
                     int rowsAffected = stmt.executeUpdate();
                     if (rowsAffected > 0) {
@@ -542,8 +680,7 @@ public class DashboardAdminController {
             confirmAlert.setContentText("Bạn có chắc chắn muốn xóa khóa học " + selectedCourse.getTenKhoaHoc() + "?");
             Optional<ButtonType> result = confirmAlert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                try (Connection conn = Database.getConn();
-                     PreparedStatement stmt = conn.prepareStatement("DELETE FROM khoahoc WHERE id = ?")) {
+                try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement("DELETE FROM khoahoc WHERE id = ?")) {
                     stmt.setInt(1, selectedCourse.getId());
                     int rowsAffected = stmt.executeUpdate();
                     if (rowsAffected > 0) {
@@ -593,8 +730,8 @@ public class DashboardAdminController {
                 updateQuickStats();
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "Error opening edit payment form", e);
-                showAlert("Lỗi", "Không thể mở form sửa thanh toán: " + e.getMessage(), 
-                          Alert.AlertType.ERROR);
+                showAlert("Lỗi", "Không thể mở form sửa thanh toán: " + e.getMessage(),
+                        Alert.AlertType.ERROR);
             }
         } else {
             showAlert("Cảnh báo", "Vui lòng chọn một thanh toán để sửa.", Alert.AlertType.WARNING);
@@ -606,8 +743,8 @@ public class DashboardAdminController {
         if (selectedPayment != null) {
             Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
             confirmAlert.setTitle("Xác nhận xóa");
-            confirmAlert.setContentText("Bạn có chắc chắn muốn xóa lịch sử thanh toán ID Giao Dịch " + 
-                                       selectedPayment.getTransactionId() + "?");
+            confirmAlert.setContentText("Bạn có chắc chắn muốn xóa lịch sử thanh toán ID Giao Dịch "
+                    + selectedPayment.getTransactionId() + "?");
             Optional<ButtonType> result = confirmAlert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
@@ -621,13 +758,13 @@ public class DashboardAdminController {
                         showAlert("Thông báo", "Không có bản ghi nào được xóa.", Alert.AlertType.INFORMATION);
                     }
                 } catch (NumberFormatException e) {
-                    LOGGER.log(Level.SEVERE, "Invalid transaction ID format: " + 
-                               selectedPayment.getTransactionId(), e);
+                    LOGGER.log(Level.SEVERE, "Invalid transaction ID format: "
+                            + selectedPayment.getTransactionId(), e);
                     showAlert("Lỗi", "ID giao dịch không hợp lệ.", Alert.AlertType.ERROR);
                 } catch (SQLException e) {
                     LOGGER.log(Level.SEVERE, "Error deleting payment history", e);
-                    showAlert("Lỗi", "Không thể xóa lịch sử thanh toán: " + e.getMessage(), 
-                              Alert.AlertType.ERROR);
+                    showAlert("Lỗi", "Không thể xóa lịch sử thanh toán: " + e.getMessage(),
+                            Alert.AlertType.ERROR);
                 }
             }
         } else {
@@ -637,13 +774,28 @@ public class DashboardAdminController {
 
     private void handleLogout() {
         try {
+            // Lấy stage hiện tại (Dashboard Admin)
             Stage currentStage = (Stage) logoutBtn.getScene().getWindow();
-            currentStage.close();
-            Parent root = FXMLLoader.load(getClass().getResource("/com/ntn/views/login.fxml"));
+
+            // Tải giao diện đăng nhập
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ntn/views/login.fxml"));
+            Parent root = loader.load();
+
+            // Tạo stage mới cho giao diện đăng nhập
             Stage loginStage = new Stage();
             loginStage.setScene(new Scene(root));
             loginStage.setTitle("Đăng Nhập");
+
+            // Xóa trạng thái phiên (reset email người dùng hiện tại)
+            setCurrentUserEmail(null);
+            LOGGER.info("User logged out successfully. Session cleared.");
+
+            // Đóng cửa sổ Dashboard Admin
+            currentStage.close();
+
+            // Hiển thị cửa sổ đăng nhập
             loginStage.show();
+
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error logging out", e);
             showAlert("Lỗi", "Không thể đăng xuất: " + e.getMessage(), Alert.AlertType.ERROR);
@@ -657,9 +809,9 @@ public class DashboardAdminController {
             return;
         }
         ObservableList<NguoiDung> filteredUsers = allUsers.stream()
-                .filter(user -> user.getHo().toLowerCase().contains(keyword) ||
-                                user.getTen().toLowerCase().contains(keyword) ||
-                                user.getEmail().toLowerCase().contains(keyword))
+                .filter(user -> user.getHo().toLowerCase().contains(keyword)
+                || user.getTen().toLowerCase().contains(keyword)
+                || user.getEmail().toLowerCase().contains(keyword))
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
         users.setAll(filteredUsers);
     }
@@ -671,8 +823,8 @@ public class DashboardAdminController {
             return;
         }
         ObservableList<KhoaHoc> filteredCourses = allCourses.stream()
-                .filter(course -> course.getTenKhoaHoc().toLowerCase().contains(keyword) ||
-                                  course.getMoTa().toLowerCase().contains(keyword))
+                .filter(course -> course.getTenKhoaHoc().toLowerCase().contains(keyword)
+                || course.getMoTa().toLowerCase().contains(keyword))
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
         courses.setAll(filteredCourses);
     }
@@ -684,11 +836,11 @@ public class DashboardAdminController {
             return;
         }
         ObservableList<ThanhToan> filteredPayments = allPayments.stream()
-                .filter(payment -> payment.getTransactionId().toLowerCase().contains(keyword) ||
-                                   payment.getThanhToanID().toLowerCase().contains(keyword) ||
-                                   payment.getHocVienID().toLowerCase().contains(keyword) ||
-                                   payment.getKhoaHocID().toLowerCase().contains(keyword) ||
-                                   payment.getPhuongThuc().toLowerCase().contains(keyword))
+                .filter(payment -> payment.getTransactionId().toLowerCase().contains(keyword)
+                || payment.getThanhToanID().toLowerCase().contains(keyword)
+                || payment.getHocVienID().toLowerCase().contains(keyword)
+                || payment.getKhoaHocID().toLowerCase().contains(keyword)
+                || payment.getPhuongThuc().toLowerCase().contains(keyword))
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
         payments.setAll(filteredPayments);
     }

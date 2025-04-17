@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane stylesheets="@../styles/course_details.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ntn.quanlykhoahoc.controllers.CourseDetailsController">
+    <top>
+        <VBox spacing="15" stylesheets="@../css/course_details.css" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
+            </padding>
+            <Label fx:id="courseNameLabel" styleClass="course-title" />
+            <Label fx:id="instructorLabel" styleClass="instructor-label" />
+        </VBox>
+    </top>
+    <center>
+        <TabPane styleClass="tab-pane" tabClosingPolicy="UNAVAILABLE">
+            <Tab text="Thông tin khóa học">
+                <VBox alignment="CENTER" spacing="25">
+                    <padding>
+                        <Insets bottom="25.0" left="40.0" right="40.0" top="25.0" />
+                    </padding>
+                    <HBox alignment="CENTER" spacing="40">
+                        <ImageView fx:id="courseImage" fitHeight="250.0" fitWidth="400.0" preserveRatio="true" styleClass="course-image" />
+                        <GridPane alignment="CENTER_LEFT" hgap="15" vgap="15">
+                            <Label styleClass="info-label" text="Giá:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                            <Label fx:id="priceLabel" styleClass="info-value" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                            <Label styleClass="info-label" text="Ngày bắt đầu:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                            <Label fx:id="startDateLabel" styleClass="info-value" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                            <Label styleClass="info-label" text="Ngày kết thúc:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                            <Label fx:id="endDateLabel" styleClass="info-value" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                            <Label styleClass="info-label" text="Số lượng học viên tối đa:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                            <Label fx:id="maxStudentsLabel" styleClass="info-value" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                     <columnConstraints>
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                     </rowConstraints>
+                        </GridPane>
+                    </HBox>
+                    <Label styleClass="info-label" text="Mô tả:" />
+                    <TextArea fx:id="descriptionTextArea" editable="false" prefHeight="150.0" styleClass="description-area" wrapText="true" />
+                </VBox>
+            </Tab>
+            <Tab text="Lịch học">
+                <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+                    <content>
+                        <TableView fx:id="scheduleTable" styleClass="schedule-table">
+                            <columns>
+                                <TableColumn fx:id="tenKhoaHocColumn" prefWidth="200" text="Tên Khóa Học" />
+                                <TableColumn fx:id="ngayHocColumn" prefWidth="130" text="Ngày Học" />
+                                <TableColumn fx:id="gioBatDauColumn" prefWidth="110" text="Giờ Bắt Đầu" />
+                                <TableColumn fx:id="gioKetThucColumn" prefWidth="110" text="Giờ Kết Thúc" />
+                                <TableColumn fx:id="giangVienColumn" prefWidth="180" text="Giảng Viên" />
+                                <TableColumn fx:id="lienKetColumn" prefWidth="250" text="Liên Kết" />
+                                <TableColumn fx:id="statusColumn" prefWidth="130" text="Trạng Thái" />
+                            </columns>
+                            <placeholder>
+                                <Label styleClass="placeholder-label" text="Chưa có lịch học cho khóa này." />
+                            </placeholder>
+                        </TableView>
+                    </content>
+                </ScrollPane>
+            </Tab>
+        </TabPane>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER" spacing="25" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="25.0" top="25.0" />
+            </padding>
+            <Button fx:id="addToCartButton" onAction="#addToCart" styleClass="action-button, primary-button" text="Thêm vào giỏ hàng" />
+            <Button fx:id="viewScheduleButton" onAction="#viewSchedule" styleClass="action-button, secondary-button" text="Xem lịch học chi tiết" />
+            <Button fx:id="closeButton" onAction="#close" styleClass="action-button, danger-button" text="Đóng" />
+        </HBox>
+    </bottom>
+</BorderPane>

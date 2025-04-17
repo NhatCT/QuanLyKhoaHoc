@@ -9,15 +9,26 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class UserService {
 
-    // Regex để kiểm tra định dạng email
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(
-            "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
-    );
     private static final String DEFAULT_AVATAR = "/com/ntn/images/avatars/default.jpg";
+    private final EmailService emailService = new EmailService(); // Thêm EmailService để kiểm tra email
+
+    // Lấy hocVienID từ nguoiDungID
+    public int getHocVienIDFromNguoiDung(int nguoiDungID) throws SQLException {
+        String sql = "SELECT id FROM hocvien WHERE nguoiDungID = ?";
+        try (Connection conn = Database.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, nguoiDungID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next() ? rs.getInt("id") : -1;
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy hocVienID từ nguoiDungID: " + nguoiDungID + ", " + e.getMessage());
+            throw e;
+        }
+    }
 
     // Kiểm tra loại người dùng hợp lệ
     private boolean isLoaiNguoiDungValid(int loaiNguoiDungId) throws SQLException {
@@ -74,8 +85,9 @@ public class UserService {
 
     // Kiểm tra email đã tồn tại
     public boolean isEmailExists(String email) throws SQLException {
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
-            throw new IllegalArgumentException("Email không hợp lệ: " + email);
+        // Nếu email không hợp lệ, trả về false
+        if (!emailService.isValidEmail(email)) {
+            return false;
         }
 
         String sql = "SELECT email FROM nguoidung WHERE email = ?";
@@ -96,8 +108,8 @@ public class UserService {
             throw new SQLException("Loại người dùng không hợp lệ: " + updatedUser.getLoaiNguoiDungId());
         }
 
-        if (!EMAIL_PATTERN.matcher(updatedUser.getEmail()).matches()) {
-            throw new IllegalArgumentException("Email không hợp lệ: " + updatedUser.getEmail());
+        if (!emailService.isValidEmail(updatedUser.getEmail())) {
+            return false;
         }
 
         String query = "UPDATE nguoidung SET ho = ?, ten = ?, email = ?, mat_khau = ?, active = ?, loai_nguoi_dung_id = ?, avatar = ? WHERE email = ?";
@@ -137,8 +149,8 @@ public class UserService {
             throw new IllegalArgumentException("Mật khẩu không được để trống");
         }
 
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
-            throw new IllegalArgumentException("Email không hợp lệ: " + email);
+        if (!emailService.isValidEmail(email)) {
+            return false;
         }
 
         if (!isLoaiNguoiDungValid(loaiNguoiDungId)) {
@@ -177,8 +189,8 @@ public class UserService {
             throw new IllegalArgumentException("Mật khẩu không được để trống");
         }
 
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
-            throw new IllegalArgumentException("Email không hợp lệ: " + email);
+        if (!emailService.isValidEmail(email)) {
+            return false;
         }
 
         String query = "UPDATE nguoidung SET mat_khau = ? WHERE email = ?";

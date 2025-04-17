@@ -1,7 +1,7 @@
 package com.ntn.quanlykhoahoc.controllers;
 
-import com.ntn.quanlykhoahoc.App;
 import com.ntn.quanlykhoahoc.database.Database;
+import com.ntn.quanlykhoahoc.services.NavigationService;
 import com.ntn.quanlykhoahoc.session.SessionManager;
 import java.io.IOException;
 import java.sql.*;
@@ -11,11 +11,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
-import org.mindrot.jbcrypt.BCrypt;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class Login {
     @FXML
@@ -27,6 +24,8 @@ public class Login {
 
     private static final int MAX_LOGIN_ATTEMPTS = 5;
     private static final int LOCKOUT_MINUTES = 10;
+
+    private final NavigationService navigationService = new NavigationService();
 
     @FXML
     private void initialize() {
@@ -41,59 +40,45 @@ public class Login {
         String role = roleComboBox.getValue();
 
         if (email.isEmpty() || password.isEmpty() || role == null) {
-            showAlert("Lỗi", "Vui lòng nhập đầy đủ thông tin!", Alert.AlertType.WARNING);
+            navigationService.showAlert("Lỗi", "Vui lòng nhập đầy đủ thông tin!", Alert.AlertType.WARNING);
             return;
         }
 
-        // Kiểm tra email có tồn tại không
         if (!isEmailExists(email)) {
-            showAlert("Lỗi", "Email không tồn tại trong hệ thống!", Alert.AlertType.ERROR);
+            navigationService.showAlert("Lỗi", "Email không tồn tại trong hệ thống!", Alert.AlertType.ERROR);
             return;
         }
 
-        // Kiểm tra trạng thái khóa tài khoản
         if (isAccountLocked(email)) {
-            showAlert("Lỗi", "Tài khoản của bạn đã bị khóa. Vui lòng thử lại sau " + LOCKOUT_MINUTES + " phút!", Alert.AlertType.ERROR);
+            navigationService.showAlert("Lỗi", "Tài khoản của bạn đã bị khóa. Vui lòng thử lại sau " + LOCKOUT_MINUTES + " phút!", Alert.AlertType.ERROR);
             return;
         }
 
         if (authenticate(email, password, role)) {
-            // Đăng nhập thành công, reset số lần nhập sai
             resetLoginAttempts(email);
             SessionManager.setLoggedInEmail(email);
-            showAlert("Thành công", "Đăng nhập thành công!", Alert.AlertType.INFORMATION);
+            navigationService.showAlert("Thành công", "Đăng nhập thành công!", Alert.AlertType.INFORMATION);
             navigateToDashboard(role);
         } else {
-            // Đăng nhập thất bại, tăng số lần nhập sai
             incrementLoginAttempts(email);
             int attempts = getLoginAttempts(email);
             if (attempts >= MAX_LOGIN_ATTEMPTS) {
                 lockAccount(email);
-                showAlert("Lỗi", "Bạn đã nhập sai mật khẩu quá " + MAX_LOGIN_ATTEMPTS + " lần. Tài khoản đã bị khóa trong " + LOCKOUT_MINUTES + " phút!", Alert.AlertType.ERROR);
+                navigationService.showAlert("Lỗi", "Bạn đã nhập sai mật khẩu quá " + MAX_LOGIN_ATTEMPTS + " lần. Tài khoản đã bị khóa trong " + LOCKOUT_MINUTES + " phút!", Alert.AlertType.ERROR);
             } else {
-                showAlert("Thất bại", "Email, mật khẩu hoặc vai trò không đúng! Bạn còn " + (MAX_LOGIN_ATTEMPTS - attempts) + " lần thử.", Alert.AlertType.ERROR);
+                navigationService.showAlert("Thất bại", "Email, mật khẩu hoặc vai trò không đúng! Bạn còn " + (MAX_LOGIN_ATTEMPTS - attempts) + " lần thử.", Alert.AlertType.ERROR);
             }
         }
     }
 
     @FXML
-    private void handleRegister(ActionEvent event) throws IOException {
-        App.setRoot("register");
+    private void handleRegister(ActionEvent event) {
+        navigationService.openWindow("/com/ntn/views/register.fxml", "Đăng ký", 600, 500, emailField);
     }
 
     @FXML
     private void handleForgotPassword() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ntn/views/forgot_password.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = new Stage();
-            stage.setTitle("Quên Mật Khẩu");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigationService.openWindow("/com/ntn/views/forgot_password.fxml", "Quên Mật Khẩu", 500, 400, emailField);
     }
 
     private boolean isEmailExists(String email) {
@@ -115,7 +100,7 @@ public class Login {
 
         try (Connection conn = Database.getConn()) {
             if (conn == null) {
-                showAlert("Lỗi kết nối", "Không thể kết nối đến cơ sở dữ liệu!", Alert.AlertType.ERROR);
+                navigationService.showAlert("Lỗi kết nối", "Không thể kết nối đến cơ sở dữ liệu!", Alert.AlertType.ERROR);
                 return false;
             }
 
@@ -133,7 +118,7 @@ public class Login {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            showAlert("Lỗi", "Có lỗi xảy ra khi kiểm tra đăng nhập!", Alert.AlertType.ERROR);
+            navigationService.showAlert("Lỗi", "Có lỗi xảy ra khi kiểm tra đăng nhập!", Alert.AlertType.ERROR);
         }
         return false;
     }
@@ -151,9 +136,8 @@ public class Login {
                     LocalDateTime now = LocalDateTime.now();
                     long minutesSinceLockout = ChronoUnit.MINUTES.between(lockoutDateTime, now);
                     if (minutesSinceLockout < LOCKOUT_MINUTES) {
-                        return true; // Tài khoản vẫn bị khóa
+                        return true;
                     } else {
-                        // Hết thời gian khóa, reset trạng thái
                         resetLoginAttempts(email);
                         return false;
                     }
@@ -172,9 +156,7 @@ public class Login {
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                int attempts = rs.getInt("so_lan_thu_dang_nhap_sai");
-                System.out.println("Login attempts for " + email + ": " + attempts); // Debug
-                return attempts;
+                return rs.getInt("so_lan_thu_dang_nhap_sai");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -187,8 +169,7 @@ public class Login {
         try (Connection conn = Database.getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, email);
-            int rowsAffected = stmt.executeUpdate();
-            System.out.println("Rows affected by incrementLoginAttempts for " + email + ": " + rowsAffected); // Debug
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -199,8 +180,7 @@ public class Login {
         try (Connection conn = Database.getConn();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, email);
-            int rowsAffected = stmt.executeUpdate();
-            System.out.println("Rows affected by resetLoginAttempts for " + email + ": " + rowsAffected); // Debug
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -212,39 +192,35 @@ public class Login {
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
             stmt.setString(2, email);
-            int rowsAffected = stmt.executeUpdate();
-            System.out.println("Rows affected by lockAccount for " + email + ": " + rowsAffected); // Debug
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     private void navigateToDashboard(String role) {
-        try {
-            switch (role) {
-                case "Học viên":
-                    App.setRoot("dashboard_student");
-                    break;
-                case "Giảng viên":
-                    App.setRoot("dashboard_teacher");
-                    break;
-                case "Quản trị viên":
-                    App.setRoot("dashboard_admin");
-                    break;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Lỗi", "Không thể tải giao diện!", Alert.AlertType.ERROR);
+        String fxmlFile;
+        String title;
+        switch (role) {
+            case "Học viên":
+                fxmlFile = "/com/ntn/views/dashboard_student.fxml";
+                title = "Dashboard Học Viên";
+                break;
+            case "Giảng viên":
+                fxmlFile = "/com/ntn/views/dashboard_teacher.fxml";
+                title = "Dashboard Giảng Viên";
+                break;
+            case "Quản trị viên":
+                fxmlFile = "/com/ntn/views/dashboard_admin.fxml";
+                title = "Dashboard Quản Trị Viên";
+                break;
+            default:
+                throw new IllegalArgumentException("Vai trò không hợp lệ: " + role);
         }
-    }
-
-    private void showAlert(String title, String message, Alert.AlertType type) {
+        navigationService.openWindow(fxmlFile, title, 800, 600, emailField);
         Platform.runLater(() -> {
-            Alert alert = new Alert(type);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(message);
-            alert.showAndWait();
+            Stage stage = (Stage) emailField.getScene().getWindow();
+            System.out.println("Dashboard opened - Maximized: " + stage.isMaximized() + ", Size: " + stage.getWidth() + "x" + stage.getHeight());
         });
     }
 }

@@ -1,76 +1,46 @@
 package com.ntn.quanlykhoahoc.services;
 
 import com.ntn.quanlykhoahoc.database.Database;
+import com.ntn.quanlykhoahoc.pojo.KhoaHocHocVien;
 import com.ntn.quanlykhoahoc.pojo.ThanhToan;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PaymentService {
     private static final Logger LOGGER = Logger.getLogger(PaymentService.class.getName());
 
-    /**
-     * Adds a new payment record to thanhtoan and logs it in lichsu_thanhtoan.
-     */
-    public int addPayment(int hocVienID, int khoaHocID, double soTien, LocalDate ngayThanhToan, 
-                          String phuongThuc) throws SQLException {
-        if (soTien <= 0 || ngayThanhToan == null || phuongThuc == null || phuongThuc.trim().isEmpty()) {
-            LOGGER.warning("Invalid payment details");
-            return 0;
-        }
-
-        Connection conn = null;
-        try {
-            conn = Database.getConn();
-            conn.setAutoCommit(false);
-
-            // Step 1: Add to thanhtoan
-            int thanhToanID = addToThanhToan(conn, hocVienID, khoaHocID, soTien, ngayThanhToan);
-            if (thanhToanID <= 0) {
-                conn.rollback();
-                return 0;
-            }
-
-            // Step 2: Add to lichsu_thanhtoan
-            int transactionId = addToLichSuThanhToan(conn, hocVienID, khoaHocID, soTien, ngayThanhToan, 
-                                                    phuongThuc, thanhToanID);
-            if (transactionId <= 0) {
-                conn.rollback();
-                return 0;
-            }
-
-            conn.commit();
-            LOGGER.info("Added payment: thanhToanID=" + thanhToanID + ", transactionId=" + transactionId);
-            return transactionId;
-        } catch (SQLException e) {
-            if (conn != null) conn.rollback();
-            LOGGER.log(Level.SEVERE, "Error adding payment", e);
-            throw e;
-        } finally {
-            if (conn != null) {
-                conn.setAutoCommit(true);
-                conn.close();
-            }
-        }
+    public int addPayment(int hocVienID, int khoaHocID, double soTien, LocalDate ngayThanhToan, String phuongThuc) throws SQLException {
+    String sql = "INSERT INTO lichsu_thanhtoan (hocVienID, khoaHocID, so_tien, ngay_thanh_toan, phuong_thuc, status) VALUES (?, ?, ?, ?, ?, ?)";
+    try (Connection conn = Database.getConn();
+         PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        stmt.setInt(1, hocVienID);
+        stmt.setInt(2, khoaHocID);
+        stmt.setDouble(3, soTien);
+        stmt.setString(4, ngayThanhToan.toString());
+        stmt.setString(5, phuongThuc);
+        stmt.setString(6, "PENDING");
+        stmt.executeUpdate();
+        ResultSet rs = stmt.getGeneratedKeys();
+        return rs.next() ? rs.getInt(1) : -1;
     }
+}
 
-    private int addToThanhToan(Connection conn, int hocVienID, int khoaHocID, double soTien, 
-                              LocalDate ngayThanhToan) throws SQLException {
+    private int addToThanhToan(Connection conn, int hocVienID, int khoaHocID, double soTien, LocalDate ngayThanhToan) throws SQLException {
         if (!isValidHocVien(hocVienID) || !isValidCourse(khoaHocID)) {
             LOGGER.warning("Invalid hocVienID=" + hocVienID + " or khoaHocID=" + khoaHocID);
             return 0;
         }
-
-        String sql = "INSERT INTO thanhtoan (hocVienID, khoaHocID, soTien, ngayThanhToan) " +
-                     "VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO thanhtoan (hocVienID, khoaHocID, soTien, ngayThanhToan) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, hocVienID);
             stmt.setInt(2, khoaHocID);
@@ -86,11 +56,8 @@ public class PaymentService {
         }
     }
 
-    private int addToLichSuThanhToan(Connection conn, Integer hocVienID, Integer khoaHocID, double soTien, 
-                                    LocalDate ngayThanhToan, String phuongThuc, int thanhToanID) 
-                                    throws SQLException {
-        String sql = "INSERT INTO lichsu_thanhtoan (hocVienID, khoaHocID, so_tien, ngay_thanh_toan, " +
-                     "phuong_thuc, thanhToanID) VALUES (?, ?, ?, ?, ?, ?)";
+    private int addToLichSuThanhToan(Connection conn, Integer hocVienID, Integer khoaHocID, double soTien, LocalDate ngayThanhToan, String phuongThuc, int thanhToanID) throws SQLException {
+        String sql = "INSERT INTO lichsu_thanhtoan (hocVienID, khoaHocID, so_tien, ngay_thanh_toan, phuong_thuc, thanhToanID) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             if (hocVienID != null) stmt.setInt(1, hocVienID); else stmt.setNull(1, java.sql.Types.INTEGER);
             if (khoaHocID != null) stmt.setInt(2, khoaHocID); else stmt.setNull(2, java.sql.Types.INTEGER);
@@ -108,22 +75,84 @@ public class PaymentService {
         }
     }
 
+    private int addToKhoaHocHocVien(Connection conn, int hocVienID, int khoaHocID, LocalDate ngayDangKy) throws SQLException {
+        String checkSql = "SELECT id FROM khoahoc_hocvien WHERE hocVienID = ? AND khoaHocID = ?";
+        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+            checkStmt.setInt(1, hocVienID);
+            checkStmt.setInt(2, khoaHocID);
+            try (ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next()) {
+                    LOGGER.warning("Bản ghi đã tồn tại trong khoahoc_hocvien: hocVienID=" + hocVienID + ", khoaHocID=" + khoaHocID);
+                    throw new SQLException("Duplicate entry for hocVienID and khoaHocID");
+                }
+            }
+        }
+        String sql = "INSERT INTO khoahoc_hocvien (hocVienID, khoaHocID, ngay_dang_ky, trang_thai) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, hocVienID);
+            stmt.setInt(2, khoaHocID);
+            stmt.setTimestamp(3, Timestamp.valueOf(ngayDangKy.atStartOfDay()));
+            stmt.setString(4, "PENDING");
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) return rs.getInt(1);
+                }
+            }
+            return 0;
+        }
+    }
+
+    private void notifyAdmin(int hocVienID, int khoaHocID, int thanhToanID) throws SQLException {
+        String noiDung = String.format("Học viên ID=%d đã thanh toán cho khóa học ID=%d (ThanhToanID=%d). Vui lòng xét duyệt.", hocVienID, khoaHocID, thanhToanID);
+        String sql = "INSERT INTO thongbao (noi_dung, nguoi_nhan_id, ngay_gui, trang_thai) VALUES (?, ?, ?, ?)";
+        try (Connection conn = Database.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, noiDung);
+            stmt.setInt(2, getAdminId());
+            stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setString(4, "UNREAD");
+            stmt.executeUpdate();
+            LOGGER.info("Gửi thông báo đến quản trị viên: " + noiDung);
+        }
+    }
+
+    private void notifyStudent(int hocVienID, int khoaHocID, String trangThai) throws SQLException {
+        String noiDung = String.format("Yêu cầu tham gia khóa học ID=%d của bạn đã được %s.", 
+                khoaHocID, trangThai.equals("APPROVED") ? "duyệt" : "từ chối");
+        String sql = "INSERT INTO thongbao (noi_dung, nguoi_nhan_id, ngay_gui, trang_thai) VALUES (?, ?, ?, ?)";
+        try (Connection conn = Database.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, noiDung);
+            stmt.setInt(2, hocVienID);
+            stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setString(4, "UNREAD");
+            stmt.executeUpdate();
+            LOGGER.info("Gửi thông báo đến học viên ID=" + hocVienID + ": " + noiDung);
+        }
+    }
+
+    private int getAdminId() throws SQLException {
+        String sql = "SELECT id FROM nguoidung WHERE loai_nguoi_dung_id = 1 LIMIT 1";
+        try (Connection conn = Database.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) return rs.getInt("id");
+            throw new SQLException("Không tìm thấy quản trị viên.");
+        }
+    }
+
     /**
      * Updates a lichsu_thanhtoan record.
      */
-    public boolean updatePayment(int transactionId, Integer hocVienID, Integer khoaHocID, double soTien, 
-                                LocalDate ngayThanhToan, String phuongThuc, int thanhToanID) 
-                                throws SQLException {
-        if (transactionId <= 0 || soTien <= 0 || ngayThanhToan == null || phuongThuc == null || 
-            phuongThuc.trim().isEmpty()) {
+    public boolean updatePayment(int transactionId, Integer hocVienID, Integer khoaHocID, double soTien, LocalDate ngayThanhToan, String phuongThuc, int thanhToanID) throws SQLException {
+        if (transactionId <= 0 || soTien <= 0 || ngayThanhToan == null || phuongThuc == null || phuongThuc.trim().isEmpty()) {
             LOGGER.warning("Invalid update details: transactionId=" + transactionId);
             return false;
         }
-
         try (Connection conn = Database.getConn();
              PreparedStatement stmt = conn.prepareStatement(
-                     "UPDATE lichsu_thanhtoan SET hocVienID = ?, khoaHocID = ?, so_tien = ?, " +
-                     "ngay_thanh_toan = ?, phuong_thuc = ?, thanhToanID = ? WHERE id = ?")) {
+                     "UPDATE lichsu_thanhtoan SET hocVienID = ?, khoaHocID = ?, so_tien = ?, ngay_thanh_toan = ?, phuong_thuc = ?, thanhToanID = ? WHERE id = ?")) {
             if (hocVienID != null) stmt.setInt(1, hocVienID); else stmt.setNull(1, java.sql.Types.INTEGER);
             if (khoaHocID != null) stmt.setInt(2, khoaHocID); else stmt.setNull(2, java.sql.Types.INTEGER);
             stmt.setDouble(3, soTien);
@@ -155,9 +184,7 @@ public class PaymentService {
      */
     public List<ThanhToan> getAllPayments() throws SQLException {
         List<ThanhToan> payments = new ArrayList<>();
-        String sql = "SELECT id, thanhToanID, ngay_thanh_toan, so_tien, phuong_thuc, " +
-                     "hocVienID, khoaHocID " +
-                     "FROM lichsu_thanhtoan";
+        String sql = "SELECT id, thanhToanID, ngay_thanh_toan, so_tien, phuong_thuc, hocVienID, khoaHocID FROM lichsu_thanhtoan";
         try (Connection conn = Database.getConn();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -181,9 +208,7 @@ public class PaymentService {
      * Retrieves a payment by transaction ID.
      */
     public ThanhToan getPaymentByTransactionId(int transactionId) throws SQLException {
-        String sql = "SELECT id, thanhToanID, ngay_thanh_toan, so_tien, phuong_thuc, " +
-                     "hocVienID, khoaHocID " +
-                     "FROM lichsu_thanhtoan WHERE id = ?";
+        String sql = "SELECT id, thanhToanID, ngay_thanh_toan, so_tien, phuong_thuc, hocVienID, khoaHocID FROM lichsu_thanhtoan WHERE id = ?";
         try (Connection conn = Database.getConn();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, transactionId);
@@ -241,6 +266,84 @@ public class PaymentService {
             try (ResultSet rs = stmt.executeQuery()) {
                 return rs.next();
             }
+        }
+    }
+
+    /**
+     * Updates the status of a khoahoc_hocvien record.
+     */
+    public boolean updateKhoaHocHocVienStatus(int id, String trangThai) throws SQLException {
+        if (id <= 0 || trangThai == null || trangThai.trim().isEmpty()) {
+            LOGGER.warning("Thông tin không hợp lệ: id=" + id + ", trangThai=" + trangThai);
+            return false;
+        }
+        Connection conn = null;
+        try {
+            conn = Database.getConn();
+            conn.setAutoCommit(false);
+
+            String selectSql = "SELECT hocVienID, khoaHocID FROM khoahoc_hocvien WHERE id = ?";
+            int hocVienID = 0;
+            int khoaHocID = 0;
+            try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                selectStmt.setInt(1, id);
+                try (ResultSet rs = selectStmt.executeQuery()) {
+                    if (rs.next()) {
+                        hocVienID = rs.getInt("hocVienID");
+                        khoaHocID = rs.getInt("khoaHocID");
+                    } else {
+                        LOGGER.warning("Không tìm thấy bản ghi khoahoc_hocvien với id=" + id);
+                        return false;
+                    }
+                }
+            }
+
+            String updateSql = "UPDATE khoahoc_hocvien SET trang_thai = ? WHERE id = ?";
+            try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                updateStmt.setString(1, trangThai);
+                updateStmt.setInt(2, id);
+                int rowsAffected = updateStmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    notifyStudent(hocVienID, khoaHocID, trangThai);
+                    conn.commit();
+                    LOGGER.info("Cập nhật trạng thái khoahoc_hocvien: id=" + id + ", trangThai=" + trangThai + ", rowsAffected=" + rowsAffected);
+                    return true;
+                }
+                conn.rollback();
+                return false;
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Lỗi cập nhật trạng thái khoahoc_hocvien: " + e.getMessage());
+            if (conn != null) conn.rollback();
+            throw e;
+        } finally {
+            if (conn != null) {
+                conn.setAutoCommit(true);
+                conn.close();
+            }
+        }
+    }
+
+    /**
+     * Retrieves all pending khoahoc_hocvien records.
+     */
+    public List<KhoaHocHocVien> getPendingKhoaHocHocVien() throws SQLException {
+        List<KhoaHocHocVien> records = new ArrayList<>();
+        String sql = "SELECT id, hocVienID, khoaHocID, ngay_dang_ky, trang_thai FROM khoahoc_hocvien WHERE trang_thai = 'PENDING'";
+        try (Connection conn = Database.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                records.add(new KhoaHocHocVien(
+                        rs.getInt("id"),
+                        rs.getInt("hocVienID"),
+                        rs.getInt("khoaHocID"),
+                        rs.getTimestamp("ngay_dang_ky").toString(),
+                        rs.getString("trang_thai")
+                ));
+            }
+            LOGGER.info("Tải " + records.size() + " bản ghi PENDING từ khoahoc_hocvien");
+            return records;
         }
     }
 }

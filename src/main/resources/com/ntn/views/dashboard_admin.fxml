@@ -26,21 +26,22 @@
         </HBox>
     </top>
 
-    <left>
-        <VBox spacing="15" style="-fx-background-color: #f5f5f5; -fx-border-color: #e0e0e0; -fx-border-width: 0 1 0 0;">
-            <padding>
-                <Insets bottom="10" left="10" right="10" top="20" />
-            </padding>
-            <VBox spacing="5" alignment="CENTER">
-                <ImageView fx:id="userAvatar" fitWidth="50" fitHeight="50" preserveRatio="true" />
-                <Label fx:id="welcomeLabel" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Admin" />
-                <Label text="Quản trị viên" style="-fx-font-size: 12px; -fx-text-fill: #6c5ce7;" />
-            </VBox>
-            <Button fx:id="manageUsersBtn" text="Quản lý Người Dùng" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManageUsers"/>
-            <Button fx:id="manageCoursesBtn" text="Quản lý Khóa Học" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManageCourses"/>
-            <Button fx:id="managePaymentsBtn" text="Quản lý Thanh Toán" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManagePayments"/>
+  <left>
+    <VBox spacing="15" style="-fx-background-color: #f5f5f5; -fx-border-color: #e0e0e0; -fx-border-width: 0 1 0 0;">
+        <padding>
+            <Insets bottom="10" left="10" right="10" top="20" />
+        </padding>
+        <VBox spacing="5" alignment="CENTER">
+            <ImageView fx:id="userAvatar" fitWidth="50" fitHeight="50" preserveRatio="true" />
+            <Label fx:id="welcomeLabel" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Admin" />
+            <Label text="Quản trị viên" style="-fx-font-size: 12px; -fx-text-fill: #6c5ce7;" />
         </VBox>
-    </left>
+        <Button fx:id="manageUsersBtn" text="Quản lý Người Dùng" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManageUsers"/>
+        <Button fx:id="manageCoursesBtn" text="Quản lý Khóa Học" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManageCourses"/>
+        <Button fx:id="managePaymentsBtn" text="Quản lý Thanh Toán" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManagePayments"/>
+        <Button fx:id="manageApprovalsBtn" text="Quản lý Xét Duyệt" prefWidth="150" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" onAction="#loadManageApprovals"/>
+    </VBox>
+</left>
 
     <center>
         <VBox spacing="20" style="-fx-background-color: #fafafa;">

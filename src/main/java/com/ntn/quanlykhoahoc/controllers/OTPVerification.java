@@ -3,13 +3,9 @@ package com.ntn.quanlykhoahoc.controllers;
 import com.ntn.quanlykhoahoc.services.NavigationService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 import java.time.LocalDateTime;
 
@@ -47,8 +43,7 @@ public class OTPVerification {
 
         if (enteredOTP.equals(correctOTP)) {
             navigationService.showAlert("Thành công", "OTP hợp lệ. Đặt lại mật khẩu.", Alert.AlertType.INFORMATION);
-            navigationService.openResetPasswordWindow(email);
-            navigationService.closeWindow(verifyButton);
+            navigationService.openResetPasswordWindow(email, verifyButton);
         } else {
             navigationService.showAlert("Lỗi", "OTP không đúng.", Alert.AlertType.ERROR);
         }

@@ -2,6 +2,7 @@ package com.ntn.quanlykhoahoc.controllers;
 
 import com.ntn.quanlykhoahoc.services.UserService;
 import com.ntn.quanlykhoahoc.services.NavigationService;
+import com.ntn.quanlykhoahoc.services.PasswordService;
 import java.sql.SQLException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -17,6 +18,7 @@ public class ResetPassword {
     private String email;
     private final UserService userService = new UserService();
     private final NavigationService navigationService = new NavigationService();
+    private final PasswordService passwordService = new PasswordService();
 
     public void setEmail(String email) {
         this.email = email;
@@ -37,8 +39,18 @@ public class ResetPassword {
             return;
         }
 
-        if (userService.updatePassword(email, newPass)) {
-            navigationService.showAlertAndRedirect("Thành công", "Mật khẩu đã cập nhật!", Alert.AlertType.INFORMATION, "login");
+        // Kiểm tra mật khẩu mới theo các quy tắc
+        String passwordValidation = passwordService.validatePassword(newPass);
+        if (passwordValidation != null) {
+            navigationService.showAlert("Lỗi", passwordValidation, Alert.AlertType.ERROR);
+            return;
+        }
+
+        // Mã hóa mật khẩu trước khi lưu vào cơ sở dữ liệu
+        String hashedPassword = passwordService.hashPassword(newPass);
+        if (userService.updatePassword(email, hashedPassword)) {
+            navigationService.showAlertAndRedirect("Thành công", "Mật khẩu đã cập nhật!", Alert.AlertType.INFORMATION, 
+                    "/com/ntn/views/login.fxml", "Đăng Nhập", 600, 500, resetButton);
         } else {
             navigationService.showAlert("Lỗi", "Cập nhật thất bại.", Alert.AlertType.ERROR);
         }
