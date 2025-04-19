@@ -29,11 +29,11 @@
             </ImageView>
             <!-- Label hiển thị họ và tên -->
             <Label fx:id="userNameLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #333;" text="Họ và tên" wrapText="true" />
-            <Button fx:id="dashboardBtn" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" text="Dashboard" />
-            <Button fx:id="coursesBtn" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" text="My Courses" />
-            <Button fx:id="timetableBtn" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" text="Timetable" onAction="#loadTimetable" />
-            <Button fx:id="profileBtn" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" text="Profile" />
-            <Button fx:id="logoutButton" onAction="#handleLogout" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;" text="Logout" />
+            <Button fx:id="dashboardBtn" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" text="Bảng học viên" />
+            <Button fx:id="coursesBtn" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" text="Khóa học của tôi" />
+            <Button fx:id="timetableBtn" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" text="Lịch học" onAction="#loadTimetable" />
+            <Button fx:id="profileBtn" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" text="Hồ sơ" />
+            <Button fx:id="logoutButton" onAction="#handleLogout" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;" text="Đăng xuất" />
         </VBox>
     </left>
 
