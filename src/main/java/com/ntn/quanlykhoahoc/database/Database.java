@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class Database {
     private static final String URL = "jdbc:mysql://localhost/quanlykhoahoc";
     private static final String USER = "root";
-    private static final String PASSWORD = "Nhat#1908";
+    private static final String PASSWORD = "Abc123";
 
     static {
         try {

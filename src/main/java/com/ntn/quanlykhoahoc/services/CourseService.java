@@ -114,7 +114,7 @@ public class CourseService {
         }
         if (moTa == null || moTa.trim().isEmpty()) {
             throw new IllegalArgumentException("Mô tả không được để trống");
-        }
+    }
         if (ngayBatDau == null || ngayKetThuc == null) {
             throw new IllegalArgumentException("Ngày bắt đầu và ngày kết thúc không được để trống");
         }

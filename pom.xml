@@ -9,8 +9,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>23</maven.compiler.source>
-        <maven.compiler.target>23</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <javafx.version>23</javafx.version>
         <mockito.version>5.12.0</mockito.version>
     </properties>
@@ -25,11 +25,16 @@
         </dependency>
 
         <!-- Mockito -->
-        <dependency>
+<!--        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>${mockito.version}</version>
             <scope>test</scope>
+        </dependency>-->
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.14.15</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -40,7 +45,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-inline</artifactId>
-            <version>${mockito.version}</version>
+            <version>5.2.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -130,7 +135,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <release>23</release>
+                    <release>21</release>
                 </configuration>
             </plugin>
 
