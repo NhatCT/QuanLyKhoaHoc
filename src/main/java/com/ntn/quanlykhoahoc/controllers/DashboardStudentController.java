@@ -29,7 +29,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.collections.ListChangeListener;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +39,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.DayOfWeek;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -154,13 +154,28 @@ public class DashboardStudentController {
             for (LichHoc lichHoc : timetable) {
                 LocalDateTime sessionTime = LocalDateTime.of(lichHoc.getNgayHoc(), lichHoc.getGioBatDau());
                 if (sessionTime.isAfter(now) && sessionTime.isBefore(soon)) {
+                    String thu = getVietnameseDayOfWeek(lichHoc.getNgayHoc());
                     showAlert("Nhắc nhở", "Bạn có buổi học '" + lichHoc.getTenKhoaHoc() + "' vào "
-                            + lichHoc.getNgayHoc() + " lúc " + lichHoc.getGioBatDau() + "!",
+                            + thu + ", " + lichHoc.getNgayHoc() + " lúc " + lichHoc.getGioBatDau() + "!",
                             Alert.AlertType.INFORMATION);
                 }
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error checking upcoming sessions", e);
+        }
+    }
+
+    private String getVietnameseDayOfWeek(LocalDate date) {
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        switch (dayOfWeek) {
+            case MONDAY: return "Thứ 2";
+            case TUESDAY: return "Thứ 3";
+            case WEDNESDAY: return "Thứ 4";
+            case THURSDAY: return "Thứ 5";
+            case FRIDAY: return "Thứ 6";
+            case SATURDAY: return "Thứ 7";
+            case SUNDAY: return "Chủ nhật";
+            default: return "";
         }
     }
 
@@ -297,7 +312,7 @@ public class DashboardStudentController {
                 subjectFilterBox.getChildren().add(subjectCheckBoxes.get(subjects.get(i)));
             }
         }
-        showMoreSubjectsButton.setText(subjectsExpanded ? "Ẩn bớt" : "Hiện thị thêm");
+        showMoreSubjectsButton.setText(subjectsExpanded ? "Ẩn bớt" : "Hiển thị thêm");
     }
 
     @FXML
@@ -546,10 +561,10 @@ public class DashboardStudentController {
             if (ngayBatDau != null && Duration.between(LocalDateTime.now(), ngayBatDau).toHours() < 48) {
                 return false;
             }
-            for (KhoaHoc enrolled : enrolledCourses) {
-                if (isOverlapping(khoaHoc, enrolled)) {
-                    return false;
-                }
+            // Kiểm tra trùng lịch học, chỉ log không hiển thị thông báo
+            if (userService.hasOverlappingSchedule(hocVienID, khoaHoc.getId())) {
+                LOGGER.info("Khóa học " + khoaHoc.getTenKhoaHoc() + " trùng lịch với khóa học đã đăng ký.");
+                return false;
             }
             return true;
         } catch (SQLException e) {
@@ -566,7 +581,7 @@ public class DashboardStudentController {
                 loader -> {
                     CourseDetailsController ctrl = loader.getController();
                     ctrl.setCourse(khoaHoc);
-            return null;
+                    return null;
                 }
         );
     }
@@ -614,11 +629,28 @@ public class DashboardStudentController {
             return;
         }
         try {
+            int hocVienId = userService.getHocVienIDFromNguoiDung(userId);
+            if (hocVienId == -1) {
+                showAlert("Lỗi", "Không tìm thấy thông tin học viên. Vui lòng liên hệ quản trị viên.", Alert.AlertType.ERROR);
+                return;
+            }
+
             List<KhoaHoc> enrolledCourses = courseService.getEnrolledCourses(userId);
             if (!canEnrollCourse(userId, khoaHoc, enrolledCourses)) {
                 showAlert("Cảnh báo", "Không thể thêm khóa học " + khoaHoc.getTenKhoaHoc() + ".", Alert.AlertType.WARNING);
                 return;
             }
+
+            // Kiểm tra xung đột lịch với các khóa học trong giỏ hàng
+            if (!cartCourses.isEmpty()) {
+                String conflictMessage = checkCartScheduleConflict(hocVienId, khoaHoc);
+                if (!conflictMessage.isEmpty()) {
+                    showAlert("Cảnh báo", conflictMessage, Alert.AlertType.WARNING);
+                    return;
+                }
+            }
+
+            // Thêm vào giỏ hàng nếu không có xung đột
             if (!cartCourses.contains(khoaHoc)) {
                 cartCourses.add(khoaHoc);
                 showAlert("Thành công", "Đã thêm khóa học " + khoaHoc.getTenKhoaHoc() + " vào giỏ hàng!", Alert.AlertType.INFORMATION);
@@ -626,8 +658,53 @@ public class DashboardStudentController {
                 showAlert("Thông báo", "Khóa học " + khoaHoc.getTenKhoaHoc() + " đã có trong giỏ hàng!", Alert.AlertType.WARNING);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error checking course status", e);
+            LOGGER.log(Level.SEVERE, "Error checking course status or schedule conflict", e);
             showAlert("Lỗi", "Không thể kiểm tra trạng thái khóa học: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private String checkCartScheduleConflict(int hocVienId, KhoaHoc khoaHoc) throws SQLException {
+        // Lấy danh sách khoaHocId từ giỏ hàng
+        List<Integer> cartCourseIds = cartCourses.stream()
+                .map(KhoaHoc::getId)
+                .collect(Collectors.toList());
+
+        // Truy vấn lịch học của khóa học mới và các khóa học trong giỏ hàng
+        String sql = "SELECT lh1.khoaHocId AS khoaHocId1, lh1.ngay_hoc AS ngay_hoc1, lh1.gio_bat_dau AS gio_bat_dau1, lh1.gio_ket_thuc AS gio_ket_thuc1, " +
+                     "lh2.khoaHocId AS khoaHocId2, lh2.ngay_hoc AS ngay_hoc2, lh2.gio_bat_dau AS gio_bat_dau2, lh2.gio_ket_thuc AS gio_ket_thuc2 " +
+                     "FROM lich_hoc lh1 " +
+                     "JOIN lich_hoc lh2 ON lh1.ngay_hoc = lh2.ngay_hoc " +
+                     "WHERE lh1.khoaHocId IN (" + String.join(",", Collections.nCopies(cartCourseIds.size(), "?")) + ") " +
+                     "AND lh2.khoaHocId = ? " +
+                     "AND (lh1.gio_bat_dau <= lh2.gio_ket_thuc AND lh1.gio_ket_thuc >= lh2.gio_bat_dau)";
+        
+        try (Connection conn = Database.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            // Đặt tham số cho các khoaHocId trong giỏ hàng
+            for (int i = 0; i < cartCourseIds.size(); i++) {
+                stmt.setInt(i + 1, cartCourseIds.get(i));
+            }
+            // Đặt tham số cho khoaHocId mới
+            stmt.setInt(cartCourseIds.size() + 1, khoaHoc.getId());
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<String> conflictDates = new ArrayList<>();
+                while (rs.next()) {
+                    LocalDate ngayHoc = rs.getDate("ngay_hoc1").toLocalDate();
+                    if (!conflictDates.contains(ngayHoc.toString())) {
+                        conflictDates.add(ngayHoc.toString());
+                    }
+                }
+                
+                if (!conflictDates.isEmpty()) {
+                    return String.format("Khóa học %s (ID: %d) trùng lịch với khóa học trong giỏ hàng vào các ngày: %s",
+                            khoaHoc.getTenKhoaHoc(), khoaHoc.getId(), String.join(", ", conflictDates));
+                }
+                return "";
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error checking schedule conflict for hocVienId: " + hocVienId + ", khoaHocId: " + khoaHoc.getId(), e);
+            throw e;
         }
     }
 
@@ -661,7 +738,7 @@ public class DashboardStudentController {
                             loadCoursesAsync();
                         });
                     }, username);
-            return null;
+                    return null;
                 }
         );
     }
@@ -767,15 +844,6 @@ public class DashboardStudentController {
         for (Button btn : inactiveBtns) {
             btn.setStyle("-fx-background-color: transparent; -fx-text-fill: #333;");
         }
-    }
-
-    private boolean isOverlapping(KhoaHoc khoaHoc, KhoaHoc enrolled) {
-        LocalDate start1 = khoaHoc.getNgayBatDau();
-        LocalDate end1 = khoaHoc.getNgayKetThuc();
-        LocalDate start2 = enrolled.getNgayBatDau();
-        LocalDate end2 = enrolled.getNgayKetThuc();
-        return !(start1 == null || end1 == null || start2 == null || end2 == null ||
-                end1.isBefore(start2) || start1.isAfter(end2));
     }
 
     private static boolean isRunningFromJar() {

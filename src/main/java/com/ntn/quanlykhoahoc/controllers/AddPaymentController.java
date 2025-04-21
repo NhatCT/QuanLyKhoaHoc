@@ -47,7 +47,7 @@ public class AddPaymentController {
 
             // Kiểm tra hợp lệ
             if (!paymentService.isValidHocVien(hocVienID)) {
-                showAlert("Cảnh báo", "ID Học Viên không tồn tại$$$!", Alert.AlertType.WARNING);
+                showAlert("Cảnh báo", "ID Học Viên không tồn tại!", Alert.AlertType.WARNING);
                 return;
             }
             if (!paymentService.isValidCourse(khoaHocID)) {

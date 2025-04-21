@@ -7,6 +7,7 @@ com\ntn\quanlykhoahoc\controllers\EditPaymentController.class
 com\ntn\quanlykhoahoc\pojo\LichHoc.class
 com\ntn\quanlykhoahoc\controllers\AddCourseController.class
 com\ntn\quanlykhoahoc\controllers\DashboardStudentController$4.class
+com\ntn\quanlykhoahoc\controllers\DashboardStudentController$6.class
 com\ntn\quanlykhoahoc\controllers\DashboardAdminController$1.class
 com\ntn\quanlykhoahoc\controllers\TimetableController$2.class
 com\ntn\quanlykhoahoc\controllers\TimetableController.class

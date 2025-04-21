@@ -13,9 +13,38 @@ import java.util.List;
 public class UserService {
 
     private static final String DEFAULT_AVATAR = "/com/ntn/images/avatars/default.jpg";
-    private final EmailService emailService = new EmailService(); // Thêm EmailService để kiểm tra email
+    private final EmailService emailService = new EmailService();
 
-    // Lấy hocVienID từ nguoiDungID
+    // Kiểm tra xem khóa học mới có trùng lịch với các khóa học đã đăng ký
+    public boolean hasOverlappingSchedule(int hocVienID, int newKhoaHocID) throws SQLException {
+        String sql = """
+            SELECT DISTINCT lh1.ngay_hoc, lh1.gio_bat_dau, lh1.gio_ket_thuc
+            FROM lich_hoc lh1
+            JOIN khoahoc_hocvien khv ON lh1.khoaHocId = khv.khoaHocID
+            WHERE khv.hocVienID = ? AND khv.trang_thai IN ('ENROLLED', 'APPROVED')
+            AND EXISTS (
+                SELECT 1
+                FROM lich_hoc lh2
+                WHERE lh2.khoaHocId = ?
+                AND lh2.ngay_hoc = lh1.ngay_hoc
+                AND (
+                    (lh2.gio_bat_dau <= lh1.gio_ket_thuc AND lh2.gio_ket_thuc >= lh1.gio_bat_dau)
+                )
+            )
+        """;
+        try (Connection conn = Database.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, hocVienID);
+            stmt.setInt(2, newKhoaHocID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // Nếu có bản ghi, nghĩa là có trùng lịch
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi kiểm tra trùng lịch học: " + e.getMessage());
+            throw e;
+        }
+    }
+
     public int getHocVienIDFromNguoiDung(int nguoiDungID) throws SQLException {
         String sql = "SELECT id FROM hocvien WHERE nguoiDungID = ?";
         try (Connection conn = Database.getConn();
@@ -30,7 +59,6 @@ public class UserService {
         }
     }
 
-    // Kiểm tra loại người dùng hợp lệ
     private boolean isLoaiNguoiDungValid(int loaiNguoiDungId) throws SQLException {
         String sql = "SELECT id FROM loainguoidung WHERE id = ?";
         try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -44,7 +72,6 @@ public class UserService {
         }
     }
 
-    // Lấy danh sách loại người dùng
     public List<String> getLoaiNguoiDungList() throws SQLException {
         List<String> loaiNguoiDungList = new ArrayList<>();
         String sql = "SELECT id, ten_loai FROM loainguoidung";
@@ -63,7 +90,6 @@ public class UserService {
         return loaiNguoiDungList;
     }
 
-    // Lấy danh sách giảng viên
     public List<String> getGiangVienList() throws SQLException {
         List<String> giangVienList = new ArrayList<>();
         String sql = "SELECT id, ho, ten FROM nguoidung WHERE loai_nguoi_dung_id = 2";
@@ -83,9 +109,7 @@ public class UserService {
         return giangVienList;
     }
 
-    // Kiểm tra email đã tồn tại
     public boolean isEmailExists(String email) throws SQLException {
-        // Nếu email không hợp lệ, trả về false
         if (!emailService.isValidEmail(email)) {
             return false;
         }
@@ -102,7 +126,6 @@ public class UserService {
         }
     }
 
-    // Cập nhật thông tin người dùng
     public boolean updateUser(NguoiDung oldUser, NguoiDung updatedUser) throws SQLException {
         if (!isLoaiNguoiDungValid(updatedUser.getLoaiNguoiDungId())) {
             throw new SQLException("Loại người dùng không hợp lệ: " + updatedUser.getLoaiNguoiDungId());
@@ -133,9 +156,7 @@ public class UserService {
         }
     }
 
-    // Đăng ký người dùng mới
     public boolean registerUser(String ho, String ten, String email, String hashedPassword, int loaiNguoiDungId, String avatar, boolean active) throws SQLException {
-        // Kiểm tra dữ liệu đầu vào
         if (ho == null || ho.trim().isEmpty()) {
             throw new IllegalArgumentException("Họ không được để trống");
         }
@@ -180,7 +201,6 @@ public class UserService {
         }
     }
 
-    // Cập nhật mật khẩu
     public boolean updatePassword(String email, String hashedPassword) throws SQLException {
         if (email == null || email.trim().isEmpty()) {
             throw new IllegalArgumentException("Email không được để trống");
@@ -207,7 +227,6 @@ public class UserService {
         }
     }
 
-    // Lấy tất cả người dùng
     public List<NguoiDung> getAllUsers() throws SQLException {
         List<NguoiDung> userList = new ArrayList<>();
         String sql = "SELECT ho, ten, email, active, loai_nguoi_dung_id, avatar FROM nguoidung";
@@ -231,7 +250,6 @@ public class UserService {
         return userList;
     }
 
-    // Xóa người dùng
     public boolean deleteUser(String email) throws SQLException {
         String sql = "DELETE FROM nguoidung WHERE email = ?";
         try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -245,7 +263,6 @@ public class UserService {
         }
     }
 
-    // Bật/tắt trạng thái người dùng
     public boolean toggleUserStatus(String email) throws SQLException {
         String sql = "UPDATE nguoidung SET active = NOT active WHERE email = ?";
         try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(sql)) {

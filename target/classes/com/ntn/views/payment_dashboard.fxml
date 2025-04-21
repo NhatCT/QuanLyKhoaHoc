@@ -17,7 +17,7 @@
     </TableView>
 
     <HBox alignment="CENTER" spacing="20">
-        <Button fx:id="showPaymentDetailsButton" onAction="#showPaymentDetails" style="-fx-background-color: #007bff; -fx-text-fill: white;" text="Thanh toán" />
+        <Button fx:id="confirmPaymentButton" onAction="#confirmPayment" style="-fx-background-color: #007bff; -fx-text-fill: white;" text="Thanh toán" />
         <Button fx:id="cancelButton" onAction="#cancelPayment" style="-fx-background-color: #dc3545; -fx-text-fill: white;" text="Hủy" />
     </HBox>
 </VBox>
