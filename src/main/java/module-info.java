@@ -7,6 +7,8 @@ module com.ntn.quanlykhoahoc {
     requires java.desktop;
     requires java.logging;
     requires jakarta.mail;
+    requires java.base;
+     requires java.prefs;  // Thêm dòng này để yêu cầu quyền truy cập vào java.prefs
 
     opens com.ntn.quanlykhoahoc to javafx.fxml;
     opens com.ntn.quanlykhoahoc.controllers to javafx.fxml;

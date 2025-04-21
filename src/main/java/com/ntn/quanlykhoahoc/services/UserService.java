@@ -210,11 +210,12 @@ public class UserService {
     // Lấy tất cả người dùng
     public List<NguoiDung> getAllUsers() throws SQLException {
         List<NguoiDung> userList = new ArrayList<>();
-        String sql = "SELECT ho, ten, email, active, loai_nguoi_dung_id, avatar FROM nguoidung";
+        String sql = "SELECT id, ho, ten, email, active, loai_nguoi_dung_id, avatar FROM nguoidung";
         try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     NguoiDung user = new NguoiDung();
+                    user.setId(rs.getInt("id"));
                     user.setHo(rs.getString("ho"));
                     user.setTen(rs.getString("ten"));
                     user.setEmail(rs.getString("email"));

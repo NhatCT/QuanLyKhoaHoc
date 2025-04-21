@@ -2,6 +2,7 @@ package com.ntn.quanlykhoahoc.services;
 
 import com.ntn.quanlykhoahoc.database.Database;
 import com.ntn.quanlykhoahoc.pojo.KhoaHoc;
+import com.ntn.quanlykhoahoc.pojo.KhoaHoc_HocVien;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -11,31 +12,30 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CourseService {
+
     private static final Logger LOGGER = Logger.getLogger(CourseService.class.getName());
 
     public List<KhoaHoc> getAllActiveCourses() throws SQLException {
         List<KhoaHoc> khoaHocList = new ArrayList<>();
-        String query = "SELECT k.id, k.ten_khoa_hoc, k.mo_ta, k.gia, k.hinh_anh, k.active, k.ngay_bat_dau, k.ngay_ket_thuc, k.so_luong_hoc_vien_toi_da, " +
-                      "CONCAT(n.ho, ' ', n.ten) AS ten_giang_vien " +
-                      "FROM khoahoc k " +
-                      "LEFT JOIN nguoidung n ON k.giangVienID = n.id " +
-                      "WHERE k.active = TRUE AND (n.loai_nguoi_dung_id = 2 OR n.loai_nguoi_dung_id IS NULL)";
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        String query = "SELECT k.id, k.ten_khoa_hoc, k.mo_ta, k.gia, k.hinh_anh, k.active, k.ngay_bat_dau, k.ngay_ket_thuc, k.so_luong_hoc_vien_toi_da, "
+                + "CONCAT(n.ho, ' ', n.ten) AS ten_giang_vien "
+                + "FROM khoahoc k "
+                + "LEFT JOIN nguoidung n ON k.giangVienID = n.id "
+                + "WHERE k.active = TRUE AND (n.loai_nguoi_dung_id = 2 OR n.loai_nguoi_dung_id IS NULL)";
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 khoaHocList.add(new KhoaHoc(
-                    rs.getInt("id"),
-                    rs.getString("ten_khoa_hoc"),
-                    rs.getString("mo_ta"),
-                    rs.getDouble("gia"),
-                    rs.getInt("so_luong_hoc_vien_toi_da"),
-                    rs.getString("ten_giang_vien") != null ? rs.getString("ten_giang_vien") : "Chưa có giảng viên",
-                    rs.getString("hinh_anh"),
-                    rs.getBoolean("active"),
-                    rs.getDate("ngay_bat_dau") != null ? rs.getDate("ngay_bat_dau").toLocalDate() : null,
-                    rs.getDate("ngay_ket_thuc") != null ? rs.getDate("ngay_ket_thuc").toLocalDate() : null
+                        rs.getInt("id"),
+                        rs.getString("ten_khoa_hoc"),
+                        rs.getString("mo_ta"),
+                        rs.getDouble("gia"),
+                        rs.getInt("so_luong_hoc_vien_toi_da"),
+                        rs.getString("ten_giang_vien") != null ? rs.getString("ten_giang_vien") : "Chưa có giảng viên",
+                        rs.getString("hinh_anh"),
+                        rs.getBoolean("active"),
+                        rs.getDate("ngay_bat_dau") != null ? rs.getDate("ngay_bat_dau").toLocalDate() : null,
+                        rs.getDate("ngay_ket_thuc") != null ? rs.getDate("ngay_ket_thuc").toLocalDate() : null
                 ));
             }
             System.out.println("Retrieved " + khoaHocList.size() + " active courses from database");
@@ -47,13 +47,11 @@ public class CourseService {
 
     public List<KhoaHoc> getAllCourses() throws SQLException {
         List<KhoaHoc> khoaHocList = new ArrayList<>();
-        String query = "SELECT k.id, k.ten_khoa_hoc, k.giangVienID, k.mo_ta, k.gia, k.hinh_anh, k.active, k.ngay_bat_dau, k.ngay_ket_thuc, k.so_luong_hoc_vien_toi_da, " +
-                      "CONCAT(n.ho, ' ', n.ten) AS ten_giang_vien " +
-                      "FROM khoahoc k " +
-                      "LEFT JOIN nguoidung n ON k.giangVienID = n.id";
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        String query = "SELECT k.id, k.ten_khoa_hoc, k.giangVienID, k.mo_ta, k.gia, k.hinh_anh, k.active, k.ngay_bat_dau, k.ngay_ket_thuc, k.so_luong_hoc_vien_toi_da, "
+                + "CONCAT(n.ho, ' ', n.ten) AS ten_giang_vien "
+                + "FROM khoahoc k "
+                + "LEFT JOIN nguoidung n ON k.giangVienID = n.id";
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 KhoaHoc khoaHoc = new KhoaHoc();
@@ -77,13 +75,12 @@ public class CourseService {
     }
 
     public KhoaHoc getCourseById(int id) throws SQLException {
-        String query = "SELECT k.id, k.ten_khoa_hoc, k.giangVienID, k.mo_ta, k.gia, k.hinh_anh, k.active, k.ngay_bat_dau, k.ngay_ket_thuc, k.so_luong_hoc_vien_toi_da, " +
-                      "CONCAT(n.ho, ' ', n.ten) AS ten_giang_vien " +
-                      "FROM khoahoc k " +
-                      "LEFT JOIN nguoidung n ON k.giangVienID = n.id " +
-                      "WHERE k.id = ?";
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        String query = "SELECT k.id, k.ten_khoa_hoc, k.giangVienID, k.mo_ta, k.gia, k.hinh_anh, k.active, k.ngay_bat_dau, k.ngay_ket_thuc, k.so_luong_hoc_vien_toi_da, "
+                + "CONCAT(n.ho, ' ', n.ten) AS ten_giang_vien "
+                + "FROM khoahoc k "
+                + "LEFT JOIN nguoidung n ON k.giangVienID = n.id "
+                + "WHERE k.id = ?";
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -129,8 +126,7 @@ public class CourseService {
         }
 
         String sql = "INSERT INTO khoahoc (ten_khoa_hoc, giangVienID, mo_ta, ngay_bat_dau, ngay_ket_thuc, gia, hinh_anh, active, so_luong_hoc_vien_toi_da) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, tenKhoaHoc);
             stmt.setInt(2, giangVienId);
             stmt.setString(3, moTa);
@@ -175,8 +171,7 @@ public class CourseService {
         }
 
         String sql = "UPDATE khoahoc SET ten_khoa_hoc = ?, giangVienID = ?, mo_ta = ?, ngay_bat_dau = ?, ngay_ket_thuc = ?, gia = ?, hinh_anh = ?, active = ?, so_luong_hoc_vien_toi_da = ? WHERE id = ?";
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, tenKhoaHoc);
             stmt.setInt(2, giangVienId);
             stmt.setString(3, moTa);
@@ -196,9 +191,7 @@ public class CourseService {
 
     public int getNextImageNumber() throws SQLException {
         String query = "SELECT COUNT(*) FROM khoahoc";
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1) + 1;
             }
@@ -210,8 +203,7 @@ public class CourseService {
 
     private boolean isGiangVienExist(int giangVienId) throws SQLException {
         String query = "SELECT COUNT(*) FROM nguoidung WHERE id = ? AND loai_nguoi_dung_id = 2";
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, giangVienId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -226,27 +218,26 @@ public class CourseService {
 
     public List<KhoaHoc> searchCourses(String keyword) throws SQLException {
         List<KhoaHoc> khoaHocList = new ArrayList<>();
-        String query = "SELECT k.id, k.ten_khoa_hoc, k.mo_ta, k.gia, k.hinh_anh, k.active, k.ngay_bat_dau, k.ngay_ket_thuc, k.so_luong_hoc_vien_toi_da, " +
-                      "CONCAT(n.ho, ' ', n.ten) AS ten_giang_vien " +
-                      "FROM khoahoc k " +
-                      "LEFT JOIN nguoidung n ON k.giangVienID = n.id " +
-                      "WHERE k.active = TRUE AND (n.loai_nguoi_dung_id = 2 OR n.loai_nguoi_dung_id IS NULL) AND k.ten_khoa_hoc LIKE ?";
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        String query = "SELECT k.id, k.ten_khoa_hoc, k.mo_ta, k.gia, k.hinh_anh, k.active, k.ngay_bat_dau, k.ngay_ket_thuc, k.so_luong_hoc_vien_toi_da, "
+                + "CONCAT(n.ho, ' ', n.ten) AS ten_giang_vien "
+                + "FROM khoahoc k "
+                + "LEFT JOIN nguoidung n ON k.giangVienID = n.id "
+                + "WHERE k.active = TRUE AND (n.loai_nguoi_dung_id = 2 OR n.loai_nguoi_dung_id IS NULL) AND k.ten_khoa_hoc LIKE ?";
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, "%" + keyword + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     khoaHocList.add(new KhoaHoc(
-                        rs.getInt("id"),
-                        rs.getString("ten_khoa_hoc"),
-                        rs.getString("mo_ta"),
-                        rs.getDouble("gia"),
-                        rs.getInt("so_luong_hoc_vien_toi_da"),
-                        rs.getString("ten_giang_vien") != null ? rs.getString("ten_giang_vien") : "Chưa có giảng viên",
-                        rs.getString("hinh_anh"),
-                        rs.getBoolean("active"),
-                        rs.getDate("ngay_bat_dau") != null ? rs.getDate("ngay_bat_dau").toLocalDate() : null,
-                        rs.getDate("ngay_ket_thuc") != null ? rs.getDate("ngay_ket_thuc").toLocalDate() : null
+                            rs.getInt("id"),
+                            rs.getString("ten_khoa_hoc"),
+                            rs.getString("mo_ta"),
+                            rs.getDouble("gia"),
+                            rs.getInt("so_luong_hoc_vien_toi_da"),
+                            rs.getString("ten_giang_vien") != null ? rs.getString("ten_giang_vien") : "Chưa có giảng viên",
+                            rs.getString("hinh_anh"),
+                            rs.getBoolean("active"),
+                            rs.getDate("ngay_bat_dau") != null ? rs.getDate("ngay_bat_dau").toLocalDate() : null,
+                            rs.getDate("ngay_ket_thuc") != null ? rs.getDate("ngay_ket_thuc").toLocalDate() : null
                     ));
                 }
             }
@@ -258,28 +249,27 @@ public class CourseService {
 
     public List<KhoaHoc> getEnrolledCourses(int hocVienId) throws SQLException {
         List<KhoaHoc> khoaHocList = new ArrayList<>();
-        String query = "SELECT k.id, k.ten_khoa_hoc, k.mo_ta, k.gia, k.hinh_anh, k.active, k.ngay_bat_dau, k.ngay_ket_thuc, k.so_luong_hoc_vien_toi_da, " +
-                      "CONCAT(n.ho, ' ', n.ten) AS ten_giang_vien " +
-                      "FROM khoahoc k " +
-                      "LEFT JOIN nguoidung n ON k.giangVienID = n.id " +
-                      "JOIN khoahoc_hocvien kh ON k.id = kh.khoaHocID " +
-                      "WHERE kh.hocVienID = ? AND kh.trang_thai = 'APPROVED'";
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        String query = "SELECT k.id, k.ten_khoa_hoc, k.mo_ta, k.gia, k.hinh_anh, k.active, k.ngay_bat_dau, k.ngay_ket_thuc, k.so_luong_hoc_vien_toi_da, "
+                + "CONCAT(n.ho, ' ', n.ten) AS ten_giang_vien "
+                + "FROM khoahoc k "
+                + "LEFT JOIN nguoidung n ON k.giangVienID = n.id "
+                + "JOIN khoahoc_hocvien kh ON k.id = kh.khoaHocID "
+                + "WHERE kh.hocVienID = ? AND kh.trang_thai = 'APPROVED'";
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, hocVienId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     khoaHocList.add(new KhoaHoc(
-                        rs.getInt("id"),
-                        rs.getString("ten_khoa_hoc"),
-                        rs.getString("mo_ta"),
-                        rs.getDouble("gia"),
-                        rs.getInt("so_luong_hoc_vien_toi_da"),
-                        rs.getString("ten_giang_vien") != null ? rs.getString("ten_giang_vien") : "Chưa có giảng viên",
-                        rs.getString("hinh_anh"),
-                        rs.getBoolean("active"),
-                        rs.getDate("ngay_bat_dau") != null ? rs.getDate("ngay_bat_dau").toLocalDate() : null,
-                        rs.getDate("ngay_ket_thuc") != null ? rs.getDate("ngay_ket_thuc").toLocalDate() : null
+                            rs.getInt("id"),
+                            rs.getString("ten_khoa_hoc"),
+                            rs.getString("mo_ta"),
+                            rs.getDouble("gia"),
+                            rs.getInt("so_luong_hoc_vien_toi_da"),
+                            rs.getString("ten_giang_vien") != null ? rs.getString("ten_giang_vien") : "Chưa có giảng viên",
+                            rs.getString("hinh_anh"),
+                            rs.getBoolean("active"),
+                            rs.getDate("ngay_bat_dau") != null ? rs.getDate("ngay_bat_dau").toLocalDate() : null,
+                            rs.getDate("ngay_ket_thuc") != null ? rs.getDate("ngay_ket_thuc").toLocalDate() : null
                     ));
                 }
             }
@@ -293,8 +283,7 @@ public class CourseService {
 
     public boolean isCourseEnrolled(int hocVienId, int khoaHocId) throws SQLException {
         String query = "SELECT COUNT(*) FROM khoahoc_hocvien WHERE hocVienID = ? AND khoaHocID = ? AND trang_thai = 'APPROVED'";
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, hocVienId);
             stmt.setInt(2, khoaHocId);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -311,8 +300,7 @@ public class CourseService {
 
     public int getCurrentEnrollmentCount(int khoaHocId) throws SQLException {
         String query = "SELECT COUNT(*) FROM khoahoc_hocvien WHERE khoaHocID = ? AND trang_thai = 'APPROVED'";
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, khoaHocId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -328,8 +316,7 @@ public class CourseService {
 
     public void enrollCourse(int hocVienId, int khoaHocId) throws SQLException {
         String query = "INSERT INTO khoahoc_hocvien (hocVienID, khoaHocID, ngay_dang_ky, trang_thai) VALUES (?, ?, ?, ?)";
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, hocVienId);
             stmt.setInt(2, khoaHocId);
             stmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
@@ -339,5 +326,40 @@ public class CourseService {
             LOGGER.log(Level.SEVERE, "Lỗi khi đăng ký khóa học", e);
             throw new SQLException("Lỗi khi đăng ký khóa học: " + e.getMessage(), e);
         }
+    }
+
+    //Nguyen them 
+    public List<KhoaHoc_HocVien> getKhoaHoc_HocViens(int hocVienid, int khoaHocID) throws SQLException {
+        List<KhoaHoc_HocVien> kh = new ArrayList<>();
+        Connection conn = Database.getConn();
+        String sql = "SELECT * FROM khoahoc_hocvien WHERE hocVienID = ? and khoaHocID = ? ";
+
+        PreparedStatement stm = conn.prepareCall(sql);
+        stm.setInt(1, hocVienid);
+        stm.setInt(2, khoaHocID);
+        ResultSet rs = stm.executeQuery();
+        while (rs.next()) {
+            KhoaHoc_HocVien c = new KhoaHoc_HocVien(
+                    rs.getInt("id"),
+                    rs.getInt("hocVienID"),
+                    rs.getInt("khoaHocID"),
+                    rs.getDate("ngay_dang_ky"),
+                    rs.getString("trang_thai")
+            );
+            kh.add(c);
+        }
+        return kh;
+    }
+
+    public void updateStatus(int hocVienID, int khoaHocID) throws SQLException {
+        Connection conn = Database.getConn();
+        String updateSQL = "UPDATE khoahoc_hocvien SET trang_thai = 'PENDING' WHERE hocVienID = ? AND khoaHocID = ?";
+
+        PreparedStatement ptm = conn.prepareStatement(updateSQL);
+
+        ptm.setInt(1, hocVienID);
+        ptm.setInt(2, khoaHocID);
+        ptm.executeUpdate();
+
     }
 }

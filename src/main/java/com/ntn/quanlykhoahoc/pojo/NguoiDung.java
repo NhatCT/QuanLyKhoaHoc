@@ -114,7 +114,7 @@ public class NguoiDung {
     @Override
     public String toString() {
         return "NguoiDung{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", ho='" + ho + '\'' +
                 ", ten='" + ten + '\'' +
                 ", email='" + email + '\'' +

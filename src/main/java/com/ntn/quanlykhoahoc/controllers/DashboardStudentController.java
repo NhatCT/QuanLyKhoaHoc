@@ -1,7 +1,9 @@
 package com.ntn.quanlykhoahoc.controllers;
 
+import com.ntn.quanlykhoahoc.App;
 import com.ntn.quanlykhoahoc.database.Database;
 import com.ntn.quanlykhoahoc.pojo.KhoaHoc;
+import com.ntn.quanlykhoahoc.pojo.KhoaHoc_HocVien;
 import com.ntn.quanlykhoahoc.pojo.LichHoc;
 import com.ntn.quanlykhoahoc.pojo.NguoiDung;
 import com.ntn.quanlykhoahoc.services.CourseService;
@@ -40,6 +42,8 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,29 +51,52 @@ import java.util.stream.Collectors;
 
 public class DashboardStudentController {
 
-    @FXML private ImageView avatarImageView;
-    @FXML private Label userNameLabel;
-    @FXML private FlowPane courseFlowPane;
-    @FXML private ScrollPane coursesScrollPane;
-    @FXML private Button prevPageBtn, nextPageBtn, payButton, removeButton;
-    @FXML private Label pageLabel;
-    @FXML private TableView<KhoaHoc> cartTable;
-    @FXML private TableColumn<KhoaHoc, String> courseColumn;
-    @FXML private TableColumn<KhoaHoc, String> instructorColumn;
-    @FXML private TableColumn<KhoaHoc, Double> priceColumn;
-    @FXML private TableColumn<KhoaHoc, String> imageColumn;
-    @FXML private Button dashboardBtn, coursesBtn, timetableBtn, profileBtn, logoutButton;
-    @FXML private TextField searchField;
-    @FXML private Button searchButton;
-    @FXML private DatePicker startDatePicker;
-    @FXML private DatePicker endDatePicker;
-    @FXML private Button applyFilterButton;
-    @FXML private Button clearFilterButton;
-    @FXML private Label resultsLabel;
-    @FXML private ComboBox<String> sortComboBox;
-    @FXML private VBox subjectFilterBox;
-    @FXML private Button showMoreSubjectsButton;
-    @FXML private Label totalPriceLabel;
+    @FXML
+    private ImageView avatarImageView;
+    @FXML
+    private Label userNameLabel;
+    @FXML
+    private FlowPane courseFlowPane;
+    @FXML
+    private ScrollPane coursesScrollPane;
+    @FXML
+    private Button prevPageBtn, nextPageBtn, payButton, removeButton;
+    @FXML
+    private Label pageLabel;
+    @FXML
+    private TableView<KhoaHoc> cartTable;
+    @FXML
+    private TableColumn<KhoaHoc, String> courseColumn;
+    @FXML
+    private TableColumn<KhoaHoc, String> instructorColumn;
+    @FXML
+    private TableColumn<KhoaHoc, Double> priceColumn;
+    @FXML
+    private TableColumn<KhoaHoc, String> imageColumn;
+    @FXML
+    private Button dashboardBtn, coursesBtn, timetableBtn, profileBtn, logoutButton;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private Button searchButton;
+    @FXML
+    private DatePicker startDatePicker;
+    @FXML
+    private DatePicker endDatePicker;
+    @FXML
+    private Button applyFilterButton;
+    @FXML
+    private Button clearFilterButton;
+    @FXML
+    private Label resultsLabel;
+    @FXML
+    private ComboBox<String> sortComboBox;
+    @FXML
+    private VBox subjectFilterBox;
+    @FXML
+    private Button showMoreSubjectsButton;
+    @FXML
+    private Label totalPriceLabel;
 
     private static final Logger LOGGER = Logger.getLogger(DashboardStudentController.class.getName());
     private static final int ITEMS_PER_PAGE = 12;
@@ -92,6 +119,7 @@ public class DashboardStudentController {
     private boolean subjectsExpanded = false;
     private boolean isMyCoursesView = false;
     private int currentPage = 1;
+    private boolean isGoToMyCourse = true;
 
     @FXML
     public void initialize() {
@@ -123,9 +151,8 @@ public class DashboardStudentController {
             LOGGER.warning("Cannot determine userId for notifications.");
             return;
         }
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT noi_dung FROM thongbao WHERE nguoi_nhan_id = ? AND trang_thai = 'UNREAD'")) {
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(
+                "SELECT noi_dung FROM thongbao WHERE nguoi_nhan_id = ? AND trang_thai = 'UNREAD'")) {
             stmt.setInt(1, userId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -275,14 +302,30 @@ public class DashboardStudentController {
 
     private String extractSubject(KhoaHoc khoaHoc) {
         String tenKhoaHoc = khoaHoc.getTenKhoaHoc().toLowerCase();
-        if (tenKhoaHoc.contains("java")) return "Java";
-        if (tenKhoaHoc.contains("python")) return "Python";
-        if (tenKhoaHoc.contains("web")) return "Lập trình Web";
-        if (tenKhoaHoc.contains("ai") || tenKhoaHoc.contains("trí tuệ")) return "Trí tuệ Nhân tạo";
-        if (tenKhoaHoc.contains("khoa học dữ liệu")) return "Khoa học Dữ liệu";
-        if (tenKhoaHoc.contains("quản trị")) return "Quản trị mạng";
-        if (tenKhoaHoc.contains("an toàn") || tenKhoaHoc.contains("bảo mật")) return "Bảo mật";
-        if (tenKhoaHoc.contains("kiểm thử")) return "Kiểm thử phần mềm";
+        if (tenKhoaHoc.contains("java")) {
+            return "Java";
+        }
+        if (tenKhoaHoc.contains("python")) {
+            return "Python";
+        }
+        if (tenKhoaHoc.contains("web")) {
+            return "Lập trình Web";
+        }
+        if (tenKhoaHoc.contains("ai") || tenKhoaHoc.contains("trí tuệ")) {
+            return "Trí tuệ Nhân tạo";
+        }
+        if (tenKhoaHoc.contains("khoa học dữ liệu")) {
+            return "Khoa học Dữ liệu";
+        }
+        if (tenKhoaHoc.contains("quản trị")) {
+            return "Quản trị mạng";
+        }
+        if (tenKhoaHoc.contains("an toàn") || tenKhoaHoc.contains("bảo mật")) {
+            return "Bảo mật";
+        }
+        if (tenKhoaHoc.contains("kiểm thử")) {
+            return "Kiểm thử phần mềm";
+        }
         return "Khác";
     }
 
@@ -347,7 +390,9 @@ public class DashboardStudentController {
     @FXML
     private void sortCourses() {
         String sortOption = sortComboBox.getSelectionModel().getSelectedItem();
-        if (sortOption == null) return;
+        if (sortOption == null) {
+            return;
+        }
         switch (sortOption) {
             case "Tên khóa học (A-Z)":
                 filteredCourses.sort(Comparator.comparing(KhoaHoc::getTenKhoaHoc));
@@ -434,16 +479,47 @@ public class DashboardStudentController {
             buttonBox.getChildren().add(addButton);
         }
 
-        Button detailsButton = new Button("Xem chi tiết");
-        detailsButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5px; -fx-padding: 5px 15px;");
-        detailsButton.setOnAction(e -> showCourseDetails(khoaHoc));
-        buttonBox.getChildren().add(detailsButton);
+        if (isGoToMyCourse) {
+            Button detailsButton = new Button("Xem chi tiết");
+
+            detailsButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5px; -fx-padding: 5px 15px;");
+            detailsButton.setOnAction(e -> showCourseDetails(khoaHoc));
+            buttonBox.getChildren().add(detailsButton);
+        } else {
+
+//            vao hoc ngay
+            Button vaoHoc = new Button("Vào học ngay");
+            vaoHoc.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5px; -fx-padding: 5px 15px;");
+            vaoHoc.setOnAction(e -> {
+                try {
+                    vaoHoc(khoaHoc.getId());
+                } catch (IOException ex) {
+                    Logger.getLogger(DashboardStudentController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+            buttonBox.getChildren().add(vaoHoc);
+
+            Button hoanTien = new Button("Hoàn tiền học phí");
+            hoanTien.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5px; -fx-padding: 5px 15px;");
+            hoanTien.setOnAction(e -> {
+                try {
+                    hoanTienHocPhi(khoaHoc.getId());
+                } catch (SQLException ex) {
+                    Logger.getLogger(DashboardStudentController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+            buttonBox.getChildren().add(hoanTien);
+
+        }
+
         card.getChildren().addAll(imageView, lecturerLabel, titleLabel, descriptionLabel, durationLabel, levelLabel, priceLabel, buttonBox);
         return card;
     }
 
     private String calculateDuration(LocalDate startDate, LocalDate endDate) {
-        if (startDate == null || endDate == null) return "Không xác định";
+        if (startDate == null || endDate == null) {
+            return "Không xác định";
+        }
         long days = Duration.between(startDate.atStartOfDay(), endDate.atStartOfDay()).toDays();
         long weeks = days / 7;
         return weeks < 1 ? days + " ngày" : weeks + " tuần";
@@ -506,7 +582,9 @@ public class DashboardStudentController {
             protected List<KhoaHoc> call() throws Exception {
                 List<KhoaHoc> allCourses = keyword.isEmpty() ? courseService.getAllActiveCourses() : courseService.searchCourses(keyword);
                 int userId = Database.getUserIdByEmail(SessionManager.getLoggedInEmail());
-                if (userId == -1) throw new IllegalStateException("Cannot determine user.");
+                if (userId == -1) {
+                    throw new IllegalStateException("Cannot determine user.");
+                }
                 List<KhoaHoc> enrolledCourses = courseService.getEnrolledCourses(userId);
                 return allCourses.stream()
                         .filter(khoaHoc -> canEnrollCourse(userId, khoaHoc, enrolledCourses))
@@ -566,7 +644,7 @@ public class DashboardStudentController {
                 loader -> {
                     CourseDetailsController ctrl = loader.getController();
                     ctrl.setCourse(khoaHoc);
-            return null;
+                    return null;
                 }
         );
     }
@@ -585,6 +663,7 @@ public class DashboardStudentController {
         imageColumn.setCellValueFactory(data -> data.getValue().hinhAnhProperty());
         imageColumn.setCellFactory(column -> new TableCell<>() {
             private final ImageView imageView = new ImageView();
+
             @Override
             protected void updateItem(String hinhAnh, boolean empty) {
                 super.updateItem(hinhAnh, empty);
@@ -661,7 +740,7 @@ public class DashboardStudentController {
                             loadCoursesAsync();
                         });
                     }, username);
-            return null;
+                    return null;
                 }
         );
     }
@@ -687,6 +766,7 @@ public class DashboardStudentController {
     }
 
     private void loadDashboard() {
+        isGoToMyCourse = true;
         isMyCoursesView = false;
         loadCoursesAsync();
         cartTable.setVisible(true);
@@ -696,6 +776,7 @@ public class DashboardStudentController {
     }
 
     private void loadMyCourses() {
+        isGoToMyCourse = false;
         int nguoiDungID = Database.getUserIdByEmail(SessionManager.getLoggedInEmail());
         if (nguoiDungID == -1) {
             showAlert("Lỗi", "Không thể xác định người dùng. Vui lòng đăng nhập lại.", Alert.AlertType.ERROR);
@@ -774,8 +855,8 @@ public class DashboardStudentController {
         LocalDate end1 = khoaHoc.getNgayKetThuc();
         LocalDate start2 = enrolled.getNgayBatDau();
         LocalDate end2 = enrolled.getNgayKetThuc();
-        return !(start1 == null || end1 == null || start2 == null || end2 == null ||
-                end1.isBefore(start2) || start1.isAfter(end2));
+        return !(start1 == null || end1 == null || start2 == null || end2 == null
+                || end1.isBefore(start2) || start1.isAfter(end2));
     }
 
     private static boolean isRunningFromJar() {
@@ -786,7 +867,9 @@ public class DashboardStudentController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
-            if (initializer != null) initializer.call(loader);
+            if (initializer != null) {
+                initializer.call(loader);
+            }
             Stage stage = new Stage();
             stage.setScene(new Scene(root, width, height));
             stage.setTitle(title);
@@ -797,6 +880,62 @@ public class DashboardStudentController {
             showAlert("Lỗi", "Không thể mở cửa sổ: " + e.getMessage(), Alert.AlertType.ERROR);
             return null;
         }
+    }
+
+//    Nguyen lm
+    public void vaoHoc(int id) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/com/ntn/views/course.fxml"));
+        Parent root = fxmlLoader.load(); // Load FXML trước
+
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.show();
+
+        CourseController controller = fxmlLoader.getController(); //  Sau khi load mới gọi getController
+        controller.setIdKhoaHoc(id); // Truyền ID
+
+        controller.loadBaiTaiTheoKhoaHocID();
+
+    }
+
+    public void hoanTienHocPhi(int id) throws SQLException {
+        CourseService c = new CourseService();
+
+        String email = SessionManager.getLoggedInEmail();
+        List<NguoiDung> allUsers = userService.getAllUsers();
+        NguoiDung user = allUsers.stream()
+                .filter(u -> u.getEmail().equals(email))
+                .findFirst()
+                .orElse(null);
+        int hocVienID = userService.getHocVienIDFromNguoiDung(user.getId());
+        List<KhoaHoc_HocVien> a = c.getKhoaHoc_HocViens(hocVienID, id);
+
+        KhoaHoc_HocVien kh_hv = a.get(0);  // Lấy phần tử đầu tiên
+
+//         Giả sử kh_hv.getNgay_dang_ky() trả về một đối tượng Date
+        Date ngayDangKyDate = kh_hv.getNgay_dang_ky();
+
+// Chuyển từ Date sang LocalDateTime
+        java.util.Date utilDate = new java.util.Date(ngayDangKyDate.getTime());
+
+        // Chuyển java.util.Date sang Instant và sau đó thành LocalDateTime
+        LocalDateTime ngayDangKy = utilDate.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+        LocalDateTime ngayRut = LocalDateTime.now();
+
+        long secondsBetween = ChronoUnit.SECONDS.between(ngayDangKy, ngayRut);
+
+        if (secondsBetween <= 7 * 24 * 60 * 60) {  // Kiểm tra nếu trong vòng 7 ngày
+
+            c.updateStatus(hocVienID, id);
+            showAlert("Hoàn tiền thành công!", "Bạn đã được hoàn tiền vì yêu cầu rút trong vòng 7 ngày.", Alert.AlertType.INFORMATION);
+        } else {
+
+            showAlert("Hoàn tiền không thành công", "Bạn không đủ điều kiện hoàn tiền vì đã quá 7 ngày.", Alert.AlertType.WARNING);
+        }
+
     }
 
     ObservableList<KhoaHoc> getCartCourses() {
