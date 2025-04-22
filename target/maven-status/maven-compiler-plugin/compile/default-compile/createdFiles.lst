@@ -59,4 +59,3 @@ com\ntn\quanlykhoahoc\controllers\EditUserController.class
 com\ntn\quanlykhoahoc\services\OTPService.class
 com\ntn\quanlykhoahoc\pojo\NguoiDung.class
 com\ntn\quanlykhoahoc\controllers\CourseDetailsController.class
-com\ntn\quanlykhoahoc\DashboardStudent.class

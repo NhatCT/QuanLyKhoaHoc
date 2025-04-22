@@ -17,7 +17,7 @@ public class App extends Application {
         stage.setTitle("Quản Lý Khóa Học");
         stage.setResizable(true);
         stage.setMaximized(false);
-        stage.setFullScreen(false); // Explicitly disable full-screen
+        stage.setFullScreen(true); // Explicitly disable full-screen
         stage.show();
 
         // Log window state

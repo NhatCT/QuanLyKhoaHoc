@@ -15,6 +15,9 @@ module com.ntn.quanlykhoahoc {
     opens com.ntn.quanlykhoahoc.pojo to javafx.fxml, javafx.base;
 
     exports com.ntn.quanlykhoahoc;
+    exports com.ntn.quanlykhoahoc.pojo;
+    exports com.ntn.quanlykhoahoc.services;
     exports com.ntn.quanlykhoahoc.controllers;
     exports com.ntn.quanlykhoahoc.database;
+    exports com.ntn.quanlykhoahoc.session;
 }

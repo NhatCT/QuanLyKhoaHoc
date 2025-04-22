@@ -590,7 +590,7 @@ public class DashboardStudentController {
 
     @FXML
     private void handleLogout(ActionEvent event) {
-        openNewWindow("/com/ntn/views/login.fxml", "Đăng nhập", 400, 300, null);
+        openNewWindow("/com/ntn/views/login.fxml", "Đăng nhập", 640, 650, null);
         Window window = ((Node) event.getSource()).getScene().getWindow();
         if (window instanceof Stage) {
             ((Stage) window).close();
@@ -708,7 +708,7 @@ public class DashboardStudentController {
         Platform.runLater(() -> totalPriceLabel.setText(String.format("Tổng tiền: %,d VNĐ", (long) total)));
     }
 
-    private void addToCart(KhoaHoc khoaHoc) {
+    public void addToCart(KhoaHoc khoaHoc) {
         int userId = Database.getUserIdByEmail(SessionManager.getLoggedInEmail());
         if (userId == -1) {
             showAlert("Lỗi", "Không thể xác định người dùng. Vui lòng đăng nhập lại.", Alert.AlertType.ERROR);

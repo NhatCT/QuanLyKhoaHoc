@@ -1,0 +1,13 @@
+-------------------------------------------------------------------------------
+Test set: DashboardStudentControllerTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 1.564 s <<< FAILURE! -- in DashboardStudentControllerTest
+DashboardStudentControllerTest.testAddToCart_41stStudent_BeforeFix -- Time elapsed: 1.541 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "conn" is null
+	at com.ntn.quanlykhoahoc@1.0-SNAPSHOT/com.ntn.quanlykhoahoc.services.UserService.getHocVienIDFromNguoiDung(UserService.java:51)
+	at com.ntn.quanlykhoahoc@1.0-SNAPSHOT/com.ntn.quanlykhoahoc.controllers.DashboardStudentController.addToCart(DashboardStudentController.java:718)
+	at DashboardStudentControllerTest.testAddToCart_41stStudent_BeforeFix(DashboardStudentControllerTest.java:98)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
