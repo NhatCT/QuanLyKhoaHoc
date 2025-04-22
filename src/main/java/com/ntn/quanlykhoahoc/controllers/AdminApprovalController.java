@@ -1,5 +1,6 @@
 package com.ntn.quanlykhoahoc.controllers;
 
+import com.ntn.quanlykhoahoc.database.Database;
 import com.ntn.quanlykhoahoc.pojo.KhoaHocHocVien;
 import com.ntn.quanlykhoahoc.services.PaymentService;
 import javafx.beans.property.SimpleStringProperty;
@@ -8,52 +9,79 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
-
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AdminApprovalController {
     private static final Logger LOGGER = Logger.getLogger(AdminApprovalController.class.getName());
-    private final PaymentService paymentService = new PaymentService();
 
     @FXML private TableView<KhoaHocHocVien> approvalTable;
+    @FXML private TableColumn<KhoaHocHocVien, String> idColumn;
     @FXML private TableColumn<KhoaHocHocVien, String> hocVienColumn;
     @FXML private TableColumn<KhoaHocHocVien, String> khoaHocColumn;
     @FXML private TableColumn<KhoaHocHocVien, String> ngayDangKyColumn;
     @FXML private TableColumn<KhoaHocHocVien, String> trangThaiColumn;
     @FXML private TableColumn<KhoaHocHocVien, Void> actionColumn;
+    @FXML private Button refreshButton;
 
+    private PaymentService paymentService = new PaymentService();
+    private ObservableList<KhoaHocHocVien> pendingRecords = FXCollections.observableArrayList();
+
+    @FXML
     public void initialize() {
-        hocVienColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getHocVienID())));
-        khoaHocColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getKhoaHocID())));
-        ngayDangKyColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNgayDangKy()));
-        trangThaiColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTrangThai()));
+        idColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getId())));
+        hocVienColumn.setCellValueFactory(data -> {
+            try {
+                String tenHocVien = getTenHocVien(data.getValue().getHocVienID());
+                return new SimpleStringProperty(tenHocVien);
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Lỗi khi lấy tên học viên: " + e.getMessage(), e);
+                return new SimpleStringProperty("N/A");
+            }
+        });
+        khoaHocColumn.setCellValueFactory(data -> {
+            try {
+                String tenKhoaHoc = getTenKhoaHoc(data.getValue().getKhoaHocID());
+                return new SimpleStringProperty(tenKhoaHoc);
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Lỗi khi lấy tên khóa học: " + e.getMessage(), e);
+                return new SimpleStringProperty("N/A");
+            }
+        });
+        ngayDangKyColumn.setCellValueFactory(data -> {
+            String ngayDangKy = data.getValue().getNgayDangKy();
+            if (ngayDangKy != null && !ngayDangKy.isEmpty()) {
+                try {
+                    LocalDateTime dateTime = LocalDateTime.parse(ngayDangKy, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                    return new SimpleStringProperty(dateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Lỗi định dạng ngày đăng ký: " + ngayDangKy, e);
+                    return new SimpleStringProperty(ngayDangKy);
+                }
+            }
+            return new SimpleStringProperty("N/A");
+        });
+        trangThaiColumn.setCellValueFactory(data -> data.getValue().trangThaiProperty());
 
-        actionColumn.setCellFactory(col -> new TableCell<>() {
+        actionColumn.setCellFactory(param -> new TableCell<>() {
             private final Button approveButton = new Button("Duyệt");
             private final Button rejectButton = new Button("Từ chối");
+            private final HBox buttons = new HBox(10, approveButton, rejectButton);
 
             {
-                approveButton.setOnAction(e -> {
+                approveButton.setOnAction(event -> {
                     KhoaHocHocVien record = getTableView().getItems().get(getIndex());
-                    try {
-                        paymentService.updateKhoaHocHocVienStatus(record.getId(), "APPROVED");
-                        showInfoAlert("Thành công", "Đã duyệt tham gia khóa học.");
-                        refreshTable();
-                    } catch (SQLException ex) {
-                        showErrorAlert("Lỗi", "Không thể duyệt: " + ex.getMessage());
-                    }
+                    handleAction(record, "APPROVED");
                 });
-                rejectButton.setOnAction(e -> {
+                rejectButton.setOnAction(event -> {
                     KhoaHocHocVien record = getTableView().getItems().get(getIndex());
-                    try {
-                        paymentService.updateKhoaHocHocVienStatus(record.getId(), "REJECTED");
-                        showInfoAlert("Thành công", "Đã từ chối tham gia khóa học.");
-                        refreshTable();
-                    } catch (SQLException ex) {
-                        showErrorAlert("Lỗi", "Không thể từ chối: " + ex.getMessage());
-                    }
+                    handleAction(record, "REJECTED");
                 });
             }
 
@@ -63,48 +91,76 @@ public class AdminApprovalController {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    HBox pane = new HBox(10, approveButton, rejectButton);
-                    setGraphic(pane);
+                    setGraphic(buttons);
                 }
             }
         });
 
-        refreshTable();
+        approvalTable.setItems(pendingRecords);
+        loadPendingRecords();
+    }
+
+    private void handleAction(KhoaHocHocVien record, String trangThai) {
+        try {
+            boolean success = paymentService.updateKhoaHocHocVienStatus(record.getId(), trangThai);
+            if (success) {
+                showAlert("Thành công", "Yêu cầu đã được " + (trangThai.equals("APPROVED") ? "duyệt" : "từ chối") + "!", Alert.AlertType.INFORMATION);
+                loadPendingRecords();
+            } else {
+                showAlert("Lỗi", "Không thể xử lý yêu cầu.", Alert.AlertType.ERROR);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi xử lý yêu cầu: " + e.getMessage(), e);
+            showAlert("Lỗi", "Không thể xử lý yêu cầu: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private void loadPendingRecords() {
+        try {
+            pendingRecords.setAll(paymentService.getPendingKhoaHocHocVien());
+            LOGGER.info("Đã tải " + pendingRecords.size() + " bản ghi PENDING.");
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi tải bản ghi PENDING: " + e.getMessage(), e);
+            showAlert("Lỗi", "Không thể tải danh sách xét duyệt: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private String getTenHocVien(int hocVienID) throws SQLException {
+        String sql = "SELECT n.ho, n.ten FROM hocvien h JOIN nguoidung n ON h.nguoiDungID = n.id WHERE h.id = ?";
+        try (Connection conn = Database.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, hocVienID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("ho") + " " + rs.getString("ten");
+                }
+                return "N/A";
+            }
+        }
+    }
+
+    private String getTenKhoaHoc(int khoaHocID) throws SQLException {
+        String sql = "SELECT ten_khoa_hoc FROM khoahoc WHERE id = ?";
+        try (Connection conn = Database.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, khoaHocID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("ten_khoa_hoc");
+                }
+                return "N/A";
+            }
+        }
     }
 
     @FXML
     private void refreshTable() {
-        try {
-            ObservableList<KhoaHocHocVien> records = FXCollections.observableArrayList(paymentService.getPendingKhoaHocHocVien());
-            approvalTable.setItems(records);
-        } catch (SQLException e) {
-            LOGGER.severe("Lỗi tải danh sách xét duyệt: " + e.getMessage());
-            showErrorAlert("Lỗi", "Không thể tải danh sách: " + e.getMessage());
-        }
+        loadPendingRecords();
+        showAlert("Thành công", "Danh sách đã được làm mới.", Alert.AlertType.INFORMATION);
     }
 
-    @FXML
-    private void closeWindow() {
-        if (approvalTable != null && approvalTable.getScene() != null) {
-            Stage stage = (Stage) approvalTable.getScene().getWindow();
-            if (stage != null) {
-                stage.close();
-            }
-        } else {
-            LOGGER.warning("Không thể đóng cửa sổ: TableView hoặc Scene là null");
-        }
-    }
-
-    private void showInfoAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showErrorAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+    private void showAlert(String title, String message, Alert.AlertType type) {
+        Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);

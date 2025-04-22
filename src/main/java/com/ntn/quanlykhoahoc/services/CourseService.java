@@ -2,7 +2,7 @@ package com.ntn.quanlykhoahoc.services;
 
 import com.ntn.quanlykhoahoc.database.Database;
 import com.ntn.quanlykhoahoc.pojo.KhoaHoc;
-import com.ntn.quanlykhoahoc.pojo.KhoaHoc_HocVien;
+import com.ntn.quanlykhoahoc.pojo.KhoaHocHocVien;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -328,38 +328,47 @@ public class CourseService {
         }
     }
 
-    //Nguyen them 
-    public List<KhoaHoc_HocVien> getKhoaHoc_HocViens(int hocVienid, int khoaHocID) throws SQLException {
-        List<KhoaHoc_HocVien> kh = new ArrayList<>();
-        Connection conn = Database.getConn();
-        String sql = "SELECT * FROM khoahoc_hocvien WHERE hocVienID = ? and khoaHocID = ? ";
-
-        PreparedStatement stm = conn.prepareCall(sql);
-        stm.setInt(1, hocVienid);
-        stm.setInt(2, khoaHocID);
-        ResultSet rs = stm.executeQuery();
-        while (rs.next()) {
-            KhoaHoc_HocVien c = new KhoaHoc_HocVien(
-                    rs.getInt("id"),
-                    rs.getInt("hocVienID"),
-                    rs.getInt("khoaHocID"),
-                    rs.getDate("ngay_dang_ky"),
-                    rs.getString("trang_thai")
-            );
-            kh.add(c);
+    public List<KhoaHocHocVien> getKhoaHocHocVien(int hocVienId, int khoaHocId) throws SQLException {
+        List<KhoaHocHocVien> enrollments = new ArrayList<>();
+        String query = "SELECT id, hocVienID, khoaHocID, ngay_dang_ky, trang_thai FROM khoahoc_hocvien "
+                + "WHERE hocVienID = ? AND khoaHocID = ? AND trang_thai = 'APPROVED'";
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, hocVienId);
+            stmt.setInt(2, khoaHocId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    KhoaHocHocVien enrollment = new KhoaHocHocVien(
+                            rs.getInt("id"),
+                            rs.getInt("hocVienID"),
+                            rs.getInt("khoaHocID"),
+                            rs.getString("ngay_dang_ky"),
+                            rs.getString("trang_thai")
+                    );
+                    enrollments.add(enrollment);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy thông tin đăng ký cho hocVienID=" + hocVienId + ", khoaHocID=" + khoaHocId, e);
+            throw new SQLException("Lỗi khi lấy thông tin đăng ký khóa học: " + e.getMessage(), e);
         }
-        return kh;
+        LOGGER.info("Lấy được " + enrollments.size() + " bản ghi đăng ký cho hocVienID=" + hocVienId + ", khoaHocID=" + khoaHocId);
+        return enrollments;
     }
 
-    public void updateStatus(int hocVienID, int khoaHocID) throws SQLException {
-        Connection conn = Database.getConn();
-        String updateSQL = "UPDATE khoahoc_hocvien SET trang_thai = 'PENDING' WHERE hocVienID = ? AND khoaHocID = ?";
-
-        PreparedStatement ptm = conn.prepareStatement(updateSQL);
-
-        ptm.setInt(1, hocVienID);
-        ptm.setInt(2, khoaHocID);
-        ptm.executeUpdate();
-
+    public void updateStatus(int hocVienId, int khoaHocId) throws SQLException {
+        String query = "UPDATE khoahoc_hocvien SET trang_thai = 'CANCELLED' WHERE hocVienID = ? AND khoaHocID = ? AND trang_thai = 'APPROVED'";
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, hocVienId);
+            stmt.setInt(2, khoaHocId);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                LOGGER.warning("Không tìm thấy bản ghi đăng ký APPROVED để hủy cho hocVienID=" + hocVienId + ", khoaHocID=" + khoaHocId);
+                throw new SQLException("Không tìm thấy đăng ký khóa học được phê duyệt để hủy.");
+            }
+            LOGGER.info("Cập nhật trạng thái thành CANCELLED cho hocVienID=" + hocVienId + ", khoaHocID=" + khoaHocId);
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi cập nhật trạng thái đăng ký cho hocVienID=" + hocVienId + ", khoaHocID=" + khoaHocId, e);
+            throw new SQLException("Lỗi khi cập nhật trạng thái đăng ký: " + e.getMessage(), e);
+        }
     }
 }

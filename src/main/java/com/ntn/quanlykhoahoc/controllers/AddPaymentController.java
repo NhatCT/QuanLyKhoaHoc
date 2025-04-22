@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class AddPaymentController {
     @FXML private TextField hocVienIDField;
@@ -15,6 +16,7 @@ public class AddPaymentController {
     @FXML private DatePicker paymentDatePicker;
     @FXML private TextField amountTextField;
     @FXML private ComboBox<String> methodComboBox;
+    @FXML private Label discountNoteLabel;
 
     private PaymentService paymentService;
 
@@ -24,6 +26,7 @@ public class AddPaymentController {
         methodComboBox.setItems(FXCollections.observableArrayList(
                 "Tiền mặt", "Chuyển khoản", "Thẻ tín dụng"));
         methodComboBox.getSelectionModel().selectFirst();
+        discountNoteLabel.setText("Lưu ý: Giảm giá 30% chỉ áp dụng khi thanh toán tự động cho 3 khóa học trở lên.");
     }
 
     @FXML
@@ -45,7 +48,13 @@ public class AddPaymentController {
             int khoaHocID = Integer.parseInt(khoaHocIDText);
             double soTien = Double.parseDouble(soTienText);
 
-            // Kiểm tra hợp lệ
+            if (soTien <= 0) {
+                showAlert("Cảnh báo", "Số tiền phải lớn hơn 0!", Alert.AlertType.WARNING);
+                return;
+            }
+
+            LocalDateTime ngayThanhToan = ngayThanhToanLocalDate.atStartOfDay();
+
             if (!paymentService.isValidHocVien(hocVienID)) {
                 showAlert("Cảnh báo", "ID Học Viên không tồn tại!", Alert.AlertType.WARNING);
                 return;
@@ -56,7 +65,7 @@ public class AddPaymentController {
             }
 
             int thanhToanID = paymentService.addPayment(hocVienID, khoaHocID, soTien, 
-                                                        ngayThanhToanLocalDate, phuongThuc);
+                                                        ngayThanhToan, phuongThuc);
             if (thanhToanID > 0) {
                 showAlert("Thành công", "Đã thêm lịch sử thanh toán (ID Thanh Toán: " + thanhToanID + ")!", 
                           Alert.AlertType.INFORMATION);

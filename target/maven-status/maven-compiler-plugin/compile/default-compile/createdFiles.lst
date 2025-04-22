@@ -1,7 +1,6 @@
 com\ntn\quanlykhoahoc\services\SubmitServices.class
 com\ntn\quanlykhoahoc\controllers\PaymentDetailsController.class
 com\ntn\quanlykhoahoc\controllers\Register.class
-com\ntn\quanlykhoahoc\pojo\KhoaHoc_HocVien.class
 com\ntn\quanlykhoahoc\controllers\AdminApprovalController$1.class
 com\ntn\quanlykhoahoc\controllers\DashboardStudentController$1.class
 com\ntn\quanlykhoahoc\services\EnrollmentService.class

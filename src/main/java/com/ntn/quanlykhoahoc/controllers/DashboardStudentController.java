@@ -3,7 +3,7 @@ package com.ntn.quanlykhoahoc.controllers;
 import com.ntn.quanlykhoahoc.App;
 import com.ntn.quanlykhoahoc.database.Database;
 import com.ntn.quanlykhoahoc.pojo.KhoaHoc;
-import com.ntn.quanlykhoahoc.pojo.KhoaHoc_HocVien;
+import com.ntn.quanlykhoahoc.pojo.KhoaHocHocVien;
 import com.ntn.quanlykhoahoc.pojo.LichHoc;
 import com.ntn.quanlykhoahoc.pojo.NguoiDung;
 import com.ntn.quanlykhoahoc.services.CourseService;
@@ -900,42 +900,97 @@ public class DashboardStudentController {
     }
 
     public void hoanTienHocPhi(int id) throws SQLException {
-        CourseService c = new CourseService();
-
+        CourseService courseService = new CourseService();
+        PaymentService paymentService = new PaymentService();
         String email = SessionManager.getLoggedInEmail();
+
+        // Kiểm tra email
+        if (email == null) {
+            showAlert("Lỗi", "Không tìm thấy thông tin đăng nhập.", Alert.AlertType.ERROR);
+            return;
+        }
+
+        // Lấy thông tin người dùng
         List<NguoiDung> allUsers = userService.getAllUsers();
         NguoiDung user = allUsers.stream()
                 .filter(u -> u.getEmail().equals(email))
                 .findFirst()
                 .orElse(null);
-        int hocVienID = userService.getHocVienIDFromNguoiDung(user.getId());
-        List<KhoaHoc_HocVien> a = c.getKhoaHoc_HocViens(hocVienID, id);
-
-        KhoaHoc_HocVien kh_hv = a.get(0);  // Lấy phần tử đầu tiên
-
-//         Giả sử kh_hv.getNgay_dang_ky() trả về một đối tượng Date
-        Date ngayDangKyDate = kh_hv.getNgay_dang_ky();
-
-// Chuyển từ Date sang LocalDateTime
-        java.util.Date utilDate = new java.util.Date(ngayDangKyDate.getTime());
-
-        // Chuyển java.util.Date sang Instant và sau đó thành LocalDateTime
-        LocalDateTime ngayDangKy = utilDate.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
-        LocalDateTime ngayRut = LocalDateTime.now();
-
-        long secondsBetween = ChronoUnit.SECONDS.between(ngayDangKy, ngayRut);
-
-        if (secondsBetween <= 7 * 24 * 60 * 60) {  // Kiểm tra nếu trong vòng 7 ngày
-
-            c.updateStatus(hocVienID, id);
-            showAlert("Hoàn tiền thành công!", "Bạn đã được hoàn tiền vì yêu cầu rút trong vòng 7 ngày.", Alert.AlertType.INFORMATION);
-        } else {
-
-            showAlert("Hoàn tiền không thành công", "Bạn không đủ điều kiện hoàn tiền vì đã quá 7 ngày.", Alert.AlertType.WARNING);
+        if (user == null) {
+            showAlert("Lỗi", "Không tìm thấy thông tin người dùng.", Alert.AlertType.ERROR);
+            return;
         }
 
+        // Lấy ID học viên
+        int hocVienID = userService.getHocVienIDFromNguoiDung(user.getId());
+        if (hocVienID == -1) {
+            showAlert("Lỗi", "Không tìm thấy thông tin học viên.", Alert.AlertType.ERROR);
+            return;
+        }
+
+        // Lấy thông tin đăng ký
+        List<KhoaHocHocVien> enrollments = courseService.getKhoaHocHocVien(hocVienID, id);
+        if (enrollments.isEmpty()) {
+            showAlert("Lỗi", "Bạn chưa đăng ký khóa học này.", Alert.AlertType.ERROR);
+            return;
+        }
+
+        KhoaHocHocVien kh_hv = enrollments.get(0); // Lấy phần tử đầu tiên
+
+        // Lấy ngày đăng ký dạng LocalDateTime
+        LocalDateTime ngayDangKy = kh_hv.getNgay_dang_ky();
+        if (ngayDangKy == null) {
+            showAlert("Lỗi", "Ngày đăng ký không hợp lệ.", Alert.AlertType.ERROR);
+            return;
+        }
+
+        LocalDateTime ngayRut = LocalDateTime.now();
+        long daysBetween = ChronoUnit.DAYS.between(ngayDangKy, ngayRut);
+
+        if (daysBetween <= 7) { // Kiểm tra nếu trong vòng 7 ngày
+            // Bắt đầu giao dịch
+            Connection conn = null;
+            try {
+                conn = Database.getConn();
+                conn.setAutoCommit(false);
+
+                // Cập nhật trạng thái đăng ký thành CANCELLED
+                courseService.updateStatus(hocVienID, id);
+
+                // Xóa bản ghi thanh toán liên quan
+                String deletePaymentSql = "DELETE FROM lichsu_thanhtoan WHERE hocVienID = ? AND khoaHocID = ?";
+                try (PreparedStatement deleteStmt = conn.prepareStatement(deletePaymentSql)) {
+                    deleteStmt.setInt(1, hocVienID);
+                    deleteStmt.setInt(2, id);
+                    int paymentRowsAffected = deleteStmt.executeUpdate();
+                    LOGGER.info("Đã xóa " + paymentRowsAffected + " bản ghi lichsu_thanhtoan cho hocVienID=" + hocVienID + ", khoaHocID=" + id);
+                }
+
+                conn.commit();
+                showAlert("Hoàn tiền thành công!", "Bạn đã được hoàn tiền vì yêu cầu rút trong vòng 7 ngày.", Alert.AlertType.INFORMATION);
+            } catch (SQLException e) {
+                if (conn != null) {
+                    try {
+                        conn.rollback();
+                    } catch (SQLException rollbackEx) {
+                        LOGGER.severe("Lỗi khi rollback: " + rollbackEx.getMessage());
+                    }
+                }
+                LOGGER.severe("Lỗi khi hoàn tiền: " + e.getMessage());
+                showAlert("Lỗi", "Không thể xử lý hoàn tiền. Vui lòng thử lại sau.", Alert.AlertType.ERROR);
+            } finally {
+                if (conn != null) {
+                    try {
+                        conn.setAutoCommit(true);
+                        conn.close();
+                    } catch (SQLException e) {
+                        LOGGER.severe("Lỗi khi đóng kết nối: " + e.getMessage());
+                    }
+                }
+            }
+        } else {
+            showAlert("Hoàn tiền không thành công", "Bạn không đủ điều kiện hoàn tiền vì đã quá 7 ngày.", Alert.AlertType.WARNING);
+        }
     }
 
     ObservableList<KhoaHoc> getCartCourses() {
