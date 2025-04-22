@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ntn.quanlykhoahoc.controllers.ExerciseController">
+   <children>
+      <Text fx:id="txtContent" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 16px; -fx-fill: #333333; -fx-text-alignment: center;" text="Text" wrappingWidth="558.9367065429688" />
+      
+      <VBox fx:id="radioButtonsContainer" alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: #f0f0f0; -fx-background-radius: 15px; -fx-padding: 20px;">
+        <!-- Các RadioButton sẽ được thêm động vào container này từ controller -->
+    </VBox>
+    
+    <HBox alignment="CENTER" spacing="20" style="-fx-spacing: 15px;">
+        <!-- Quay lại và tiếp theo -->
+        <Button fx:id="nextButton" onAction="#nextHandler" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-radius: 25px; -fx-border-color: #4CAF50; -fx-border-radius: 25px;" text="Quay lại" />
+        <Button fx:id="prevButton" onAction="#prevHandler" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-radius: 25px; -fx-border-color: #4CAF50; -fx-border-radius: 25px;" text="Tiếp theo" />
+        
+        <!-- Nộp bài -->
+        <Button fx:id="submitButton" onAction="#submit" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-radius: 25px; -fx-border-color: #4CAF50; -fx-border-radius: 25px;" text="Nộp bài" />
+    </HBox>
+
+    <Text fx:id="timerText" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18px; -fx-fill: #FF5722; -fx-font-weight: bold;" />
+    
+    <Text fx:id="dem" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 14px; -fx-fill: #555;" text="Text" />
+      <Button fx:id ="btnClose"  mnemonicParsing="false" />
+    
+   </children>
+</VBox>

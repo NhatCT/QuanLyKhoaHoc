@@ -2,17 +2,21 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.ntn.quanlykhoahoc.controllers.AdminApprovalController">
-    <VBox spacing="10" alignment="CENTER">
+<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ntn.quanlykhoahoc.controllers.AdminApprovalController">
+    <VBox spacing="10" alignment="CENTER" style="-fx-padding: 10;">
+        <Label text="Quản lý xét duyệt thanh toán" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
         <TableView fx:id="approvalTable">
             <columns>
-                <TableColumn fx:id="hocVienColumn" text="Học viên ID" prefWidth="100"/>
-                <TableColumn fx:id="khoaHocColumn" text="Khóa học ID" prefWidth="100"/>
+                <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
+                <TableColumn fx:id="hocVienColumn" text="Học viên" prefWidth="150"/>
+                <TableColumn fx:id="khoaHocColumn" text="Khóa học" prefWidth="200"/>
                 <TableColumn fx:id="ngayDangKyColumn" text="Ngày đăng ký" prefWidth="150"/>
                 <TableColumn fx:id="trangThaiColumn" text="Trạng thái" prefWidth="100"/>
                 <TableColumn fx:id="actionColumn" text="Hành động" prefWidth="200"/>
             </columns>
         </TableView>
-        <Button fx:id="refreshButton" text="Làm mới" onAction="#refreshTable"/>
+        <HBox spacing="10">
+            <Button fx:id="refreshButton" text="Làm mới" onAction="#refreshTable"/>
+        </HBox>
     </VBox>
 </AnchorPane>

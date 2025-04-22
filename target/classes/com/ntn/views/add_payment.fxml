@@ -1,57 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="380.0" prefWidth="541.0" styleClass="course-card-label" 
-            stylesheets="@../css/dashboard_style.css" xmlns="http://javafx.com/javafx/23.0.1" 
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ntn.quanlykhoahoc.controllers.AddPaymentController">
-   <children>
-      <Label layoutX="198.0" layoutY="14.0" text="Thêm Lịch Sử Thanh Toán">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Label>
-      <GridPane layoutX="27.0" layoutY="52.0" prefHeight="250.0" prefWidth="482.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="251.9999755859375" minWidth="10.0" prefWidth="150.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="332.80001220703127" minWidth="10.0" prefWidth="332.80001220703127" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <Label text="Học Viên ID:" />
-            <TextField fx:id="hocVienIDField" promptText="Nhập ID Học Viên" GridPane.columnIndex="1" />
-            <Label text="Khóa Học ID:" GridPane.rowIndex="1" />
-            <TextField fx:id="khoaHocIDField" promptText="Nhập ID Khóa Học" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label text="Ngày Thanh Toán:" GridPane.rowIndex="2" />
-            <DatePicker fx:id="paymentDatePicker" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Label text="Số Tiền:" GridPane.rowIndex="3" />
-            <TextField fx:id="amountTextField" promptText="Nhập số tiền" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <Label text="Phương Thức:" GridPane.rowIndex="4" />
-            <ComboBox fx:id="methodComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-         </children>
-      </GridPane>
-      <Button layoutX="150.0" layoutY="320.0" mnemonicParsing="false" onAction="#handleAdd" 
-              styleClass="course-card-button" stylesheets="@../css/dashboard_style.css" text="Lưu" />
-      <Button layoutX="300.0" layoutY="320.0" mnemonicParsing="false" onAction="#handleCancel" 
-              styleClass="cart-section-button" stylesheets="@../css/dashboard_style.css" text="Hủy" />
-   </children>
-   <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-   </padding>
-</AnchorPane>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ntn.quanlykhoahoc.controllers.AddPaymentController" spacing="10" alignment="CENTER" prefWidth="400">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    <Label text="Thêm Thanh Toán" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+    <GridPane hgap="10" vgap="10">
+        <Label text="ID Học Viên:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="hocVienIDField" promptText="Nhập ID Học Viên" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="ID Khóa Học:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="khoaHocIDField" promptText="Nhập ID Khóa Học" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Ngày Thanh Toán:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="paymentDatePicker" promptText="Chọn ngày thanh toán" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Số Tiền:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="amountTextField" promptText="Nhập số tiền" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label text="Phương Thức:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="methodComboBox" GridPane.rowIndex="4" GridPane.columnIndex="1" prefWidth="150"/>
+    </GridPane>
+    <Label fx:id="discountNoteLabel" text="" style="-fx-text-fill: red;" textAlignment="CENTER"/>
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Thêm" onAction="#handleAdd"/>
+        <Button text="Hủy" onAction="#handleCancel"/>
+    </HBox>
+</VBox>

@@ -409,7 +409,7 @@ public class DashboardAdminController {
         userAvatar.setImage(loadImage(avatarPath, DEFAULT_AVATAR, true).getImage());
     }
 
-    private String getCurrentUserEmail() {
+    String getCurrentUserEmail() {
         return currentUserEmail != null ? currentUserEmail : "admin1@example.com";
     }
 

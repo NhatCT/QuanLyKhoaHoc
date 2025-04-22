@@ -2,6 +2,7 @@ package com.ntn.quanlykhoahoc.session;
 
 public class SessionManager {
     private static String loggedInEmail;
+    public static boolean is_submit = true;
 
     public static void setLoggedInEmail(String email) {
         loggedInEmail = email;

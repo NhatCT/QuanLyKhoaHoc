@@ -14,12 +14,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class EditPaymentController {
-    @FXML private TextField paymentIdTextField;     // lichsu_thanhtoan.id (read-only)
-    @FXML private TextField hocVienIDField;         // lichsu_thanhtoan.hocVienID
-    @FXML private TextField khoaHocIDField;         // lichsu_thanhtoan.khoaHocID
-    @FXML private DatePicker paymentDatePicker;     // lichsu_thanhtoan.ngay_thanh_toan
-    @FXML private TextField amountTextField;        // lichsu_thanhtoan.so_tien
-    @FXML private ComboBox<String> methodComboBox;  // lichsu_thanhtoan.phuong_thuc
+    @FXML private TextField paymentIdTextField;
+    @FXML private TextField hocVienIDField;
+    @FXML private TextField khoaHocIDField;
+    @FXML private DatePicker paymentDatePicker;
+    @FXML private TextField amountTextField;
+    @FXML private ComboBox<String> methodComboBox;
 
     private ThanhToan currentPayment;
     private PaymentService paymentService;
@@ -27,17 +27,11 @@ public class EditPaymentController {
     @FXML
     public void initialize() {
         paymentService = new PaymentService();
-        // Populate payment method options
         methodComboBox.setItems(FXCollections.observableArrayList(
                 "Tiền mặt", "Chuyển khoản", "Thẻ tín dụng"));
-        // Make paymentId read-only
         paymentIdTextField.setEditable(false);
     }
 
-    /**
-     * Sets the payment data to be edited.
-     * @param payment The ThanhToan object representing the lichsu_thanhtoan record.
-     */
     public void setPayment(ThanhToan payment) {
         this.currentPayment = payment;
         if (payment != null) {
@@ -48,7 +42,6 @@ public class EditPaymentController {
             methodComboBox.setValue(payment.getPhuongThuc());
 
             try {
-                // Parse the datetime string from the database
                 String ngayThanhToan = payment.getNgayThanhToan();
                 if (ngayThanhToan != null && !ngayThanhToan.isEmpty()) {
                     LocalDateTime dateTime = LocalDateTime.parse(
@@ -61,7 +54,7 @@ public class EditPaymentController {
                 }
             } catch (DateTimeParseException e) {
                 e.printStackTrace();
-                paymentDatePicker.setValue(LocalDate.now()); // Fallback to current date
+                paymentDatePicker.setValue(LocalDate.now());
             }
         }
     }
@@ -80,7 +73,6 @@ public class EditPaymentController {
         String soTienText = amountTextField.getText();
         String phuongThuc = methodComboBox.getValue();
 
-        // Validate required fields
         if (paymentIdText.isEmpty() || ngayThanhToanLocalDate == null || 
             soTienText.isEmpty() || phuongThuc == null || phuongThuc.isEmpty()) {
             showAlert("Cảnh báo", "Vui lòng điền đầy đủ các trường bắt buộc!", Alert.AlertType.WARNING);
@@ -88,12 +80,18 @@ public class EditPaymentController {
         }
 
         try {
-            int transactionId = Integer.parseInt(paymentIdText); // thanhToanID chính là id
+            int transactionId = Integer.parseInt(paymentIdText);
             Integer hocVienID = hocVienIDText.isEmpty() ? null : Integer.parseInt(hocVienIDText);
             Integer khoaHocID = khoaHocIDText.isEmpty() ? null : Integer.parseInt(khoaHocIDText);
             double soTien = Double.parseDouble(soTienText);
 
-            // Validate optional fields
+            if (soTien <= 0) {
+                showAlert("Cảnh báo", "Số tiền phải lớn hơn 0!", Alert.AlertType.WARNING);
+                return;
+            }
+
+            LocalDateTime ngayThanhToan = ngayThanhToanLocalDate.atStartOfDay();
+
             if (hocVienID != null && !paymentService.isValidHocVien(hocVienID)) {
                 showAlert("Cảnh báo", "ID Học Viên không tồn tại!", Alert.AlertType.WARNING);
                 return;
@@ -103,9 +101,8 @@ public class EditPaymentController {
                 return;
             }
 
-            // Update the payment record in lichsu_thanhtoan
             boolean success = paymentService.updatePayment(transactionId, hocVienID, khoaHocID, soTien, 
-                                                           ngayThanhToanLocalDate, phuongThuc);
+                                                           ngayThanhToan, phuongThuc);
             if (success) {
                 showAlert("Thành công", "Đã cập nhật lịch sử thanh toán!", Alert.AlertType.INFORMATION);
                 handleCancel();
