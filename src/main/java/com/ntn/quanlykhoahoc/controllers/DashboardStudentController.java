@@ -628,7 +628,7 @@ public class DashboardStudentController {
         new Thread(task).start();
     }
 
-    private boolean canEnrollCourse(int nguoiDungID, KhoaHoc khoaHoc, List<KhoaHoc> enrolledCourses) {
+    public boolean canEnrollCourse(int nguoiDungID, KhoaHoc khoaHoc, List<KhoaHoc> enrolledCourses) {
         try {
             int hocVienID = userService.getHocVienIDFromNguoiDung(nguoiDungID);
             if (hocVienID == -1) {
@@ -1080,3 +1080,4 @@ public class DashboardStudentController {
         return cartCourses;
     }
 }
+
