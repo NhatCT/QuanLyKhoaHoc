@@ -5,11 +5,8 @@
 package com.vmct.testcases.CoursesTest;
 
 import com.ntn.quanlykhoahoc.database.Database;
-import com.ntn.quanlykhoahoc.pojo.KhoaHoc;
 import com.ntn.quanlykhoahoc.services.CourseService;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -18,10 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 import java.sql.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @ExtendWith(MockitoExtension.class)
-public class UseCoursesTest {
+public class AddCoursesTest {
 
     @InjectMocks
     private CourseService courseService;
@@ -177,22 +173,17 @@ public class UseCoursesTest {
 
     @Test
     void testAddCourseWithImage_SQLException() throws SQLException {
-        CourseService mockCourseService = Mockito.mock(CourseService.class);
+        // Giả lập Database.getConn() trả về mockConn
+        databaseMock = Mockito.mockStatic(Database.class);
+        databaseMock.when(Database::getConn).thenReturn(mockConn);
 
-        Mockito.doThrow(new SQLException("Lỗi khi thêm khóa học"))
-               .when(mockCourseService).addCourseWithImage(
-                   Mockito.anyString(),
-                   Mockito.anyInt(),
-                   Mockito.anyString(),
-                   Mockito.any(LocalDate.class),
-                   Mockito.any(LocalDate.class),
-                   Mockito.anyDouble(),
-                   Mockito.anyString(),
-                   Mockito.anyBoolean()
-               );
+        // Giả lập mockConn.prepareStatement(...) ném SQLException
+        Mockito.when(mockConn.prepareStatement(Mockito.anyString()))
+               .thenThrow(new SQLException("Lỗi khi thêm khóa học"));
 
+        // Gọi thực tế hàm courseService.addCourseWithImage và kiểm tra exception
         SQLException ex = assertThrows(SQLException.class, () -> {
-            mockCourseService.addCourseWithImage(
+            courseService.addCourseWithImage(
                 "Khóa học Java",
                 100,
                 "Nội dung khóa học",
@@ -205,5 +196,8 @@ public class UseCoursesTest {
         });
 
         assertTrue(ex.getMessage().contains("Lỗi khi thêm khóa học"), "Thông báo lỗi không đúng");
+
+        // Đóng static mock sau khi xong
+        databaseMock.close();
     }
 }
