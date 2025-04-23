@@ -1,0 +1,4 @@
+--patch-module
+com.ntn.quanlykhoahoc=_
+--add-reads
+com.ntn.quanlykhoahoc=ALL-UNNAMED

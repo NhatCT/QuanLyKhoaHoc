@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------------
+Test set: PerformanceTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 2.316 s <<< FAILURE! -- in PerformanceTest
+PerformanceTest.testLoadCourses_PerformanceUnder2Seconds -- Time elapsed: 2.311 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Quá trình tải khóa học mất quá nhiều thời gian! ==> expected: <true> but was: <false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:36)
+	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:214)
+	at PerformanceTest.testLoadCourses_PerformanceUnder2Seconds(PerformanceTest.java:33)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

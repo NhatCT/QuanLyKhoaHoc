@@ -1,47 +1,76 @@
 package com.ntn.quanlykhoahoc.pojo;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
-/**
- * Lớp đại diện cho bản ghi đăng ký khóa học của học viên.
- */
 public class KhoaHocHocVien {
-    private final IntegerProperty id = new SimpleIntegerProperty();
-    private final IntegerProperty hocVienID = new SimpleIntegerProperty();
-    private final IntegerProperty khoaHocID = new SimpleIntegerProperty();
-    private final StringProperty ngayDangKy = new SimpleStringProperty();
-    private final StringProperty trangThai = new SimpleStringProperty();
+    private final int id;
+    private final int hocVienID;
+    private final int khoaHocID;
+    private final SimpleStringProperty ngayDangKy;
+    private final SimpleStringProperty trangThai;
 
     public KhoaHocHocVien(int id, int hocVienID, int khoaHocID, String ngayDangKy, String trangThai) {
-        if (id < 0 || hocVienID < 0 || khoaHocID < 0) {
-            throw new IllegalArgumentException("ID phải không âm");
+        this.id = id;
+        this.hocVienID = hocVienID;
+        this.khoaHocID = khoaHocID;
+        this.ngayDangKy = new SimpleStringProperty();
+        this.trangThai = new SimpleStringProperty(trangThai);
+
+        if (ngayDangKy != null) {
+            ngayDangKy = ngayDangKy.replaceAll("\\.0$", "");
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                LocalDateTime parsedDate = LocalDateTime.parse(ngayDangKy, formatter);
+                this.ngayDangKy.set(parsedDate.format(formatter));
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException("Định dạng ngày đăng ký không hợp lệ: " + ngayDangKy, e);
+            }
+        } else {
+            this.ngayDangKy.set("");
         }
-        if (trangThai == null || !trangThai.matches("PENDING|ENROLLED|REJECTED")) {
-            throw new IllegalArgumentException("Trạng thái không hợp lệ");
-        }
-        this.id.set(id);
-        this.hocVienID.set(hocVienID);
-        this.khoaHocID.set(khoaHocID);
-        this.ngayDangKy.set(ngayDangKy);
-        this.trangThai.set(trangThai);
     }
 
-    // Getters và Property Getters
-    public int getId() { return id.get(); }
-    public IntegerProperty idProperty() { return id; }
+    public int getId() {
+        return id;
+    }
 
-    public int getHocVienID() { return hocVienID.get(); }
-    public IntegerProperty hocVienIDProperty() { return hocVienID; }
+    public int getHocVienID() {
+        return hocVienID;
+    }
 
-    public int getKhoaHocID() { return khoaHocID.get(); }
-    public IntegerProperty khoaHocIDProperty() { return khoaHocID; }
+    public int getKhoaHocID() {
+        return khoaHocID;
+    }
 
-    public String getNgayDangKy() { return ngayDangKy.get(); }
-    public StringProperty ngayDangKyProperty() { return ngayDangKy; }
+    public String getNgayDangKy() {
+        return ngayDangKy.get();
+    }
 
-    public String getTrangThai() { return trangThai.get(); }
-    public StringProperty trangThaiProperty() { return trangThai; }
+    public SimpleStringProperty ngayDangKyProperty() {
+        return ngayDangKy;
+    }
+
+    public LocalDateTime getNgay_dang_ky() {
+        String ngayDangKyStr = ngayDangKy.get();
+        if (ngayDangKyStr == null || ngayDangKyStr.isEmpty()) {
+            return null;
+        }
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            return LocalDateTime.parse(ngayDangKyStr, formatter);
+        } catch (DateTimeParseException e) {
+            throw new IllegalStateException("Không thể phân tích ngày đăng ký: " + ngayDangKyStr, e);
+        }
+    }
+
+    public String getTrangThai() {
+        return trangThai.get();
+    }
+
+    public SimpleStringProperty trangThaiProperty() {
+        return trangThai;
+    }
 }

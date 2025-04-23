@@ -1,0 +1,10 @@
+ChoiceTest.class
+CourseLogicRegressionTest$TestableDashboardStudentController.class
+TimetableTest.class
+com\vmct\testcases\CoursesTest\UpdateCoursesTest.class
+PerformanceTest.class
+com\vmct\testcases\CoursesTest\AddCoursesTest.class
+com\vmct\testcases\CoursesTest\GetCoursesTest.class
+CourseLogicRegressionTest.class
+EnrollmentTest.class
+DatabaseSecurityTest.class
