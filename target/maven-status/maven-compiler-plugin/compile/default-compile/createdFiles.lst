@@ -14,12 +14,14 @@ com\ntn\quanlykhoahoc\controllers\DashboardAdminController$1.class
 com\ntn\quanlykhoahoc\controllers\TimetableController$2.class
 com\ntn\quanlykhoahoc\pojo\DapAn.class
 com\ntn\quanlykhoahoc\controllers\TimetableController.class
+com\ntn\quanlykhoahoc\controllers\Dashboard_teacherController.class
 com\ntn\quanlykhoahoc\services\CourseService.class
 com\ntn\quanlykhoahoc\services\ChoiceServices.class
 com\ntn\quanlykhoahoc\services\UserService.class
 com\ntn\quanlykhoahoc\controllers\AddUserController.class
 module-info.class
 com\ntn\quanlykhoahoc\pojo\ThanhToan.class
+com\ntn\quanlykhoahoc\pojo\HocVien_BaiTap.class
 com\ntn\quanlykhoahoc\services\QuestionServices.class
 com\ntn\quanlykhoahoc\controllers\DashboardStudentController$5.class
 com\ntn\quanlykhoahoc\session\SessionManager.class
@@ -40,6 +42,7 @@ com\ntn\quanlykhoahoc\pojo\CauHoi.class
 com\ntn\quanlykhoahoc\controllers\CourseDetailsController$2.class
 com\ntn\quanlykhoahoc\services\EmailService.class
 com\ntn\quanlykhoahoc\services\PaymentService.class
+com\ntn\quanlykhoahoc\controllers\Dashboard_teacherController$1.class
 com\ntn\quanlykhoahoc\pojo\KhoaHoc.class
 com\ntn\quanlykhoahoc\controllers\TimetableController$1.class
 com\ntn\quanlykhoahoc\controllers\DashboardStudentController$3.class

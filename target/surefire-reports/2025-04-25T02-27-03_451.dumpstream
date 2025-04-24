@@ -1,0 +1,5 @@
+# Created at 2025-04-25T02:27:03.639
+Boot Manifest-JAR contains absolute paths in classpath 'D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

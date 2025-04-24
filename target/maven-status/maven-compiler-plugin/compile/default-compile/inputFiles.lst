@@ -5,6 +5,7 @@ D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\qua
 D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\AdminApprovalController.java
 D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\CourseController.java
 D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\CourseDetailsController.java
+D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\Dashboard_teacherController.java
 D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\DashboardAdminController.java
 D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\DashboardStudentController.java
 D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\DashboardTeacherController.java
@@ -26,6 +27,7 @@ D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\qua
 D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\BaiTap.java
 D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\CauHoi.java
 D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\DapAn.java
+D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\HocVien_BaiTap.java
 D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\KhoaHoc.java
 D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\KhoaHoc_HocVien.java
 D:\kiem thu pham mem\QuanLyKhoaHoc-final\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\KhoaHocHocVien.java

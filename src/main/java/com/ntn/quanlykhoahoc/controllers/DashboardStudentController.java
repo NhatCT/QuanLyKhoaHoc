@@ -170,7 +170,7 @@ public class DashboardStudentController {
             showAlert("Lỗi", "Không thể kiểm tra thông báo: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
-
+// kiem tra lich hoc co trung khong
     private void checkUpcomingSessions() {
         try {
             String email = SessionManager.getLoggedInEmail();
@@ -342,7 +342,7 @@ public class DashboardStudentController {
         }
         showMoreSubjectsButton.setText(subjectsExpanded ? "Ẩn bớt" : "Hiện thị thêm");
     }
-
+// tim kiem = datepicker
     @FXML
     private void applyFilters() {
         LocalDate startDate = startDatePicker.getValue();
@@ -524,7 +524,7 @@ public class DashboardStudentController {
         long weeks = days / 7;
         return weeks < 1 ? days + " ngày" : weeks + " tuần";
     }
-
+// load anh khoa hoc
     private void loadCourseImage(ImageView imageView, String hinhAnh) {
         try {
             String imagePath = hinhAnh == null || hinhAnh.trim().isEmpty()
@@ -648,7 +648,7 @@ public class DashboardStudentController {
                 }
         );
     }
-
+//tao bang gio hang
     private void setupCartTable() {
         courseColumn.setCellValueFactory(data -> data.getValue().tenKhoaHocProperty());
         instructorColumn.setCellValueFactory(data -> data.getValue().tenGiangVienProperty());
@@ -680,12 +680,12 @@ public class DashboardStudentController {
         });
         cartTable.setItems(cartCourses);
     }
-
+// tong gia
     private void updateTotalPrice() {
         double total = cartCourses.stream().mapToDouble(KhoaHoc::getGia).sum();
         Platform.runLater(() -> totalPriceLabel.setText(String.format("Tổng tiền: %,d VNĐ", (long) total)));
     }
-
+// them vao gio hang
     private void addToCart(KhoaHoc khoaHoc) {
         int userId = Database.getUserIdByEmail(SessionManager.getLoggedInEmail());
         if (userId == -1) {
@@ -709,7 +709,7 @@ public class DashboardStudentController {
             showAlert("Lỗi", "Không thể kiểm tra trạng thái khóa học: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
-
+// nhan nut thanh toan
     @FXML
     private void handlePayButton() {
         if (cartCourses.isEmpty()) {
@@ -842,7 +842,7 @@ public class DashboardStudentController {
         loadUserAvatar();
         setButtonStyles(profileBtn, dashboardBtn, coursesBtn, timetableBtn);
     }
-
+// style cac nut mycourses........
     private void setButtonStyles(Button activeBtn, Button... inactiveBtns) {
         activeBtn.setStyle("-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;");
         for (Button btn : inactiveBtns) {
@@ -901,7 +901,7 @@ public class DashboardStudentController {
 
     public void hoanTienHocPhi(int id) throws SQLException {
         CourseService c = new CourseService();
-
+// lay id , lay hocVienID
         String email = SessionManager.getLoggedInEmail();
         List<NguoiDung> allUsers = userService.getAllUsers();
         NguoiDung user = allUsers.stream()

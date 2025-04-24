@@ -4,10 +4,8 @@
  */
 package com.ntn.quanlykhoahoc.controllers;
 
-/**
- *
- * @author Thanh Nhat
- */
+
+
 public class DashboardTeacherController {
     
 }
