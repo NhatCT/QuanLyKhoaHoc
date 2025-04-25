@@ -19,12 +19,14 @@ public class KhoaHocHocVien {
         this.ngayDangKy = new SimpleStringProperty();
         this.trangThai = new SimpleStringProperty(trangThai);
 
-        if (ngayDangKy != null) {
+        if (ngayDangKy != null && !ngayDangKy.isEmpty()) {
             ngayDangKy = ngayDangKy.replaceAll("\\.0$", "");
             try {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                // Hỗ trợ định dạng có microsecond (7 chữ số) hoặc không có
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss[.SSSSSSS]");
                 LocalDateTime parsedDate = LocalDateTime.parse(ngayDangKy, formatter);
-                this.ngayDangKy.set(parsedDate.format(formatter));
+                // Lưu dưới dạng yyyy-MM-dd HH:mm:ss
+                this.ngayDangKy.set(parsedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             } catch (DateTimeParseException e) {
                 throw new IllegalArgumentException("Định dạng ngày đăng ký không hợp lệ: " + ngayDangKy, e);
             }

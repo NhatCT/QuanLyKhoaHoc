@@ -1,4 +1,5 @@
 com\ntn\quanlykhoahoc\services\SubmitServices.class
+com\ntn\quanlykhoahoc\controllers\AddCourseController$2.class
 com\ntn\quanlykhoahoc\controllers\PaymentDetailsController.class
 com\ntn\quanlykhoahoc\controllers\Register.class
 com\ntn\quanlykhoahoc\controllers\AdminApprovalController$1.class
@@ -32,6 +33,7 @@ com\ntn\quanlykhoahoc\controllers\ForgotPassword.class
 com\ntn\quanlykhoahoc\controllers\AdminApprovalController.class
 com\ntn\quanlykhoahoc\services\PasswordService.class
 com\ntn\quanlykhoahoc\App.class
+com\ntn\quanlykhoahoc\controllers\AddCourseController$1.class
 com\ntn\quanlykhoahoc\controllers\ProfileController.class
 com\ntn\quanlykhoahoc\controllers\DashboardAdminController.class
 com\ntn\quanlykhoahoc\pojo\BaiTap.class
@@ -40,6 +42,7 @@ com\ntn\quanlykhoahoc\pojo\CauHoi.class
 com\ntn\quanlykhoahoc\controllers\CourseDetailsController$2.class
 com\ntn\quanlykhoahoc\services\EmailService.class
 com\ntn\quanlykhoahoc\services\PaymentService.class
+com\ntn\quanlykhoahoc\controllers\AddCourseController$4.class
 com\ntn\quanlykhoahoc\pojo\KhoaHoc.class
 com\ntn\quanlykhoahoc\controllers\TimetableController$1.class
 com\ntn\quanlykhoahoc\controllers\DashboardStudentController$3.class
@@ -49,6 +52,7 @@ com\ntn\quanlykhoahoc\controllers\DashboardAdminController$2.class
 com\ntn\quanlykhoahoc\controllers\OTPVerification.class
 com\ntn\quanlykhoahoc\pojo\KhoaHocHocVien.class
 com\ntn\quanlykhoahoc\services\TimetableService.class
+com\ntn\quanlykhoahoc\controllers\AddCourseController$3.class
 com\ntn\quanlykhoahoc\controllers\DashboardTeacherController.class
 com\ntn\quanlykhoahoc\database\Database.class
 com\ntn\quanlykhoahoc\controllers\ExerciseController.class

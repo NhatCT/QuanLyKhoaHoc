@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="PerformanceTest" time="1.402" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="PaymentTest" time="1.408" tests="20" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -16,9 +16,9 @@
     <property name="user.country" value="US"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-21\bin"/>
-    <property name="sun.java.command" value="org.apache.maven.surefire.booter.ForkedBooter C:\Users\Nhat&apos;s Laptop\AppData\Local\Temp\surefire17101025233600053194 2025-04-23T16-15-58_280-jvmRun1 surefire-20250423161558589_1tmp surefire_0-20250423161558589_2tmp"/>
+    <property name="sun.java.command" value="org.apache.maven.surefire.booter.ForkedBooter C:\Users\Nhat&apos;s Laptop\AppData\Local\Temp\surefire3567003881411908125 2025-04-25T23-26-45_520-jvmRun1 surefire-20250425232646030_1tmp surefire_0-20250425232646030_2tmp"/>
     <property name="jdk.debug" value="release"/>
-    <property name="test" value="PerformanceTest"/>
+    <property name="test" value="PaymentTest"/>
     <property name="surefire.test.class.path" value="E:\OneDrive\Documents\NetBeansProjects\QuanLyKhoaHoc1\QuanLyKhoaHoc\target\test-classes;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\junit\jupiter\junit-jupiter\5.11.0\junit-jupiter-5.11.0.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.11.0\junit-jupiter-api-5.11.0.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\junit\platform\junit-platform-commons\1.11.0\junit-platform-commons-1.11.0.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.11.0\junit-jupiter-params-5.11.0.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.11.0\junit-jupiter-engine-5.11.0.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\junit\platform\junit-platform-engine\1.11.0\junit-platform-engine-1.11.0.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\net\bytebuddy\byte-buddy\1.14.15\byte-buddy-1.14.15.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\mockito\mockito-junit-jupiter\5.12.0\mockito-junit-jupiter-5.12.0.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\mockito\mockito-core\5.12.0\mockito-core-5.12.0.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.15\byte-buddy-agent-1.14.15.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\mockito\mockito-inline\5.2.0\mockito-inline-5.2.0.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\openjfx\javafx-controls\21\javafx-controls-21.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\openjfx\javafx-fxml\21\javafx-fxml-21.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\openjfx\javafx-graphics\21\javafx-graphics-21.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\openjfx\javafx-base\21\javafx-base-21.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\slf4j\slf4j-api\2.0.13\slf4j-api-2.0.13.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\slf4j\slf4j-simple\2.0.13\slf4j-simple-2.0.13.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\testfx\testfx-core\4.0.18\testfx-core-4.0.18.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\hamcrest\hamcrest\2.1\hamcrest-2.1.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\assertj\assertj-core\3.13.2\assertj-core-3.13.2.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\osgi\org.osgi.core\6.0.0\org.osgi.core-6.0.0.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\org\testfx\testfx-junit5\4.0.18\testfx-junit5-4.0.18.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\com\mysql\mysql-connector-j\9.0.0\mysql-connector-j-9.0.0.jar;C:\Users\Nhat&apos;s Laptop\.m2\repository\com\google\protobuf\protobuf-java\4.26.1\protobuf-java-4.26.1.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
     <property name="user.home" value="C:\Users\Nhat&apos;s Laptop"/>
@@ -63,12 +63,98 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="testLoadCourses_PerformanceUnder2Seconds" classname="PerformanceTest" time="1.359">
-    <system-out><![CDATA[Retrieved 26 active courses from database
-Thời gian xử lý: 1339ms
-]]></system-out>
-    <system-err><![CDATA[thg 4 23, 2025 4:15:59 CH com.ntn.quanlykhoahoc.services.CourseService getEnrolledCourses
-INFO: Tải 2 khóa học APPROVED cho hocVienID=8
+  <testcase name="testGetPaymentByTransactionId_NotFound" classname="PaymentTest" time="1.267">
+    <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (C:\Users\Nhat's Laptop\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.15\byte-buddy-agent-1.14.15.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService getPaymentByTransactionId
+INFO: No payment found for transactionId=1
+]]></system-err>
+  </testcase>
+  <testcase name="testIsValidNguoiDung" classname="PaymentTest" time="0.005"/>
+  <testcase name="testUpdatePayment_Success" classname="PaymentTest" time="0.014">
+    <system-err><![CDATA[thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService updatePayment
+INFO: Updated payment: transactionId=1, rowsAffected=1
+]]></system-err>
+  </testcase>
+  <testcase name="testIsValidHocVien" classname="PaymentTest" time="0.004"/>
+  <testcase name="testIsValidCourse" classname="PaymentTest" time="0.003"/>
+  <testcase name="testGetPaymentByTransactionId_Found" classname="PaymentTest" time="0.009"/>
+  <testcase name="testAddToKhoaHocHocVien_DuplicateEntry" classname="PaymentTest" time="0.006">
+    <system-err><![CDATA[thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService addToKhoaHocHocVien
+WARNING: Bản ghi đã tồn tại trong khoahoc_hocvien: hocVienID=1, khoaHocID=1
+]]></system-err>
+  </testcase>
+  <testcase name="testGetPendingKhoaHocHocVien" classname="PaymentTest" time="0.011"/>
+  <testcase name="testUpdateKhoaHocHocVienStatus_InvalidParameters" classname="PaymentTest" time="0.006">
+    <system-err><![CDATA[thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService updateKhoaHocHocVienStatus
+WARNING: Thông tin không hợp lệ: id=0, trangThai=APPROVED
+thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService updateKhoaHocHocVienStatus
+WARNING: Thông tin không hợp lệ: id=1, trangThai=null
+thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService updateKhoaHocHocVienStatus
+WARNING: Thông tin không hợp lệ: id=1, trangThai=INVALID_STATUS
+]]></system-err>
+  </testcase>
+  <testcase name="testGetAllPayments" classname="PaymentTest" time="0.005">
+    <system-err><![CDATA[thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService getAllPayments
+INFO: Retrieved 2 payment records
+]]></system-err>
+  </testcase>
+  <testcase name="testUpdateKhoaHocHocVienStatus_RejectPayment" classname="PaymentTest" time="0.015">
+    <system-err><![CDATA[thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService updateKhoaHocHocVienStatus
+INFO: Đã xóa 1 bản ghi lichsu_thanhtoan cho hocVienID=1, khoaHocID=1
+thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService notifyStudent
+INFO: Đã gửi thông báo đến học viên ID=1: Yêu cầu tham gia khóa học ID=1 của bạn đã được từ chối., rowsAffected=1
+thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService updateKhoaHocHocVienStatus
+INFO: Cập nhật trạng thái khoahoc_hocvien: id=1, trangThai=REJECTED, rowsAffected=1
+]]></system-err>
+  </testcase>
+  <testcase name="testAddPayment" classname="PaymentTest" time="0.003"/>
+  <testcase name="testUpdateKhoaHocHocVienStatus_UpdateFailed" classname="PaymentTest" time="0.004">
+    <system-err><![CDATA[thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService updateKhoaHocHocVienStatus
+WARNING: Không cập nhật được bản ghi khoahoc_hocvien với id=1
+]]></system-err>
+  </testcase>
+  <testcase name="testUpdateKhoaHocHocVienStatus_Success" classname="PaymentTest" time="0.005">
+    <system-err><![CDATA[thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService notifyStudent
+INFO: Đã gửi thông báo đến học viên ID=1: Yêu cầu tham gia khóa học ID=1 của bạn đã được duyệt., rowsAffected=1
+thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService updateKhoaHocHocVienStatus
+INFO: Cập nhật trạng thái khoahoc_hocvien: id=1, trangThai=APPROVED, rowsAffected=1
+]]></system-err>
+  </testcase>
+  <testcase name="testAddToKhoaHocHocVien_Success" classname="PaymentTest" time="0.003"/>
+  <testcase name="testDeletePayment_Success" classname="PaymentTest" time="0.005">
+    <system-err><![CDATA[thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService deletePayment
+INFO: Deleted payment: thanhToanID=1, rowsAffected=1
+]]></system-err>
+  </testcase>
+  <testcase name="testDeletePayment_InvalidId" classname="PaymentTest" time="0.002">
+    <system-err><![CDATA[thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService deletePayment
+WARNING: Invalid thanhToanID format: abc
+]]></system-err>
+  </testcase>
+  <testcase name="testUpdateKhoaHocHocVienStatus_RecordNotFound" classname="PaymentTest" time="0.003">
+    <system-err><![CDATA[thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService updateKhoaHocHocVienStatus
+WARNING: Không tìm thấy bản ghi khoahoc_hocvien với id=999
+]]></system-err>
+  </testcase>
+  <testcase name="testNotifyAdmin" classname="PaymentTest" time="0.005">
+    <system-err><![CDATA[thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService notifyAdmin
+INFO: Đã chèn thông báo cho admin: Học viên Nguyen Van A (ID=1) đã thanh toán cho khóa học Java Programming (ID=1, ThanhToanID=123). Vui lòng xét duyệt., rowsAffected=1
+]]></system-err>
+  </testcase>
+  <testcase name="testUpdatePayment_InvalidParameters" classname="PaymentTest" time="0.003">
+    <system-err><![CDATA[thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService updatePayment
+WARNING: Invalid update details: transactionId=0
+thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService updatePayment
+WARNING: Invalid update details: transactionId=1
+thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService updatePayment
+WARNING: Invalid update details: transactionId=1
+thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService updatePayment
+WARNING: Invalid update details: transactionId=1
+thg 4 25, 2025 11:26:48 CH com.ntn.quanlykhoahoc.services.PaymentService updatePayment
+WARNING: Invalid update details: transactionId=1
 ]]></system-err>
   </testcase>
 </testsuite>

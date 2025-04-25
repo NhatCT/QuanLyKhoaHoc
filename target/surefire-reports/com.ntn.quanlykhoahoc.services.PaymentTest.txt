@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: com.ntn.quanlykhoahoc.services.PaymentTest
+-------------------------------------------------------------------------------
+Tests run: 20, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 1.652 s <<< FAILURE! -- in com.ntn.quanlykhoahoc.services.PaymentTest
+com.ntn.quanlykhoahoc.services.PaymentTest.testGetAllPayments -- Time elapsed: 0.009 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "java.sql.ResultSet.next()" because "rs" is null
+	at com.ntn.quanlykhoahoc@1.0-SNAPSHOT/com.ntn.quanlykhoahoc.services.PaymentService.getAllPayments(PaymentService.java:205)
+	at com.ntn.quanlykhoahoc@1.0-SNAPSHOT/com.ntn.quanlykhoahoc.services.PaymentTest.testGetAllPayments(PaymentTest.java:183)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

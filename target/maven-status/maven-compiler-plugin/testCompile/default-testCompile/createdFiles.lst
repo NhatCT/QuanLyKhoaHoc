@@ -5,3 +5,4 @@ PerformanceTest.class
 CourseLogicRegressionTest.class
 EnrollmentTest.class
 DatabaseSecurityTest.class
+PaymentTest.class
