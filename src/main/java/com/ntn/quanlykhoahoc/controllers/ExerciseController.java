@@ -71,9 +71,9 @@ public class ExerciseController implements Initializable {
     private int seconds;
     private Timeline timeline;
 
-    private static final String TIMER_KEY_FORMAT = "k_baiTap_%d";
+    private static final String TIMER_KEY_FORMAT = "hocvien_%d_baitap_%d";
 
-    private static final String QUESTION_KEY_FORMAT = "qk_baiTap_%d";
+    private static final String QUESTION_KEY_FORMAT = "hocvien_%d_baitap_%d";
     private static Preferences preferences = Preferences.userRoot().node(CourseController.class.getName());
 
     // Phương thức để load câu hỏi và đáp án, xử lý tạo động radio buttons
@@ -92,9 +92,9 @@ public class ExerciseController implements Initializable {
                 .findFirst()
                 .orElse(null);
         int hocVienID = userService.getHocVienIDFromNguoiDung(user.getId());
-        this.QUES_KEY = String.format(QUESTION_KEY_FORMAT, hocVienID + baiTapID);
+        this.QUES_KEY = String.format(QUESTION_KEY_FORMAT, hocVienID, baiTapID);
 
-        this.TIME_KEY = String.format(TIMER_KEY_FORMAT, hocVienID + baiTapID);
+        this.TIME_KEY = String.format(TIMER_KEY_FORMAT, hocVienID, baiTapID);
 
         int soCauHoi = this.cauhoi.size() * 3;
         String thoiGianMacDinh = String.format("%02d:00", soCauHoi);
