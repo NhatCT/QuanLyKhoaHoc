@@ -48,6 +48,7 @@ import javafx.stage.Stage;
 import java.time.format.DateTimeFormatter;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ProgressBar;
 
 /**
  * FXML Controller class
@@ -61,9 +62,15 @@ public class CourseController implements Initializable {
     @FXML
     Text txtKhoaHoc;
     @FXML
+    Text txtTienTrinh;
+    @FXML
     VBox vboxDanhSachBaiTap;
     @FXML
     Button btnClose;
+    @FXML
+    Text progressText;
+    @FXML
+    ProgressBar progressBar;
 
     private int idKhoaHoc;
 
@@ -72,8 +79,41 @@ public class CourseController implements Initializable {
 
     }
 
-    public void loadBaiTaiTheoKhoaHocID() {
+    public void loadBaiTaiTheoKhoaHocID() throws SQLException {
         // set ten khoa hoc
+
+        UserService userService = new UserService();
+        String email = SessionManager.getLoggedInEmail();
+        List<NguoiDung> allUsers = userService.getAllUsers();
+        NguoiDung user = allUsers.stream()
+                .filter(u -> u.getEmail().equals(email))
+                .findFirst()
+                .orElse(null);
+        int hocVienID = userService.getHocVienIDFromNguoiDung(user.getId());
+
+        ExerciseServices exerciseServices = new ExerciseServices();
+        double tatCaBT = (double) exerciseServices.getBaiTapsTheoKhoaHocID(idKhoaHoc).size();
+        int baiTapDaLam = 0;
+        ExerciseServices bt = new ExerciseServices();
+        List<BaiTap> ds = bt.getBaiTapsTheoKhoaHocID(idKhoaHoc);
+        for (BaiTap bt2 : ds) {
+            if (exerciseServices.countSubbmitted(idKhoaHoc, hocVienID, bt2.getId()).size() == 1) {
+                baiTapDaLam++;
+            }
+        }
+
+        double c = (baiTapDaLam / tatCaBT) * 100;
+        int phanTramTienTrinh = (int) c;
+
+        progressBar.setStyle("-fx-accent: green;"); // Đặt màu sắc thanh tiến trình
+
+        // Tạo Text để hiển thị giá trị phần trăm tiến trình
+        // Cập nhật tiến trình theo giá trị từ 0 đến 100
+        progressBar.setProgress(phanTramTienTrinh / 100.0);
+
+        // Hiển thị phần trăm tiến trình
+        progressText.setText("Tiến trình: " + phanTramTienTrinh + "%");
+
         try {
             CourseService courseService = new CourseService();
 
@@ -86,9 +126,9 @@ public class CourseController implements Initializable {
         }
 
         try {
-            ExerciseServices bt = new ExerciseServices();
-            List<BaiTap> ds = bt.getBaiTapTheoKhoaHocID(idKhoaHoc);
-            for (BaiTap b : ds) {
+//            ExerciseServices bt3 = new ExerciseServices();
+            List<BaiTap> ds1 = exerciseServices.getBaiTapsTheoKhoaHocID(idKhoaHoc);
+            for (BaiTap b : ds1) {
                 HBox h = taoHangBaiTap(b.getTenBaiTap(), b.getDeadline(), b.getId());
                 vboxDanhSachBaiTap.getChildren().add(h); // ✅ đúng tên biến
             }
@@ -125,7 +165,7 @@ public class CourseController implements Initializable {
 
         Date hienTai = Date.from(Instant.now());
 
-        if ((hv_bt.size() == 2) || (hienTai.after(deadline))) {
+        if ((hv_bt.size() == 1) || (hienTai.after(deadline))) {
             btnLamBai = new Button("-----");
             btnLamBai.setPrefWidth(120);
             btnLamBai.setOnAction(e -> {
@@ -182,9 +222,7 @@ public class CourseController implements Initializable {
 
     }
 
-    
-    
-     private void showAlert(String title, String message, Alert.AlertType type) {
+    private void showAlert(String title, String message, Alert.AlertType type) {
         Platform.runLater(() -> {
             Alert alert = new Alert(type);
             alert.setTitle(title);
@@ -193,6 +231,7 @@ public class CourseController implements Initializable {
             alert.showAndWait();
         });
     }
+
     public void daLamBai() {
     }
 

@@ -21,6 +21,7 @@ import javafx.fxml.Initializable;
 import java.util.prefs.Preferences;
 import java.net.URL;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,7 +59,7 @@ public class ExerciseController implements Initializable {
     private int currentIdx = 0;
     private int baiTapID;
     private int ketQua = 0;
-   
+
     private String TIME_KEY;
     private String QUES_KEY;
 
@@ -84,16 +85,16 @@ public class ExerciseController implements Initializable {
             Logger.getLogger(ExerciseController.class.getName()).log(Level.SEVERE, null, ex);
         }
         UserService userService = new UserService();
-         String email = SessionManager.getLoggedInEmail();
+        String email = SessionManager.getLoggedInEmail();
         List<NguoiDung> allUsers = userService.getAllUsers();
         NguoiDung user = allUsers.stream()
                 .filter(u -> u.getEmail().equals(email))
                 .findFirst()
                 .orElse(null);
         int hocVienID = userService.getHocVienIDFromNguoiDung(user.getId());
-        this.QUES_KEY =String.format(QUESTION_KEY_FORMAT, hocVienID);
+        this.QUES_KEY = String.format(QUESTION_KEY_FORMAT, hocVienID + baiTapID);
 
-        this.TIME_KEY = String.format(TIMER_KEY_FORMAT, hocVienID);
+        this.TIME_KEY = String.format(TIMER_KEY_FORMAT, hocVienID + baiTapID);
 
         int soCauHoi = this.cauhoi.size() * 3;
         String thoiGianMacDinh = String.format("%02d:00", soCauHoi);
@@ -330,21 +331,22 @@ public class ExerciseController implements Initializable {
         int hocVienID = userService.getHocVienIDFromNguoiDung(user.getId());
         SubmitServices nopBaiServices = new SubmitServices();
         ExerciseServices bts = new ExerciseServices();
-        BaiTap bt = bts.getBaiTapTheoKhoaHocID(baiTapID).get(0);
-        Date hienTai = Date.from(Instant.now());
-        int is_thanhCong;
-        if((bt.getDeadline()==hienTai) || (hienTai.after(bt.getDeadline()))) {
+        BaiTap bt = bts.getBaiTapTheoKhoaHocID(baiTapID);
+        Timestamp hienTai = new Timestamp(System.currentTimeMillis());
+        int is_thanhCong = -1;
+
+        if ((bt.getDeadline().equals(hienTai)) || (hienTai.before(bt.getDeadline()))) {
             is_thanhCong = nopBaiServices.submitSQL(hocVienID, baiTapID, ketQua);
-        }
-        
-        else {
+        } else {
             is_thanhCong = 0;
         }
         if ((is_thanhCong == 1)) {
             showAlert("Nộp thành công!", "Số điểm bạn là: " + String.valueOf(ketQua), Alert.AlertType.INFORMATION);
+            this.timeline.stop();
+        } else {
+            showAlert("Nộp thất bại!", "Số điểm bạn là: " + String.valueOf(ketQua), Alert.AlertType.INFORMATION);
         }
-        else{showAlert("Nộp thất bại!", "Số điểm bạn là: " + String.valueOf(ketQua), Alert.AlertType.INFORMATION);}
-        
+        this.timeline.stop();
         Stage currentStage = (Stage) btnClose.getScene().getWindow();
         currentStage.close();
 
@@ -374,6 +376,4 @@ public class ExerciseController implements Initializable {
     /**
      * @return the random
      */
-  
-
 }

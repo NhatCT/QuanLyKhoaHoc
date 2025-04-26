@@ -25,6 +25,9 @@ public class BaiTap {
         this.deadline = deadline;
     }
 
+    public BaiTap() {
+    }
+
     /**
      * @return the id
      */
