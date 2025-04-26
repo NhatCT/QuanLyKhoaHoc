@@ -1,3 +1,4 @@
+
 import com.ntn.quanlykhoahoc.database.Database;
 import com.ntn.quanlykhoahoc.pojo.DapAn;
 import com.ntn.quanlykhoahoc.services.ChoiceServices;
@@ -14,6 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,7 +35,7 @@ public class ChoiceTest {
     private ResultSet mockRs;
     
     private MockedStatic<Database> databaseMock;
-    
+
     @BeforeEach
     void setUp() throws Exception {
         // Mock phương thức tĩnh Database.getConn()
@@ -44,25 +46,25 @@ public class ChoiceTest {
         when(mockConn.prepareStatement(anyString())).thenReturn(mockStmt);
         when(mockStmt.executeQuery()).thenReturn(mockRs);
     }
-    
+////    
     @AfterEach
     void tearDown() {
         // Giải phóng mock tĩnh
         databaseMock.close();
     }
-    
-    /**
-     * TC1: Kiểm tra lấy danh sách đáp án theo ID câu hỏi
-     * 
-     * Test case dùng để kiểm thử chức năng lấy danh sách đáp án
-     * khi cung cấp một ID câu hỏi hợp lệ trong hệ thống
-     * 
-     * Các bước:
-     * 1: Cung cấp ID câu hỏi hợp lệ
-     * 2: Gọi phương thức getDapAnTheoCauHoiID
-     * 
-     * Kết quả mong đợi: Trả về danh sách đáp án đầy đủ thông tin
-     */
+////    
+////    /**
+////     * TC1: Kiểm tra lấy danh sách đáp án theo ID câu hỏi
+////     * 
+////     * Test case dùng để kiểm thử chức năng lấy danh sách đáp án
+////     * khi cung cấp một ID câu hỏi hợp lệ trong hệ thống
+////     * 
+////     * Các bước:
+////     * 1: Cung cấp ID câu hỏi hợp lệ
+////     * 2: Gọi phương thức getDapAnTheoCauHoiID
+////     * 
+////     * Kết quả mong đợi: Trả về danh sách đáp án đầy đủ thông tin
+////     */
     @Test
     void testGetDapAnTheoCauHoiID_Success() throws SQLException {
         // Mock ResultSet: 4 bản ghi đáp án
@@ -98,23 +100,23 @@ public class ChoiceTest {
         
         assertEquals("Đáp án D", dapAnList.get(3).getNoiDung());
         assertEquals(false, dapAnList.get(3).isDapAnDung());
-        
-        // Xác minh PreparedStatement được thiết lập đúng
+//        
+//        // Xác minh PreparedStatement được thiết lập đúng
         verify(mockStmt).setInt(1, cauHoiId);
     }
-    
-    /**
-     * TC2: Kiểm tra lấy danh sách đáp án khi không có đáp án nào
-     * 
-     * Test case dùng để kiểm thử chức năng lấy danh sách đáp án
-     * khi cung cấp ID câu hỏi hợp lệ nhưng không có đáp án nào
-     * 
-     * Các bước:
-     * 1: Cung cấp ID câu hỏi không có đáp án
-     * 2: Gọi phương thức getDapAnTheoCauHoiID
-     * 
-     * Kết quả mong đợi: Trả về danh sách rỗng
-     */
+////    
+////    /**
+////     * TC2: Kiểm tra lấy danh sách đáp án khi không có đáp án nào
+////     * 
+////     * Test case dùng để kiểm thử chức năng lấy danh sách đáp án
+////     * khi cung cấp ID câu hỏi hợp lệ nhưng không có đáp án nào
+////     * 
+////     * Các bước:
+////     * 1: Cung cấp ID câu hỏi không có đáp án
+////     * 2: Gọi phương thức getDapAnTheoCauHoiID
+////     * 
+////     * Kết quả mong đợi: Trả về danh sách rỗng
+////     */
     @Test
     void testGetDapAnTheoCauHoiID_EmptyList() throws SQLException {
         // Mock ResultSet: không có bản ghi nào
@@ -130,26 +132,26 @@ public class ChoiceTest {
         // Xác minh PreparedStatement được thiết lập đúng
         verify(mockStmt).setInt(1, cauHoiId);
     }
-    
-    /**
-     * TC3: Kiểm tra xử lý ngoại lệ khi truy vấn thất bại
-     * 
-     * Test case dùng để kiểm thử việc xử lý ngoại lệ
-     * khi có lỗi xảy ra trong quá trình truy vấn cơ sở dữ liệu
-     * 
-     * Các bước:
-     * 1: Cung cấp ID câu hỏi bất kỳ
-     * 2: Giả lập lỗi SQL
-     * 3: Gọi phương thức getDapAnTheoCauHoiID
-     * 
-     * Kết quả mong đợi: Ngoại lệ SQLException được ném ra
-     */
+////    
+////    /**
+////     * TC3: Kiểm tra xử lý ngoại lệ khi truy vấn thất bại
+////     * 
+////     * Test case dùng để kiểm thử việc xử lý ngoại lệ
+////     * khi có lỗi xảy ra trong quá trình truy vấn cơ sở dữ liệu
+////     * 
+////     * Các bước:
+////     * 1: Cung cấp ID câu hỏi bất kỳ
+////     * 2: Giả lập lỗi SQL
+////     * 3: Gọi phương thức getDapAnTheoCauHoiID
+////     * 
+////     * Kết quả mong đợi: Ngoại lệ SQLException được ném ra
+////     */
     @Test
     void testGetDapAnTheoCauHoiID_SQLException() throws SQLException {
         // Mock SQLException khi executeQuery
         when(mockStmt.executeQuery()).thenThrow(new SQLException("Database error"));
         
-        // Gọi phương thức và xác minh ngoại lệ
+//        // Gọi phương thức và xác minh ngoại lệ
         int cauHoiId = 5;
         try {
             choiceServices.getDapAnTheoCauHoiID(cauHoiId);
@@ -157,7 +159,75 @@ public class ChoiceTest {
             assertEquals("Database error", e.getMessage());
         }
         
-        // Xác minh PreparedStatement được thiết lập đúng
+//        // Xác minh PreparedStatement được thiết lập đúng
         verify(mockStmt).setInt(1, cauHoiId);
     }
+    
+    //Nguyen 
+    // test mỗi câu luôn có 4 lựa chọn
+    @Test
+    public void testQuestionHasFourAnswers() throws SQLException {
+        Connection connection = Database.getConn();
+
+        // lay baitapid tu cauhoi
+        String questionQuery = "SELECT DISTINCT baiTapID FROM cauhoi";
+        PreparedStatement statement = connection.prepareStatement(questionQuery);
+        ResultSet questionResult = statement.executeQuery();
+
+        while (questionResult.next()) {
+            int baiTapID = questionResult.getInt("baiTapID");
+
+            // đếm số câu trả lời cho câu hỏi này
+            String answerQuery = "SELECT COUNT(*) AS answerCount FROM dapan WHERE cauHoiID = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(answerQuery);
+            preparedStatement.setInt(1, baiTapID);
+            ResultSet answerResult = preparedStatement.executeQuery();
+
+            if (answerResult.next()) {
+                int answerCount = answerResult.getInt("answerCount");
+
+                // Assert that the question has exactly 4 answers
+                assertEquals(4, answerCount, "Question with baiTapID " + baiTapID + " does not have 4 answers.");
+            }
+        }
+
+        // Close the connections
+        questionResult.close();
+        statement.close();
+        connection.close();
+    }
+// test 1 câu luôn có 1 đáp án đúng 
+    @Test
+    public void testQuestionHasOneCorrect() throws SQLException {
+        Connection connection = Database.getConn();
+
+        // lay baitapid tu cauhoi
+        String questionQuery = "SELECT DISTINCT baiTapID FROM cauhoi";
+        PreparedStatement statement = connection.prepareStatement(questionQuery);
+        ResultSet questionResult = statement.executeQuery();
+
+        while (questionResult.next()) {
+            int baiTapID = questionResult.getInt("baiTapID");
+
+            // Truy vấn để đếm số lượng đáp án đúng (dapAnDung = 1)
+            String answerQuery = "SELECT SUM(dapAnDung) AS correctAnswerCount FROM dapan WHERE cauHoiID = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(answerQuery);
+            preparedStatement.setInt(1, baiTapID);  // Gán baiTapID vào câu truy vấn
+            ResultSet answerResult = preparedStatement.executeQuery();
+
+            if (answerResult.next()) {
+                int correctAnswerCount = answerResult.getInt("correctAnswerCount");  // Lấy số lượng đáp án đúng
+
+                // Kiểm tra rằng mỗi câu hỏi có đúng 1 đáp án đúng
+                assertEquals(1, correctAnswerCount, "Luôn 1 có đáp án dung.");
+            }
+        }
+
+        // Close the connections
+        questionResult.close();
+        statement.close();
+        connection.close();
+
+    }
+
 }

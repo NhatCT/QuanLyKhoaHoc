@@ -46,6 +46,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.time.format.DateTimeFormatter;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 
 /**
  * FXML Controller class
@@ -180,6 +182,17 @@ public class CourseController implements Initializable {
 
     }
 
+    
+    
+     private void showAlert(String title, String message, Alert.AlertType type) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(type);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
+    }
     public void daLamBai() {
     }
 
