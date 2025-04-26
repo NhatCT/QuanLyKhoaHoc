@@ -24,8 +24,8 @@
 
     <Text fx:id="timerText" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18px; -fx-fill: #FF5722; -fx-font-weight: bold;" />
     
-    <Text fx:id="dem" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 14px; -fx-fill: #555;" text="Text" />
-      <Button fx:id ="btnClose"  mnemonicParsing="false" />
+    <Text fx:id="dem" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 14px; -fx-fill: #555;" />
+      <Button fx:id="btnClose" mnemonicParsing="false" />
     
    </children>
 </VBox>

@@ -18,21 +18,21 @@ import java.util.List;
  * @author ADMIN
  */
 public class ExerciseServices {
-     public List<BaiTap> getBaiTapTheoKhoaHocID(int i) throws SQLException {
-         List<BaiTap> bt = new ArrayList<>();
-         Connection conn = Database.getConn();
+
+    public List<BaiTap> getBaiTapTheoKhoaHocID(int i) throws SQLException {
+        List<BaiTap> bt = new ArrayList<>();
+        Connection conn = Database.getConn();
         String sql = "SELECT * FROM baitap WHERE khoaHocID = ?";
-         PreparedStatement stm = conn.prepareStatement(sql);
+        PreparedStatement stm = conn.prepareStatement(sql);
         stm.setInt(1, i);
-         ResultSet rs = stm.executeQuery();
+        ResultSet rs = stm.executeQuery();
 
         while (rs.next()) {
             BaiTap c = new BaiTap(
                     rs.getInt("id"),
                     rs.getInt("khoaHocID"),
                     rs.getString("tenBaiTap"),
-                    rs.getDate("deadline")
-                  
+                    rs.getTimestamp("deadline")
             );
             bt.add(c);
         }
@@ -44,6 +44,28 @@ public class ExerciseServices {
 
         return bt;
     }
-    
-    
+    //test
+
+    public BaiTap getBaiTapByID(int i) throws SQLException {
+        List<BaiTap> bt = new ArrayList<>();
+        Connection conn = Database.getConn();
+        String sql = "SELECT * FROM baitap WHERE id = ?";
+        PreparedStatement stm = conn.prepareStatement(sql);
+        stm.setInt(1, i);
+        ResultSet rs = stm.executeQuery();
+
+        if (rs.next()) {
+            BaiTap c = new BaiTap(
+                    rs.getInt("id"),
+                    rs.getInt("khoaHocID"),
+                    rs.getString("tenBaiTap"),
+                    rs.getTimestamp("deadline")
+            );
+            return c;
+        } else {
+            return null;
+        }
+
+    }
+
 }

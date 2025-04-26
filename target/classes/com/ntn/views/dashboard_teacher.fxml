@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ntn.quanlykhoahoc.controllers.Dashboard_teacherController">
+
+    <!-- Sidebar (Thanh menu trái) -->
+    <left>
+        <VBox fx:id="sidebar" prefHeight="706.0" prefWidth="156.0" spacing="12" style="-fx-padding: 15px; -fx-background-color: #f4f4f4; -fx-border-color: #e0e0e0; -fx-border-width: 0 1 0 0;">
+            <!-- Avatar người dùng -->
+            <ImageView fx:id="avatarImageView" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);">
+                <VBox.margin>
+                    <Insets bottom="10.0" />
+                </VBox.margin>
+            </ImageView>
+            <!-- Label hiển thị họ và tên -->
+            <Label fx:id="userNameLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #333;" text="Họ và tên" wrapText="true" />
+            <Button fx:id="dashboardBtn" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" text="Bảng khóa học" />
+            <Button fx:id="coursesBtn" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" text="Khóa học của tôi" />
+<!--            <Button fx:id="timetableBtn" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" text="Lịch học" onAction="#loadTimetable" />-->
+            <Button fx:id="profileBtn" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-alignment: BASELINE_LEFT;" text="Hồ sơ" />
+            <Button fx:id="logoutButton" onAction="#handleLogout" prefHeight="34.0" prefWidth="182.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;" text="Đăng xuất" />
+        </VBox>
+    </left>
+
+    <!-- Phần hiển thị danh sách khóa học -->
+    <center>
+        <HBox spacing="20" style="-fx-padding: 20px; -fx-background-color: #f5f5f5;">
+            <!-- Filter Sidebar -->
+            <VBox fx:id="filterPane" prefHeight="656.0" prefWidth="306.0" spacing="10" style="-fx-min-width: 250px; -fx-background-color: #ffffff; -fx-padding: 15px; -fx-border-color: #e0e0e0; -fx-border-radius: 5px;">
+                <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Lọc khóa học" />
+
+                <!-- Subject Filter -->
+                <Label text="Môn học" />
+                <VBox fx:id="subjectFilterBox" spacing="5" />
+
+
+                <!-- Date Range Filter -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Ngày bắt đầu:" />
+                    <DatePicker fx:id="startDatePicker" />
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="đến" />
+                    <DatePicker fx:id="endDatePicker" />
+                </HBox>
+
+                <!-- Filter Buttons -->
+              
+            </VBox>
+
+            <!-- Course Listing -->
+            <VBox spacing="15" style="-fx-flex-grow: 1;">
+                <!-- Search and Sort -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <TextField fx:id="searchField" prefWidth="300.0" promptText="Tìm kiếm khóa học..." />
+                    <Button fx:id="searchButton" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" text="Tìm kiếm" />
+                    <Label fx:id="resultsLabel" prefHeight="28.0" prefWidth="200.0" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Danh Sách Khóa Học" />
+                    <ComboBox fx:id="sortComboBox" onAction="#sortCourses" />
+                </HBox>
+
+                <!-- Course Cards -->
+                <ScrollPane fx:id="coursesScrollPane" fitToWidth="true" style="-fx-background-color: transparent;">
+                    <content>
+                        <FlowPane fx:id="courseFlowPane" hgap="15" style="-fx-padding: 10px;" vgap="15" />
+                    </content>
+                </ScrollPane>
+
+                <!-- Pagination -->
+                <HBox fx:id="paginationContainer" alignment="CENTER" spacing="12">
+                    <Button fx:id="prevPageBtn" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" text="Previous" />
+                    <Label fx:id="pageLabel" text="Trang 1" />
+                    <Button fx:id="nextPageBtn" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" text="Next" />
+                </HBox>
+            </VBox>
+        </HBox>
+    </center>
+
+    <!-- Giỏ hàng (Selected Courses) -->
+<!--    <right>
+        <VBox fx:id="cartSection" prefWidth="270" spacing="12" style="-fx-padding: 15px; -fx-background-color: #f4f4f4; -fx-border-color: #e0e0e0; -fx-border-width: 1 0 0 0;">
+            <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Giỏ hàng" />
+            <TableView fx:id="cartTable" prefHeight="600" prefWidth="163.0">
+                <columns>
+                    <TableColumn fx:id="courseColumn" prefWidth="150.0" text="Khóa học">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="tenKhoaHoc" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="instructorColumn" prefWidth="120.0" text="Giảng Viên">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="tenGiangVien" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="priceColumn" prefWidth="100.0" text="Giá">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="gia" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="imageColumn" prefWidth="100.0" text="Hình Ảnh">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="hinhAnh" />
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableView>
+            <HBox alignment="CENTER" spacing="10">
+                <Button fx:id="payButton" style="-fx-background-color: #6c5ce7; -fx-text-fill: white; -fx-background-radius: 5;" text="Thanh toán" />
+                <Button fx:id="removeButton" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;" text="Xóa" />
+            </HBox>
+            <Label fx:id="totalPriceLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #333;" text="Tổng tiền: 0 VNĐ" />
+        </VBox>
+    </right>-->
+
+</BorderPane>

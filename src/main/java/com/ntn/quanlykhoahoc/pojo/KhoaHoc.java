@@ -16,6 +16,14 @@ public class KhoaHoc {
     private LocalDate ngayBatDau;
     private LocalDate ngayKetThuc;
     private int giangVienId;
+    
+    
+    
+       // Nguyen
+    public KhoaHoc(int id, String tenKhoaHoc){
+        this.id.set(id);
+        this.tenKhoaHoc.set(tenKhoaHoc);
+    }
 
     // Constructor cho sinh viên (không cần giangVienId)
     public KhoaHoc(int id, String tenKhoaHoc, String moTa, double gia, int soLuongHocVienToiDa, String tenGiangVien,
