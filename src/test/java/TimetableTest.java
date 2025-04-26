@@ -1,3 +1,4 @@
+
 import com.ntn.quanlykhoahoc.database.Database;
 import com.ntn.quanlykhoahoc.pojo.LichHoc;
 import com.ntn.quanlykhoahoc.services.TimetableService;
@@ -11,9 +12,11 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -90,4 +93,31 @@ public class TimetableTest {
         // Xác minh PreparedStatement được thiết lập đúng
         verify(mockStmt).setString(1, "student@example.com");
     }
-}
+
+    @Test
+    public void checkTeacherScheduleConflict() throws SQLException {
+        Connection connection = Database.getConn();
+
+        String query = "SELECT giangVienId, ngay_hoc, gio_bat_dau, COUNT(DISTINCT khoaHocId) AS classCount "
+                + "FROM khoa_hoc "
+                + "GROUP BY giangVienId, ngay_hoc, gio_bat_dau "
+                + "HAVING COUNT(DISTINCT khoaHocId) > 1"; // Kiểm tra nếu có giáo viên dạy > 1 lớp cùng ngày và giờ
+
+        PreparedStatement statement = connection.prepareStatement(query);
+        ResultSet result = statement.executeQuery();
+
+       
+
+            while (result.next()) {
+                int teacherId = result.getInt("giangVienId");
+                String classDate = result.getString("ngay_hoc");
+                String startTime = result.getString("gio_bat_dau");
+                int classCount = result.getInt("classCount");
+
+                // Kiểm tra xem có giáo viên nào dạy nhiều lớp cùng ngày và giờ không
+                assertTrue(classCount > 1,
+                        "Giáo viên không bị trùng lịch" );
+            }
+        }
+    }
+
