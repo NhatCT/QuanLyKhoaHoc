@@ -55,7 +55,7 @@ public class PaymentDetailsController {
         }
 
         statusLabel.setText("Vui lòng chuyển khoản theo thông tin bên dưới:");
-        contentText.setText(String.format("Nội dung: Thanh toán khóa học %s\nSố tiền: %,d VNĐ (Giảm 30%% từ %,d VNĐ)", 
+        contentText.setText(String.format("Nội dung: Thanh toán khóa học %s\nSố tiền: %,d VNĐ", 
             this.username, (long) soTien, (long) (soTien / 0.7)));
 
         try (InputStream qrStream = getClass().getResourceAsStream("/com/ntn/images/qr/qr.jpg")) {

@@ -182,11 +182,9 @@ public class AddCourseController {
     }
 
     private void loadGiangVienList() {
-        try (Connection conn = Database.getConn();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT id, CONCAT(ho, ' ', ten) AS ten_giang_vien " +
-                             "FROM nguoidung WHERE loai_nguoi_dung_id = 2");
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(
+                "SELECT id, CONCAT(ho, ' ', ten) AS ten_giang_vien "
+                + "FROM nguoidung WHERE loai_nguoi_dung_id = 2"); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String tenGiangVien = rs.getString("ten_giang_vien");
@@ -357,25 +355,25 @@ public class AddCourseController {
                 showAlert("Lỗi", "Không thể sao chép hình ảnh: " + e.getMessage(), Alert.AlertType.ERROR);
                 return;
             }
-        }
 
-        // Thêm khóa học bằng CourseService
-        try {
-            boolean success = courseService.addCourseWithImage(
-                    tenKhoaHoc, giangVienId, moTa, ngayBatDau, ngayKetThuc, hocPhi, hinhAnhPath, true
-            );
-            if (success) {
-                LOGGER.info("Đã thêm khóa học: " + tenKhoaHoc + " với hình ảnh: " + hinhAnhPath);
-                showAlert("Thành công", "Khóa học đã được thêm!", Alert.AlertType.INFORMATION);
-                closeWindow();
-            } else {
-                showAlert("Lỗi", "Không thể thêm khóa học!", Alert.AlertType.ERROR);
+            // Thêm khóa học bằng CourseService
+            try {
+                boolean success = courseService.addCourseWithImage(
+                        tenKhoaHoc, giangVienId, moTa, ngayBatDau, ngayKetThuc, hocPhi, hinhAnhPath, true
+                );
+                if (success) {
+                    LOGGER.info("Đã thêm khóa học: " + tenKhoaHoc + " với hình ảnh: " + hinhAnhPath);
+                    showAlert("Thành công", "Khóa học đã được thêm!", Alert.AlertType.INFORMATION);
+                    closeWindow();
+                } else {
+                    showAlert("Lỗi", "Không thể thêm khóa học!", Alert.AlertType.ERROR);
+                }
+            } catch (IllegalArgumentException e) {
+                showAlert("Cảnh báo", e.getMessage(), Alert.AlertType.WARNING);
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Lỗi khi thêm khóa học", e);
+                showAlert("Lỗi", "Không thể thêm khóa học: " + e.getMessage(), Alert.AlertType.ERROR);
             }
-        } catch (IllegalArgumentException e) {
-            showAlert("Cảnh báo", e.getMessage(), Alert.AlertType.WARNING);
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Lỗi khi thêm khóa học", e);
-            showAlert("Lỗi", "Không thể thêm khóa học: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
