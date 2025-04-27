@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -360,22 +361,23 @@ public class PaymentService {
         }
     }
 
-    public List<KhoaHocHocVien> getPendingKhoaHocHocVien() throws SQLException {
-        List<KhoaHocHocVien> result = new ArrayList<>();
-        String sql = "SELECT id, hocVienID, khoaHocID, ngay_dang_ky, trang_thai FROM khoahoc_hocvien WHERE trang_thai = 'PENDING'";
-        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                String ngayDangKy = rs.getTimestamp("ngay_dang_ky") != null ? rs.getTimestamp("ngay_dang_ky").toString() : "";
-                ngayDangKy = ngayDangKy.replaceAll("\\.0$", "");
-                result.add(new KhoaHocHocVien(
-                        rs.getInt("id"),
-                        rs.getInt("hocVienID"),
-                        rs.getInt("khoaHocID"),
-                        ngayDangKy,
-                        rs.getString("trang_thai")
-                ));
-            }
+   public List<KhoaHocHocVien> getPendingKhoaHocHocVien() throws SQLException {
+    List<KhoaHocHocVien> result = new ArrayList<>();
+    String sql = "SELECT id, hocVienID, khoaHocID, ngay_dang_ky, trang_thai FROM khoahoc_hocvien WHERE trang_thai = 'PENDING'";
+    try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+            Timestamp timestamp = rs.getTimestamp("ngay_dang_ky");
+            String ngayDangKy = timestamp != null ? timestamp.toLocalDateTime()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")) : "";
+            result.add(new KhoaHocHocVien(
+                    rs.getInt("id"),
+                    rs.getInt("hocVienID"),
+                    rs.getInt("khoaHocID"),
+                    ngayDangKy,
+                    rs.getString("trang_thai")
+            ));
         }
-        return result;
     }
+    return result;
+}
 }

@@ -3,6 +3,7 @@ package com.ntn.quanlykhoahoc.pojo;
 import javafx.beans.property.SimpleStringProperty;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 
 public class KhoaHocHocVien {
@@ -20,10 +21,14 @@ public class KhoaHocHocVien {
         this.trangThai = new SimpleStringProperty(trangThai);
 
         if (ngayDangKy != null && !ngayDangKy.isEmpty()) {
-            ngayDangKy = ngayDangKy.replaceAll("\\.0$", "");
             try {
-                // Hỗ trợ định dạng có microsecond (7 chữ số) hoặc không có
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss[.SSSSSSS]");
+                // Hỗ trợ microsecond linh hoạt (0-7 chữ số)
+                DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                    .appendPattern("yyyy-MM-dd HH:mm:ss")
+                    .optionalStart()
+                    .appendFraction(java.time.temporal.ChronoField.MICRO_OF_SECOND, 0, 7, true)
+                    .optionalEnd()
+                    .toFormatter();
                 LocalDateTime parsedDate = LocalDateTime.parse(ngayDangKy, formatter);
                 // Lưu dưới dạng yyyy-MM-dd HH:mm:ss
                 this.ngayDangKy.set(parsedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));

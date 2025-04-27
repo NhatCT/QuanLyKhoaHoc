@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -417,28 +418,30 @@ class PaymentTest {
 
     // Kiểm thử lấy danh sách các bản ghi khoahoc_hocvien có trạng thái PENDING
     @Test
-    void testGetPendingKhoaHocHocVien() throws SQLException {
-        try (MockedStatic<Database> mockedDatabase = Mockito.mockStatic(Database.class)) {
-            mockedDatabase.when(Database::getConn).thenReturn(mockConnection);
+void testGetPendingKhoaHocHocVien() throws SQLException {
+    try (MockedStatic<Database> mockedDatabase = Mockito.mockStatic(Database.class)) {
+        mockedDatabase.when(Database::getConn).thenReturn(mockConnection);
 
-            when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
-            when(mockResultSet.next()).thenReturn(true, true, false);
-            when(mockResultSet.getInt("id")).thenReturn(1, 2);
-            when(mockResultSet.getInt("hocVienID")).thenReturn(1, 2);
-            when(mockResultSet.getInt("khoaHocID")).thenReturn(1, 2);
-            when(mockResultSet.getTimestamp("ngay_dang_ky")).thenReturn(Timestamp.valueOf(testDateTime));
-            when(mockResultSet.getString("trang_thai")).thenReturn("PENDING");
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true, true, false);
+        when(mockResultSet.getInt("id")).thenReturn(1, 2);
+        when(mockResultSet.getInt("hocVienID")).thenReturn(1, 2);
+        when(mockResultSet.getInt("khoaHocID")).thenReturn(1, 2);
+        // Đảm bảo định dạng 6 chữ số microsecond
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+        String formattedDateTime = testDateTime.format(formatter);
+        when(mockResultSet.getTimestamp("ngay_dang_ky")).thenReturn(Timestamp.valueOf(formattedDateTime));
+        when(mockResultSet.getString("trang_thai")).thenReturn("PENDING");
 
-            List<KhoaHocHocVien> pendingRecords = paymentService.getPendingKhoaHocHocVien();
+        List<KhoaHocHocVien> pendingRecords = paymentService.getPendingKhoaHocHocVien();
 
-            assertEquals(2, pendingRecords.size());
-            assertEquals(1, pendingRecords.get(0).getId());
-            assertEquals(2, pendingRecords.get(1).getId());
-            assertEquals("PENDING", pendingRecords.get(0).getTrangThai());
-            assertEquals("PENDING", pendingRecords.get(1).getTrangThai());
-        }
+        assertEquals(2, pendingRecords.size());
+        assertEquals(1, pendingRecords.get(0).getId());
+        assertEquals(2, pendingRecords.get(1).getId());
+        assertEquals("PENDING", pendingRecords.get(0).getTrangThai());
+        assertEquals("PENDING", pendingRecords.get(1).getTrangThai());
     }
-
+}
     // Kiểm thử gửi thông báo cho quản trị viên
     @Test
     void testNotifyAdmin() throws SQLException {

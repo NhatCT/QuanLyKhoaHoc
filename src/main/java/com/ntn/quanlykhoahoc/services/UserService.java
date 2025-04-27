@@ -59,7 +59,7 @@ public class UserService {
         }
     }
 
-    private boolean isLoaiNguoiDungValid(int loaiNguoiDungId) throws SQLException {
+    boolean isLoaiNguoiDungValid(int loaiNguoiDungId) throws SQLException {
         String sql = "SELECT id FROM loainguoidung WHERE id = ?";
         try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, loaiNguoiDungId);

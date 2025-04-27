@@ -51,18 +51,7 @@ public class ChoiceTest {
         databaseMock.close();
     }
     
-    /**
-     * TC1: Kiểm tra lấy danh sách đáp án theo ID câu hỏi
-     * 
-     * Test case dùng để kiểm thử chức năng lấy danh sách đáp án
-     * khi cung cấp một ID câu hỏi hợp lệ trong hệ thống
-     * 
-     * Các bước:
-     * 1: Cung cấp ID câu hỏi hợp lệ
-     * 2: Gọi phương thức getDapAnTheoCauHoiID
-     * 
-     * Kết quả mong đợi: Trả về danh sách đáp án đầy đủ thông tin
-     */
+  
     @Test
     void testGetDapAnTheoCauHoiID_Success() throws SQLException {
         // Mock ResultSet: 4 bản ghi đáp án
@@ -103,18 +92,7 @@ public class ChoiceTest {
         verify(mockStmt).setInt(1, cauHoiId);
     }
     
-    /**
-     * TC2: Kiểm tra lấy danh sách đáp án khi không có đáp án nào
-     * 
-     * Test case dùng để kiểm thử chức năng lấy danh sách đáp án
-     * khi cung cấp ID câu hỏi hợp lệ nhưng không có đáp án nào
-     * 
-     * Các bước:
-     * 1: Cung cấp ID câu hỏi không có đáp án
-     * 2: Gọi phương thức getDapAnTheoCauHoiID
-     * 
-     * Kết quả mong đợi: Trả về danh sách rỗng
-     */
+
     @Test
     void testGetDapAnTheoCauHoiID_EmptyList() throws SQLException {
         // Mock ResultSet: không có bản ghi nào
@@ -131,19 +109,7 @@ public class ChoiceTest {
         verify(mockStmt).setInt(1, cauHoiId);
     }
     
-    /**
-     * TC3: Kiểm tra xử lý ngoại lệ khi truy vấn thất bại
-     * 
-     * Test case dùng để kiểm thử việc xử lý ngoại lệ
-     * khi có lỗi xảy ra trong quá trình truy vấn cơ sở dữ liệu
-     * 
-     * Các bước:
-     * 1: Cung cấp ID câu hỏi bất kỳ
-     * 2: Giả lập lỗi SQL
-     * 3: Gọi phương thức getDapAnTheoCauHoiID
-     * 
-     * Kết quả mong đợi: Ngoại lệ SQLException được ném ra
-     */
+    
     @Test
     void testGetDapAnTheoCauHoiID_SQLException() throws SQLException {
         // Mock SQLException khi executeQuery
