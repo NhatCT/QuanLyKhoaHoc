@@ -40,6 +40,12 @@ public class KhoaHocHocVien {
         }
     }
 
+    public KhoaHocHocVien(int i, LocalDateTime minusDays) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+   
+
     public int getId() {
         return id;
     }

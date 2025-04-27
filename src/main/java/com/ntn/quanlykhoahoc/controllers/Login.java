@@ -94,7 +94,7 @@ public class Login {
         }
     }
 
-    private boolean authenticate(String email, String password, String role) {
+    public boolean authenticate(String email, String password, String role) {
         String query = "SELECT mat_khau FROM nguoidung WHERE email = ? "
                 + "AND loai_nguoi_dung_id = (SELECT id FROM loainguoidung WHERE ten_loai = ? LIMIT 1)";
 

@@ -4,6 +4,7 @@
  */
 package com.ntn.quanlykhoahoc.pojo;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -15,13 +16,16 @@ public class BaiTap {
     private int id;
     private int khoaHocID;
     private String tenBaiTap;
-    private Date deadline;
+    private Timestamp deadline;
 
-    public BaiTap(int id, int khoaHocID, String tenBaiTap, Date deadline) {
+    public BaiTap(int id, int khoaHocID, String tenBaiTap, Timestamp deadline) {
         this.id = id;
         this.khoaHocID = khoaHocID;
         this.tenBaiTap = tenBaiTap;
         this.deadline = deadline;
+    }
+
+    public BaiTap() {
     }
 
     /**
@@ -69,14 +73,14 @@ public class BaiTap {
     /**
      * @return the deadline
      */
-    public Date getDeadline() {
+    public Timestamp getDeadline() {
         return deadline;
     }
 
     /**
      * @param deadline the deadline to set
      */
-    public void setDeadline(Date deadline) {
+    public void setDeadline(Timestamp deadline) {
         this.deadline = deadline;
     }
 }

@@ -514,7 +514,11 @@ public class DashboardStudentController {
             vaoHoc.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5px; -fx-padding: 5px 15px;");
             vaoHoc.setOnAction(e -> {
                 try {
-                    vaoHoc(khoaHoc.getId());
+                    try {
+                        vaoHoc(khoaHoc.getId());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(DashboardStudentController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 } catch (IOException ex) {
                     Logger.getLogger(DashboardStudentController.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -966,7 +970,7 @@ public class DashboardStudentController {
     }
 
 //    Nguyen lm
-    public void vaoHoc(int id) throws IOException {
+    public void vaoHoc(int id) throws IOException, SQLException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/com/ntn/views/course.fxml"));
         Parent root = fxmlLoader.load(); // Load FXML trước
 
