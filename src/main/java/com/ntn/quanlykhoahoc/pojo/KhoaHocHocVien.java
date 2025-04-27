@@ -3,6 +3,7 @@ package com.ntn.quanlykhoahoc.pojo;
 import javafx.beans.property.SimpleStringProperty;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 
 public class KhoaHocHocVien {
@@ -19,12 +20,18 @@ public class KhoaHocHocVien {
         this.ngayDangKy = new SimpleStringProperty();
         this.trangThai = new SimpleStringProperty(trangThai);
 
-        if (ngayDangKy != null) {
-            ngayDangKy = ngayDangKy.replaceAll("\\.0$", "");
+        if (ngayDangKy != null && !ngayDangKy.isEmpty()) {
             try {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                // Hỗ trợ microsecond linh hoạt (0-7 chữ số)
+                DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                    .appendPattern("yyyy-MM-dd HH:mm:ss")
+                    .optionalStart()
+                    .appendFraction(java.time.temporal.ChronoField.MICRO_OF_SECOND, 0, 7, true)
+                    .optionalEnd()
+                    .toFormatter();
                 LocalDateTime parsedDate = LocalDateTime.parse(ngayDangKy, formatter);
-                this.ngayDangKy.set(parsedDate.format(formatter));
+                // Lưu dưới dạng yyyy-MM-dd HH:mm:ss
+                this.ngayDangKy.set(parsedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             } catch (DateTimeParseException e) {
                 throw new IllegalArgumentException("Định dạng ngày đăng ký không hợp lệ: " + ngayDangKy, e);
             }
@@ -32,6 +39,12 @@ public class KhoaHocHocVien {
             this.ngayDangKy.set("");
         }
     }
+
+    public KhoaHocHocVien(int i, LocalDateTime minusDays) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+   
 
     public int getId() {
         return id;

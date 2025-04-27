@@ -7,23 +7,30 @@ import com.ntn.quanlykhoahoc.services.PasswordService;
 
 import java.io.IOException;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 
 public class Register {
 
-    @FXML private TextField hoField, tenField, emailField;
-    @FXML private PasswordField passwordField, confirmPasswordField;
-    @FXML private Button registerButton;
-    @FXML private Hyperlink loginLink;
+    @FXML
+    private TextField hoField, tenField, emailField;
+    @FXML
+    private PasswordField passwordField, confirmPasswordField;
+    @FXML
+    private Button registerButton;
+    @FXML
+    private Hyperlink loginLink;
 
     private final PasswordService passwordService = new PasswordService();
     private final EmailService emailService = new EmailService();
     private final NavigationService navigationService = new NavigationService();
+    private static int nguoidungID = 41;
 
     @FXML
-    private void handleRegister() {
+    private void handleRegister() throws ParseException, SQLException {
         if (registerButton.getScene() != null) {
             registerButton.getScene().getRoot().requestFocus();
         }
@@ -93,7 +100,9 @@ public class Register {
         }
     }
 
-    private boolean registerUser(String ho, String ten, String email, String hashedPassword, int loaiNguoiDungID) {
+    private boolean registerUser(String ho, String ten, String email, String hashedPassword, int loaiNguoiDungID) throws ParseException, SQLException {
+      
+
         String sql = "INSERT INTO nguoidung (ho, ten, email, mat_khau, loai_nguoi_dung_id) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, ho);
@@ -101,12 +110,16 @@ public class Register {
             stmt.setString(3, email);
             stmt.setString(4, hashedPassword);
             stmt.setInt(5, loaiNguoiDungID);
-            return stmt.executeUpdate() > 0;
+            return stmt.executeUpdate()>0;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
+    
+   
+ 
 
     @FXML
     private void handleLogin(ActionEvent event) {

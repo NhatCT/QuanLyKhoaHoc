@@ -5,6 +5,7 @@ D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\AddUserControll
 D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\AdminApprovalController.java
 D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\CourseController.java
 D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\CourseDetailsController.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\Dashboard_teacherController.java
 D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\DashboardAdminController.java
 D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\DashboardStudentController.java
 D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\controllers\DashboardTeacherController.java
@@ -26,7 +27,9 @@ D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\database\Database.java
 D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\BaiTap.java
 D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\CauHoi.java
 D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\DapAn.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\HocVien_BaiTap.java
 D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\KhoaHoc.java
+D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\KhoaHoc_HocVien.java
 D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\KhoaHocHocVien.java
 D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\LichHoc.java
 D:\QuanLyKhoaHoc\src\main\java\com\ntn\quanlykhoahoc\pojo\NguoiDung.java

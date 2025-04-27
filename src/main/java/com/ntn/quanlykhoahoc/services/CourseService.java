@@ -3,6 +3,7 @@ package com.ntn.quanlykhoahoc.services;
 import com.ntn.quanlykhoahoc.database.Database;
 import com.ntn.quanlykhoahoc.pojo.KhoaHoc;
 import com.ntn.quanlykhoahoc.pojo.KhoaHocHocVien;
+import com.ntn.quanlykhoahoc.pojo.KhoaHoc_HocVien;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -111,7 +112,7 @@ public class CourseService {
         }
         if (moTa == null || moTa.trim().isEmpty()) {
             throw new IllegalArgumentException("Mô tả không được để trống");
-    }
+        }
         if (ngayBatDau == null || ngayKetThuc == null) {
             throw new IllegalArgumentException("Ngày bắt đầu và ngày kết thúc không được để trống");
         }
@@ -370,5 +371,104 @@ public class CourseService {
             LOGGER.log(Level.SEVERE, "Lỗi khi cập nhật trạng thái đăng ký cho hocVienID=" + hocVienId + ", khoaHocID=" + khoaHocId, e);
             throw new SQLException("Lỗi khi cập nhật trạng thái đăng ký: " + e.getMessage(), e);
         }
+    
+        
+        
+        
+}
+    //Nguyen lam 
+    
+      public List<KhoaHoc> getCourseID(int khoaHocID) throws SQLException {
+        List<KhoaHoc> khoaHocList = new ArrayList<>();
+        Connection conn = Database.getConn();
+        String sql = "SELECT * FROM khoahoc WHERE id = ?";
+        PreparedStatement stm = conn.prepareStatement(sql);
+        stm.setInt(1, khoaHocID);
+        ResultSet rs = stm.executeQuery();
+        while (rs.next()) {
+                    khoaHocList.add(new KhoaHoc(
+                            rs.getInt("id"),
+                            rs.getString("ten_khoa_hoc")
+                           
+                    ));
+                }
+        return khoaHocList;
     }
+    
+    public List<KhoaHoc_HocVien> getKhoaHoc_HocViens(int hocVienid, int khoaHocID) throws SQLException {
+        List<KhoaHoc_HocVien> kh = new ArrayList<>();
+        Connection conn = Database.getConn();
+        String sql = "SELECT * FROM khoahoc_hocvien WHERE hocVienID = ? and khoaHocID = ? ";
+
+        PreparedStatement stm = conn.prepareCall(sql);
+        stm.setInt(1, hocVienid);
+        stm.setInt(2, khoaHocID);
+        ResultSet rs = stm.executeQuery();
+        while (rs.next()) {
+            KhoaHoc_HocVien c = new KhoaHoc_HocVien(
+                    rs.getInt("id"),
+                    rs.getInt("hocVienID"),
+                    rs.getInt("khoaHocID"),
+                    rs.getDate("ngay_dang_ky"),
+                    rs.getString("trang_thai")
+            );
+            kh.add(c);
+        }
+        return kh;
+    }
+    
+
+   
+    
+    
+    public List<KhoaHoc> getCoursesByTeacherId(int id) throws SQLException {
+        List<KhoaHoc> khoaHocs = new ArrayList<>();
+        String query = "SELECT k.id, k.ten_khoa_hoc, k.giangVienID, k.mo_ta, k.gia, k.hinh_anh, k.active, k.ngay_bat_dau, k.ngay_ket_thuc, k.so_luong_hoc_vien_toi_da, "
+                + "CONCAT(n.ho, ' ', n.ten) AS ten_giang_vien "
+                + "FROM khoahoc k "
+                + "LEFT JOIN nguoidung n ON k.giangVienID = n.id "
+                + "WHERE k.giangVienID = ?";
+        try (Connection conn = Database.getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    KhoaHoc khoaHoc = new KhoaHoc();
+                    khoaHoc.setId(rs.getInt("id"));
+                    khoaHoc.setTenKhoaHoc(rs.getString("ten_khoa_hoc"));
+                    khoaHoc.setGiangVienId(rs.getInt("giangVienID"));
+                    khoaHoc.setMoTa(rs.getString("mo_ta"));
+                    khoaHoc.setGia(rs.getDouble("gia"));
+                    khoaHoc.setSoLuongHocVienToiDa(rs.getInt("so_luong_hoc_vien_toi_da"));
+                    khoaHoc.setHinhAnh(rs.getString("hinh_anh"));
+                    khoaHoc.setTenGiangVien(rs.getString("ten_giang_vien") != null ? rs.getString("ten_giang_vien") : "Chưa có giảng viên");
+                    khoaHoc.setActive(rs.getBoolean("active"));
+                    khoaHoc.setNgayBatDau(rs.getDate("ngay_bat_dau") != null ? rs.getDate("ngay_bat_dau").toLocalDate() : null);
+                    khoaHoc.setNgayKetThuc(rs.getDate("ngay_ket_thuc") != null ? rs.getDate("ngay_ket_thuc").toLocalDate() : null);
+                    khoaHocs.add(khoaHoc);
+                }
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Lỗi khi lấy thông tin khóa học ID " + id + ": " + e.getMessage(), e);
+        }
+        return khoaHocs;
+    }
+    
+    
+     public int updateSoLuong(int so_luong_hoc_vien_toi_da, int khoaHocID) throws SQLException {
+        Connection conn = Database.getConn();
+        String updateSQL = "UPDATE khoahoc SET so_luong_hoc_vien_toi_da = ? WHERE id = ?";
+
+        PreparedStatement ptm = conn.prepareStatement(updateSQL);
+
+        ptm.setInt(1, so_luong_hoc_vien_toi_da);
+        ptm.setInt(2, khoaHocID);
+        int a = ptm.executeUpdate();
+        return a;
+        
+
+    }
+    
+   
+    
+
 }

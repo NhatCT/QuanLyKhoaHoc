@@ -4,10 +4,12 @@
  */
 package com.ntn.quanlykhoahoc.controllers;
 
+import com.ntn.quanlykhoahoc.pojo.BaiTap;
 import com.ntn.quanlykhoahoc.pojo.CauHoi;
 import com.ntn.quanlykhoahoc.pojo.DapAn;
 import com.ntn.quanlykhoahoc.pojo.NguoiDung;
 import com.ntn.quanlykhoahoc.services.ChoiceServices;
+import com.ntn.quanlykhoahoc.services.ExerciseServices;
 import com.ntn.quanlykhoahoc.services.QuestionServices;
 import com.ntn.quanlykhoahoc.services.SubmitServices;
 import com.ntn.quanlykhoahoc.services.UserService;
@@ -19,7 +21,10 @@ import javafx.fxml.Initializable;
 import java.util.prefs.Preferences;
 import java.net.URL;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,25 +59,50 @@ public class ExerciseController implements Initializable {
     private int currentIdx = 0;
     private int baiTapID;
     private int ketQua = 0;
-    private boolean is_submit = true;
+
+    private String TIME_KEY;
+    private String QUES_KEY;
+
     @FXML
     private Text timerText;
     @FXML
     private Button btnClose;
-    private int minutes = 24;
-    private int seconds = 31;
-    private static final String TIMER_KEY = "remainingTime4";
-    private static final String QUESTION_KEY = "question1_";
+    private int minutes;
+    private int seconds;
+    private Timeline timeline;
+
+    private static final String TIMER_KEY_FORMAT = "hocvien_%d_baitap_%d";
+
+    private static final String QUESTION_KEY_FORMAT = "hocvien_%d_baitap_%d";
     private static Preferences preferences = Preferences.userRoot().node(CourseController.class.getName());
 
     // Phương thức để load câu hỏi và đáp án, xử lý tạo động radio buttons
-    public void loadCauHoi() {
+    public void loadCauHoi() throws SQLException {
         QuestionServices loadCauHoi = new QuestionServices();
         try {
             this.cauhoi = loadCauHoi.getCauHoiTheoBaiTapID(baiTapID);
         } catch (SQLException ex) {
             Logger.getLogger(ExerciseController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        UserService userService = new UserService();
+        String email = SessionManager.getLoggedInEmail();
+        List<NguoiDung> allUsers = userService.getAllUsers();
+        NguoiDung user = allUsers.stream()
+                .filter(u -> u.getEmail().equals(email))
+                .findFirst()
+                .orElse(null);
+        int hocVienID = userService.getHocVienIDFromNguoiDung(user.getId());
+        this.QUES_KEY = String.format(QUESTION_KEY_FORMAT, hocVienID, baiTapID);
+
+        this.TIME_KEY = String.format(TIMER_KEY_FORMAT, hocVienID, baiTapID);
+
+        int soCauHoi = this.cauhoi.size() * 3;
+        String thoiGianMacDinh = String.format("%02d:00", soCauHoi);
+
+        String remainingTime = preferences.get(TIME_KEY, thoiGianMacDinh);  // Thời gian mặc định nếu không có dữ liệu lưu trữ
+        String[] timeParts = remainingTime.split(":");
+        minutes = Integer.parseInt(timeParts[0]);
+        seconds = Integer.parseInt(timeParts[1]);
 
     }
 
@@ -124,7 +154,7 @@ public class ExerciseController implements Initializable {
             // Lưu lựa chọn của người dùng khi họ chọn đáp án và lưu vào map
             for (RadioButton radioButton : radioButtons) {
                 radioButton.setOnAction(e -> {
-                    String luaChon1 = (String) radioButton.getUserData();  // Lấy giá trị 'A', 'B', 'C', 'D'
+                    String luaChon1 = (String) radioButton.getUserData();  // Lấy giá trị '0', '1', '2', '3'
                     cauHoiMap.put(this.currentIdx, luaChon1);  // Lưu vào Map
                 });
             }
@@ -139,14 +169,9 @@ public class ExerciseController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        String remainingTime = preferences.get(TIMER_KEY, "24:31");  // Thời gian mặc định nếu không có dữ liệu lưu trữ
-        String[] timeParts = remainingTime.split(":");
-        minutes = Integer.parseInt(timeParts[0]);
-        seconds = Integer.parseInt(timeParts[1]);
 
         // Cập nhật thời gian đã lưu
-        updateTimeDisplay();
-
+//        updateTimeDisplay();
     }
 
     public void prevHandler() throws SQLException {
@@ -173,8 +198,14 @@ public class ExerciseController implements Initializable {
 
     public void startTimer() {
         // Tạo Timeline để thực hiện việc đếm ngược mỗi giây
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), e -> updateTimer())
+        this.timeline = new Timeline(
+                new KeyFrame(Duration.seconds(1), e -> {
+                    try {
+                        updateTimer();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ExerciseController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                })
         );
 
         // Lặp vô hạn (đếm ngược không giới hạn)
@@ -184,7 +215,14 @@ public class ExerciseController implements Initializable {
         timeline.play();
     }
 
-    private void updateTimer() {
+    private void updateTimer() throws SQLException {
+        String timeRemaining = String.format("Thời gian còn lại: %02d:%02d", minutes, seconds);
+        if (timeRemaining.equals("Thời gian còn lại: 00:00")) {
+
+            submit();
+            this.timeline.stop();
+        }
+
         if (seconds == 0) {
             if (minutes == 0) {
                 // Thời gian đã hết
@@ -199,9 +237,9 @@ public class ExerciseController implements Initializable {
         }
 
         // Cập nhật lại thời gian hiển thị
-        String time = String.format("Thời gian còn lại: %02d:%02d", minutes, seconds);
+        timerText.setText(String.format("Thời gian còn lại: %02d:%02d", minutes, seconds));
         saveState();
-        timerText.setText(time);
+
     }
 
     private void updateTimeDisplay() {
@@ -211,7 +249,7 @@ public class ExerciseController implements Initializable {
 
     public void saveState() {
         String timeRemaining = String.format("%02d:%02d", minutes, seconds);
-        preferences.put(TIMER_KEY, timeRemaining);
+        preferences.put(TIME_KEY, timeRemaining);
 
 //        entrySet() trả về danh sách các cặp key-value chứa trong Map
 //Set<Map.Entry<String, Integer>> entrySet = map.entrySet();
@@ -221,7 +259,7 @@ public class ExerciseController implements Initializable {
         for (Map.Entry<Integer, String> entry : cauHoiMap.entrySet()) {
             int questionIndex = entry.getKey();  // Chỉ mục câu hỏi
             String luaChon = entry.getValue();  // Đáp án đã chọn
-            preferences.put(QUESTION_KEY + questionIndex, luaChon);  // Lưu lựa chọn cho câu hỏi theo index
+            preferences.put(QUES_KEY + questionIndex, luaChon);  // Lưu lựa chọn cho câu hỏi theo index
         }
 
     }
@@ -231,7 +269,7 @@ public class ExerciseController implements Initializable {
             // Duyệt qua từng câu hỏi để khôi phục lựa chọn của người dùng
             for (int i = 0; i < this.cauhoi.size(); i++) {
                 // Lấy lựa chọn đã lưu cho câu hỏi i từ Preferences
-                String luaChon = preferences.get(QUESTION_KEY + i, null);  // Nếu không có dữ liệu thì trả về null
+                String luaChon = preferences.get(QUES_KEY + i, null);  // Nếu không có dữ liệu thì trả về null
                 if (luaChon != null) {
                     // Lưu lựa chọn vào Map, để khi cần có thể khôi phục
                     cauHoiMap.put(i, luaChon);
@@ -282,7 +320,6 @@ public class ExerciseController implements Initializable {
         dem.setText(String.valueOf(ketQua));
         // Lấy cửa sổ (stage) hiện tại từ scene
         // Lấy cửa sổ hiện tại từ nút hoặc bất kỳ thành phần nào trong scene
-        
 
         UserService userService = new UserService();
         String email = SessionManager.getLoggedInEmail();
@@ -293,18 +330,29 @@ public class ExerciseController implements Initializable {
                 .orElse(null);
         int hocVienID = userService.getHocVienIDFromNguoiDung(user.getId());
         SubmitServices nopBaiServices = new SubmitServices();
-        if((nopBaiServices.submitSQL(hocVienID, baiTapID, ketQua) == 1)){
-             showAlert("Nộp thành công!", "Số điểm bạn là: " + String.valueOf(ketQua), Alert.AlertType.INFORMATION);
+        ExerciseServices bts = new ExerciseServices();
+        BaiTap bt = bts.getBaiTapTheoKhoaHocID(baiTapID);
+        Timestamp hienTai = new Timestamp(System.currentTimeMillis());
+        int is_thanhCong = -1;
+
+        if ((bt.getDeadline().equals(hienTai)) || (hienTai.before(bt.getDeadline()))) {
+            is_thanhCong = nopBaiServices.submitSQL(hocVienID, baiTapID, ketQua);
+        } else {
+            is_thanhCong = 0;
         }
+        if ((is_thanhCong == 1)) {
+            showAlert("Nộp thành công!", "Số điểm bạn là: " + String.valueOf(ketQua), Alert.AlertType.INFORMATION);
+            this.timeline.stop();
+        } else {
+            showAlert("Nộp thất bại!", "Số điểm bạn là: " + String.valueOf(ketQua), Alert.AlertType.INFORMATION);
+        }
+        this.timeline.stop();
         Stage currentStage = (Stage) btnClose.getScene().getWindow();
         currentStage.close();
-            
-       
-        
 
     }
-    
-      private void showAlert(String title, String message, Alert.AlertType type) {
+
+    private void showAlert(String title, String message, Alert.AlertType type) {
         Platform.runLater(() -> {
             Alert alert = new Alert(type);
             alert.setTitle(title);
@@ -325,4 +373,7 @@ public class ExerciseController implements Initializable {
         return ketQua;
     }
 
+    /**
+     * @return the random
+     */
 }
