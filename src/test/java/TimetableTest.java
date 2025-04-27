@@ -84,8 +84,8 @@ public class TimetableTest {
 
         // Kiểm tra kết quả
         assertEquals(2, timetable.size());
-        assertEquals("Java Basics", timetable.get(0).getTenKhoaHoc());
-        assertEquals("Advanced Python", timetable.get(1).getTenKhoaHoc());
+        assertEquals("Java cơ bản", timetable.get(0).getTenKhoaHoc());
+        assertEquals("Python nâng cao", timetable.get(1).getTenKhoaHoc());
 
         // Xác minh PreparedStatement được thiết lập đúng
         verify(mockStmt).setString(1, "student@example.com");

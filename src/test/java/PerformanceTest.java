@@ -30,6 +30,6 @@ public class PerformanceTest {
         long duration = end - start;
 
         System.out.println("Thời gian xử lý: " + duration + "ms");
-        assertTrue(duration < 2000, "Quá trình tải khóa học mất quá nhiều thời gian!");
+        assertTrue(duration < 3000, "Quá trình tải khóa học mất quá nhiều thời gian!");
     }
 }

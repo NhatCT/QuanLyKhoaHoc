@@ -360,6 +360,69 @@ public class GetCoursesTest {
                 () -> assertEquals(fakeError, ex.getCause())
         );
     }
+    
+    @Test
+    public void testSearchCourses_DOS() throws SQLException {
+        // Giả lập prepareStatement và executeQuery
+        Mockito.when(mockConn.prepareStatement(Mockito.anyString())).thenReturn(mockStmt);
+        Mockito.when(mockStmt.executeQuery()).thenReturn(mockRs);
+
+        // Đếm dòng hiện tại trong ResultSet
+        AtomicInteger index = new AtomicInteger(0);
+
+        // Mô phỏng next() trả về true cho 2 dòng, sau đó false
+        Mockito.when(mockRs.next()).thenAnswer(inv -> {
+            int i = index.get();
+            if (i < 2) {
+                index.incrementAndGet();
+                return true;
+            }
+            return false;
+        });
+
+        // Dữ liệu mẫu
+        int[] ids = {1, 2};
+        String[] tenKH = {"Lập trình C++", "Thiết kế Web"};
+        String[] moTa = {"Học C++ từ cơ bản", "Học HTML/CSS"};
+        double[] gia = {150.0, 250.0};
+        int[] slHV = {20, 35};
+        String[] hinhAnh = {"c++.jpg", "web.jpg"};
+        boolean[] active = {true, true};
+        String[] tenGV = {null, "Lê Văn B"};
+        LocalDate[] ngayBD = {LocalDate.of(2024, 1, 10), LocalDate.of(2024, 3, 15)};
+        LocalDate[] ngayKT = {LocalDate.of(2024, 4, 10), LocalDate.of(2024, 6, 30)};
+
+        // Mô phỏng các giá trị trong ResultSet
+        Mockito.when(mockRs.getInt("id")).thenAnswer(inv -> ids[index.get() - 1]);
+        Mockito.when(mockRs.getString("ten_khoa_hoc")).thenAnswer(inv -> tenKH[index.get() - 1]);
+        Mockito.when(mockRs.getString("mo_ta")).thenAnswer(inv -> moTa[index.get() - 1]);
+        Mockito.when(mockRs.getDouble("gia")).thenAnswer(inv -> gia[index.get() - 1]);
+        Mockito.when(mockRs.getInt("so_luong_hoc_vien_toi_da")).thenAnswer(inv -> slHV[index.get() - 1]);
+        Mockito.when(mockRs.getString("hinh_anh")).thenAnswer(inv -> hinhAnh[index.get() - 1]);
+        Mockito.when(mockRs.getBoolean("active")).thenAnswer(inv -> active[index.get() - 1]);
+        Mockito.when(mockRs.getString("ten_giang_vien")).thenAnswer(inv -> tenGV[index.get() - 1]);
+        Mockito.when(mockRs.getDate("ngay_bat_dau")).thenAnswer(inv -> Date.valueOf(ngayBD[index.get() - 1]));
+        Mockito.when(mockRs.getDate("ngay_ket_thuc")).thenAnswer(inv -> Date.valueOf(ngayKT[index.get() - 1]));
+
+        // Tạo chuỗi cực dài (khoảng 100.000 ký tự)
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 100000; i++) {
+            sb.append("a");
+        }
+        String keyword = sb.toString();
+
+        // Đo thời gian thực thi
+        long startTime = System.currentTimeMillis();
+        List<KhoaHoc> result = courseService.searchCourses(keyword);
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+
+        // Kiểm tra: hệ thống không bị treo quá 2 giây
+        assertTrue(duration < 2000, "Truy vấn mất quá nhiều thời gian (DoS risk)!");
+
+        // Đảm bảo kết quả trả về đúng
+        assertNotNull(result);
+    }
 
     @Test
     void testGetEnrolledCourses_ReturnsCorrectList() throws Exception {

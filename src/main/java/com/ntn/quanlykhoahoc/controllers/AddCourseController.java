@@ -166,26 +166,26 @@ public class AddCourseController {
             return;
         }
 
-        // Xử lý hình ảnh
-        if (selectedImageFile != null) {
-            try {
-                int nextImageNumber = courseService.getNextImageNumber();
-                String fileExtension = getFileExtension(selectedImageFile.getName());
-                String newFileName = "course_" + nextImageNumber + fileExtension;
-                Path targetPath = Paths.get(COURSE_IMAGE_DIR, newFileName);
-                Files.copy(selectedImageFile.toPath(), targetPath);
-                hinhAnhPath = COURSE_IMAGE_PATH_PREFIX + newFileName;
-                LOGGER.info("Đã sao chép hình ảnh đến: " + targetPath.toAbsolutePath());
-            } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Lỗi khi sao chép hình ảnh", e);
-                showAlert("Lỗi", "Không thể sao chép hình ảnh: " + e.getMessage(), Alert.AlertType.ERROR);
-                return;
-            } catch (SQLException e) {
-                LOGGER.log(Level.SEVERE, "Lỗi khi lấy số thứ tự hình ảnh", e);
-                showAlert("Lỗi", "Không thể lấy số thứ tự hình ảnh: " + e.getMessage(), Alert.AlertType.ERROR);
-                return;
+            // Xử lý hình ảnh
+            if (selectedImageFile != null) {
+                try {
+                    int nextImageNumber = courseService.getNextImageNumber();
+                    String fileExtension = getFileExtension(selectedImageFile.getName());
+                    String newFileName = "course_" + nextImageNumber + fileExtension;
+                    Path targetPath = Paths.get(COURSE_IMAGE_DIR, newFileName);
+                    Files.copy(selectedImageFile.toPath(), targetPath);
+                    hinhAnhPath = COURSE_IMAGE_PATH_PREFIX + newFileName;
+                    LOGGER.info("Đã sao chép hình ảnh đến: " + targetPath.toAbsolutePath());
+                } catch (IOException e) {
+                    LOGGER.log(Level.SEVERE, "Lỗi khi sao chép hình ảnh", e);
+                    showAlert("Lỗi", "Không thể sao chép hình ảnh: " + e.getMessage(), Alert.AlertType.ERROR);
+                    return;
+                } catch (SQLException e) {
+                    LOGGER.log(Level.SEVERE, "Lỗi khi lấy số thứ tự hình ảnh", e);
+                    showAlert("Lỗi", "Không thể lấy số thứ tự hình ảnh: " + e.getMessage(), Alert.AlertType.ERROR);
+                    return;
+                }
             }
-        }
 
         // Thêm khóa học bằng CourseService
         try {

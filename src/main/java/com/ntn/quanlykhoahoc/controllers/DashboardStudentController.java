@@ -643,7 +643,7 @@ public class DashboardStudentController {
                 return false;
             }
             LocalDateTime ngayBatDau = khoaHoc.getNgayBatDau() != null ? khoaHoc.getNgayBatDau().atStartOfDay() : null;
-            if (ngayBatDau != null && Duration.between(LocalDateTime.now(), ngayBatDau).toHours() < 48) {
+            if (ngayBatDau != null && Duration.between(LocalDateTime.now(), ngayBatDau).toHours() < 24) {
                 return false;
             }
             // Kiểm tra trùng lịch học, chỉ log không hiển thị thông báo
