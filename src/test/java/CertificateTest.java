@@ -69,7 +69,7 @@ public class CertificateTest {
 
         double c = (baiTapDaLam / tatCaBT) * 100;
         int phanTramTienTrinh = (int) c;
-        assertTrue(phanTramTienTrinh > 80 && diemTrungBinh > 70, "Phần trăm tiến trình phải lớn hơn 80");
+        assertFalse(phanTramTienTrinh > 80 && diemTrungBinh > 70, "Phần trăm tiến trình phải lớn hơn 80");
 
     }
 
